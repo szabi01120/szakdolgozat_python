@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dézsafürdő és Hordószauna nyilvántartó rendszer</title>
+</head>
+<body>
+    <table>
+        <caption><h2>Termékek tábla</h2></caption>
+        <tr>
+            <th>Id</th>
+            <th>Terméknév</th>
+            <th>Típus</th>
+            <th>Méretek</th>
+        </tr>
+        <tr>
+            {% for termek in termekek %}
+                <td>{{ termek.id }}</td>
+                <td>{{ termek.termeknev }}</td>
+                <td>{{ termek.tipus }}</td>
+                <td>{{ termek.meretek }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+</body>
+</html>

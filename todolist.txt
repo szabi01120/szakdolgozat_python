@@ -1,0 +1,7 @@
+2024.03.27 todo:
+
+-Termékek modul implementálása frontenden.
+-Adatbázis elkészítése
+-Backend összekapcsolása a termekek táblával DONE
+-CRUD implementálás backenden
+-----------------------------------------------------------------------------------
