@@ -11,7 +11,7 @@ export default function App() {
         <Routes>
           <Route index element={<Home />} />
           <Route path="/home" element={<Home />} />
-          <Route path="/AddProduct" element={<AddProduct />} />
+          <Route path="/addproduct" element={<AddProduct />} />
           <Route path="/termekek" element={<Termekek />} />
           <Route path="/raktar" element={<Raktar />} />
           <Route path="/ajanlat" element={<Ajanlat />} />

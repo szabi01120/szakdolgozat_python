@@ -41,53 +41,53 @@ export default function Termekek() {
   return (
     <div>
       <Navbar />
-
-      <div className="container shadow d-flex flex-column pt-4">
-        <h2>Termékek</h2>
-        <div className="d-flex">
-          <button type="button" className="btn btn-primary w-25 mb-3 mt-2 me-4" onClick={handleProductsButtonClick}>
-            Lekérdezés
-          </button>
-          <Link to="/AddProduct" type="button" className="btn btn-primary w-25 mb-3 mt-2">
-            Termék hozzáadása
-          </Link>
-        </div>
-        {productData &&
-          <div className="container pt-3">
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Id</th>
-                  <th scope="termeknev">Terméknév</th>
-                  <th scope="tipus">Típus</th>
-                  <th scope="meret">Méret</th>
-                  <th scope="muveletek">Műveletek</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.length === 0 ? (
-                  <tr><td colSpan="5">Nincs felhasználó adat</td></tr>
-                ) : (
-                  products.map(product => (
-                    <tr key={product.id}>
-                      <th scope="row">{product.id}</th>
-                      <td>{product.termeknev}</td>
-                      <td>{product.tipus}</td>
-                      <td>{product.meretek}</td>
-                      <td>
-                        <button type="button" className="btn btn-primary w-25" onClick={() => handleDeleteButtonClick(product.id)} >
-                          Törlés
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+      <div className="pt-4">
+        <div className="container shadow d-flex flex-column pt-4">
+          <h2>Termékek</h2>
+          <div className="d-flex">
+            <button type="button" className="btn btn-primary w-25 mb-3 mt-2 me-4" onClick={handleProductsButtonClick}>
+              Lekérdezés
+            </button>
+            <Link to="/addproduct" type="button" className="btn btn-primary w-25 mb-3 mt-2">
+              Termék hozzáadása
+            </Link>
           </div>
-        }
+          {productData &&
+            <div className="container pt-3">
+              <table className="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th scope="termeknev">Terméknév</th>
+                    <th scope="tipus">Típus</th>
+                    <th scope="meret">Méret</th>
+                    <th scope="muveletek">Műveletek</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.length === 0 ? (
+                    <tr><td colSpan="5">Nincs termék adat</td></tr>
+                  ) : (
+                    products.map(product => (
+                      <tr key={product.id}>
+                        <th scope="row">{product.id}</th>
+                        <td>{product.termeknev}</td>
+                        <td>{product.tipus}</td>
+                        <td>{product.meretek}</td>
+                        <td>
+                          <button type="button" className="btn btn-primary w-25" onClick={() => handleDeleteButtonClick(product.id)} >
+                            Törlés
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
       </div>
     </div>
   );
-
 }

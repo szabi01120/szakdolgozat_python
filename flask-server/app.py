@@ -13,6 +13,23 @@ def get_termekek():
                         "tipus": termek.tipus, 
                         "meretek": termek.meretek} for termek in termekek]), 200
 
+# endpoints - update product
+@app.route("/api/update_termek/<int:id>", methods=["PUT"])
+def update_termek(id):
+    termeknev = request.json.get("termeknev")
+    tipus = request.json.get("tipus")
+    meretek = request.json.get("meret")
+
+    with app.app_context():
+        termek = Termekek.query.get(id)
+        if termek is None:
+            return jsonify({"error": "Nincs ilyen termék!"}), 404
+        termek.termeknev = termeknev
+        termek.tipus = tipus
+        termek.meretek = meretek
+        db.session.commit()
+        return jsonify({"message": "Termék sikeresen frissítve!"}), 200
+    
 # endpoints - delete product
 @app.route("/api/delete_termek/<int:id>", methods=["DELETE"])
 def delete_termek(id):
