@@ -1,9 +1,8 @@
 import React from 'react'
 import { Navbar } from '../../components'
-import './Ajanlat.css'
+import './Forgalom.css'
 
-export default function Ajanlat() {
-
+export default function Forgalom() {
   return (
     <div>
       <Navbar />    

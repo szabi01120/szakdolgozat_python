@@ -45,7 +45,7 @@ export default function Termekek() {
         <div className="container shadow d-flex flex-column pt-4">
           <h2>Termékek</h2>
           <div className="d-flex">
-            <button type="button" className="btn btn-primary w-25 mb-3 mt-2 me-4" onClick={handleProductsButtonClick}>
+            <button type="button" className="btn btn-primary mb-3 mt-2 me-2" onClick={handleProductsButtonClick}>
               Lekérdezés
             </button>
             <Link to="/addproduct" type="button" className="btn btn-primary w-25 mb-3 mt-2">
@@ -75,7 +75,13 @@ export default function Termekek() {
                         <td>{product.tipus}</td>
                         <td>{product.meretek}</td>
                         <td>
-                          <button type="button" className="btn btn-primary w-25" onClick={() => handleDeleteButtonClick(product.id)} >
+                          <Link to={`/termekfotok/${product.id}`} type="button" className="btn btn-info me-2">
+                            Fotók
+                          </Link>
+                          <Link to={`/editproduct/${product.id}`} type="button" className="btn btn-success me-2">
+                            Edit
+                          </Link>
+                          <button type="button" className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)} >
                             Törlés
                           </button>
                         </td>

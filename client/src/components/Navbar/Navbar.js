@@ -20,6 +20,9 @@ export default function MyNavbar() {
                         <li className={`nav-item ${location.pathname === '/termekek' ? 'active' : ''}`}>
                             <Link className="nav-link" to="/termekek">Termékek</Link>
                         </li>
+                        <li className={`nav-item ${location.pathname === '/forgalom' ? 'active' : ''}`}>
+                            <Link className="nav-link" to="/forgalom">Forgalom</Link>
+                        </li>
                         <li className={`nav-item ${location.pathname === '/raktar' ? 'active' : ''}`}>
                             <Link className="nav-link" to="/raktar">Raktár</Link>
                         </li>
