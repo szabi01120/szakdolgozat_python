@@ -14,7 +14,13 @@ body {
 .navbar-brand, .navbar-brand::after {
     color: #eeeeee;
     font-size: 20px;
-    
+}
+
+.navbar-brand {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 600px; 
 }
 
 .navbar-brand.active {

@@ -75,13 +75,13 @@ export default function Termekek() {
                         <td>{product.tipus}</td>
                         <td>{product.meretek}</td>
                         <td>
-                          <Link to={`/termekfotok/${product.id}`} type="button" className="btn btn-info me-2">
+                          <Link to={`/termekfotok/${product.id}`} type="button" className="btn btn-info me-2 btn-sm d-block d-md-inline mt-2 mt-md-0">
                             Fotók
                           </Link>
-                          <Link to={`/editproduct/${product.id}`} type="button" className="btn btn-success me-2">
+                          <Link to={`/editproduct/${product.id}`} type="button" className="btn btn-success btn-sm me-2 d-block d-md-inline mt-2 mt-md-0">
                             Edit
                           </Link>
-                          <button type="button" className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)} >
+                          <button type="button" className="btn btn-danger btn-sm d-block d-md-inline mt-2 mt-md-0" onClick={() => handleDeleteButtonClick(product.id)} >
                             Törlés
                           </button>
                         </td>

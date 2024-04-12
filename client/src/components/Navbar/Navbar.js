@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Navbar.css';
 
 export default function MyNavbar() {
     const location = useLocation();
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleNavbar = () => {
+        setIsOpen(!isOpen);
+    };
 
     return (
         <nav className="navbar navbar-expand-md fixed-top">
             <div className="container">
-                <Link className="navbar-brand" to="/" id="mainPage">Dézsafürdő és Hordószauna Nyilvántartó Rendszer</Link>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <Link className="navbar-brand mr-auto" to="/" id="mainPage">Dézsafürdő és Hordószauna Nyilvántartó Rendszer</Link>
+                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" onClick={toggleNavbar}>
                     <span className="navbar-toggler-icon"></span>
                 </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
+                <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarNav">
                     <ul className="navbar-nav ms-auto">
                         <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
                             <Link className="nav-link" to="/">Kezdőoldal</Link>

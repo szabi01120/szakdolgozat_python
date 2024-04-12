@@ -18,7 +18,7 @@ def get_termekek():
 def update_termek(id):
     termeknev = request.json.get("termeknev")
     tipus = request.json.get("tipus")
-    meretek = request.json.get("meret")
+    meretek = request.json.get("meretek")
 
     with app.app_context():
         termek = Termekek.query.get(id)
