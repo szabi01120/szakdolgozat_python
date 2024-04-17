@@ -52,12 +52,16 @@ export default function EditProduct() {
             });
             if (response.status === 200) {
                 alert('Sikeres szerkesztés!');
-                window.location.reload();
+                window.location.href = '/termekek';
             }
         } catch (error) {
             console.error('Hiba', error);
         }
     };
+
+    const productNameChange = event => {
+        currentProductName = event.target.value;
+    }
 
     return (
         <div>
@@ -71,14 +75,15 @@ export default function EditProduct() {
                         <label htmlFor="name" className="form-label">Terméknév</label>
                         <input type="text" className="form-control"
                             name="name"
-                            placeholder={currentProductName}
                             id="name"
-                            onChange={(e) => currentProductName = e.target.value}
+                            placeholder={currentProductName}
+                            onChange={productNameChange}
                         />
                     </div>
                     <div className="mb-3">
                         <label htmlFor="tipus" className="form-label">Típus</label>
                         <select className="form-select" id="tipus" name="tipus" placeholder={currentProductType} onChange={(e) => currentProductType = e.target.value} >
+                            <option>{currentProductType}</option>
                             {types.map((type, index) => (
                                 <option key={index} value={type}>{type}</option>
                             ))}

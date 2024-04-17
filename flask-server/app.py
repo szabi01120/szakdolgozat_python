@@ -1,6 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, json
-from flask_cors import CORS
-from dbConfig import app, Termekek, db
+from flask import Flask, render_template, request, redirect, url_for, jsonify, json, abort
+from flask_cors import CORS 
+from flask_bcrypt import Bcrypt
+from dbConfig import app, db, Termekek, Felhasznalok
+
+bcrypt = Bcrypt(app)
 
 # ------------------------------------- ENDPOINT FRONTEND ------------------------------------- #
 # endpoints - get termekek
@@ -62,8 +65,24 @@ def index():
     return render_template("index.html", termekek=termekek)
     
 @app.route("/register")
-def register():
-    return render_template("register.html")
+def register_user():
+    username = request.json["username"]
+    password = request.json["password"]
+
+    user_exists = Felhasznalok.query.filter_by(username=username).first() is not None
+
+    if user_exists:
+        abort(409, description="Felhasználó már létezik!")
+
+    hashed_password = bcrypt.generate_password_hash(password)
+    new_user = Felhasznalok(username=username, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({
+        "id": new_user.id,
+        "username": new_user.username
+    }), 201 # létrehozva válasz kód
 
 @app.route("/members")
 def members():
