@@ -3,9 +3,7 @@ from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from dbConfig import app, db, Termekek, Felhasznalok
-from config import ApplicationConfig
 
-app.config.from_object(ApplicationConfig)
 CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
 
 bcrypt = Bcrypt(app)
@@ -72,7 +70,7 @@ def index():
 
 @app.route("/active_user")
 def get_current_user():
-    user_id = session
+    user_id = session.get("user_id")
 
     print("userid:", user_id)
     if not user_id:
@@ -84,25 +82,25 @@ def get_current_user():
         "username": user.username,
     }), 200
 
-@app.route("/register", methods=["POST"])
-def register_user():
-    username = request.json["username"]
-    password = request.json["password"]
+# @app.route("/register", methods=["POST"])
+# def register_user():
+#     username = request.json["username"]
+#     password = request.json["password"]
 
-    user_exists = Felhasznalok.query.filter_by(username=username).first() is not None
+#     user_exists = Felhasznalok.query.filter_by(username=username).first() is not None
 
-    if user_exists:
-        return jsonify({"error": "A felhasználónév már foglalt!"}), 409
+#     if user_exists:
+#         return jsonify({"error": "A felhasználónév már foglalt!"}), 409
 
-    hashed_password = bcrypt.generate_password_hash(password)
-    new_user = Felhasznalok(username=username, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
+#     hashed_password = bcrypt.generate_password_hash(password)
+#     new_user = Felhasznalok(username=username, password=hashed_password)
+#     db.session.add(new_user)
+#     db.session.commit()
 
-    return jsonify({
-        "id": new_user.id,
-        "username": new_user.username
-    }), 201 # létrehozva válasz kód
+#     return jsonify({
+#         "id": new_user.id,
+#         "username": new_user.username
+#     }), 201 # létrehozva válasz kód
 
 @app.route("/login", methods=["POST"])
 def login_user():
@@ -120,6 +118,7 @@ def login_user():
     
     session["user_id"] = user.id
     print("session: ", session["user_id"])
+    print("sessionid: ", session.get("user_id"))
 
     return jsonify({
         "id": user.id,

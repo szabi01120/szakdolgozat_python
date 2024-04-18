@@ -24,10 +24,8 @@ export default function AddProduct() {
 
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
-        setIsSubmitted(true);
-        setTimeout(() => {
-          window.location.href = '/termekek';
-        }, 2000);
+        alert('Sikeres hozzáadás! Az oldal frissítésre kerül.');
+        window.location.href = '/termekek';
       }
     } catch (error) {
       console.log('Hiba történt:', error);
@@ -93,10 +91,7 @@ export default function AddProduct() {
   return (
     <div>
       <Navbar />
-      {isSubmitted ?
-        <div>
-          <h1 className='text-center'>Sikeres hozzáadás!</h1>
-        </div> : renderForm}
+      {renderForm}
     </div>
   )
 }

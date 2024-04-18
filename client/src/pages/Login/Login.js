@@ -10,17 +10,10 @@ export default function Login() {
     const logInUser = async () => {
         try {
             await axios.post('http://localhost:5000/login', {
-                withCredentials: true,
-                username,
-                password
+                "username": username,
+                "password": password
             })
-            .then((response) => {
-                if (response.status === 200) {
-                    window.location.href = '/';
-                } else {
-                    alert('Hibás felhasználónév vagy jelszó!');
-                }
-            });
+            window.location.href = '/';
         } catch (error) {
             console.log(error);
             alert('Hibás felhasználónév vagy jelszó!');
@@ -38,7 +31,7 @@ export default function Login() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder='Felhasználónév'
-                    id="username"
+                    id=""
                 />
                 <br />
                 <label>Jelszó:</label>
@@ -47,7 +40,7 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder='Jelszó'
-                    id="password"
+                    id=""
                 />
                 <br />
                 <button type='button' className="btn btn-primary mt-4" onClick={() => logInUser()}>Bejelentkezés</button>
