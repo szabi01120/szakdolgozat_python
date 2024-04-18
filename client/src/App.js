@@ -1,7 +1,7 @@
 import React from 'react';
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Home, Termekek, Raktar, Ajanlat, Forgalom } from './pages';
+import { Home, Termekek, Raktar, Ajanlat, Forgalom, NotFound, Login } from './pages';
 import { AddProduct, EditProduct, ProductPhotos } from './components';
 import './App.css';
 
@@ -10,6 +10,9 @@ export default function App() {
     <div>      
       <BrowserRouter>
         <Routes>
+          <Route path='/' exact component={<Home />} />
+          <Route path='/login' exact element={<Login />} />
+          <Route component={<NotFound />} />
           <Route index element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/termekek" element={<Termekek />} />
