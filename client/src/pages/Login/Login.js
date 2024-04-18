@@ -10,11 +10,11 @@ export default function Login() {
     const logInUser = async () => {
         try {
             await axios.post('http://localhost:5000/login', {
-                username: username,
-                password: password
+                withCredentials: true,
+                username,
+                password
             })
             .then((response) => {
-                console.log(response.data);
                 if (response.status === 200) {
                     window.location.href = '/';
                 } else {
@@ -38,7 +38,7 @@ export default function Login() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder='Felhasználónév'
-                    id=""
+                    id="username"
                 />
                 <br />
                 <label>Jelszó:</label>
@@ -47,7 +47,7 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder='Jelszó'
-                    id=""
+                    id="password"
                 />
                 <br />
                 <button type='button' className="btn btn-primary mt-4" onClick={() => logInUser()}>Bejelentkezés</button>

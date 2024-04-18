@@ -9,7 +9,8 @@ def get_uuid():
 
 def create_app(): 
     app = Flask(__name__)
-    CORS(app, resources={r"*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+    from flask_cors import CORS
+    CORS(app, resources={r"*": {"origins": "http://localhost:3000"}}, supports_credentials=True, allow_headers=["Content-Type", "Authorization"])
     # database config
     app.config.from_object(ApplicationConfig)
 
