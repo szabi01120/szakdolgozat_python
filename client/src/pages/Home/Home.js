@@ -4,7 +4,7 @@ import './Home.css'
 import axios from 'axios';
 
 export default function Home() {
-  const [user, setUser] = useState([""] || null);
+  const [user, setUser] = useState(null);
 
   async function logoutUser() {
     try {
@@ -26,26 +26,26 @@ export default function Home() {
       }
       console.log("user: " + user);
     })();
-  }, []);
+  });
 
   return (
     <div>
       <Navbar />
-      {/* {user !== null ? ( */}
-        {/* <div className="container mt-4 pt-5 justify-content-center">
+      {user !== null ? ( 
+         <div className="container mt-4 pt-5 justify-content-center">
           <h1>Üdvözöllek, {user.username}!</h1>
           <h1>Id: {user.id}</h1>
           <button onClick={logoutUser}>Kijelentkezés</button>
-        </div> */}
-      {/* ) : ( */}
-        <div className="container mt-4 pt-5 justify-content-center">
+        </div> 
+      ) : ( 
+         <div className="container mt-4 pt-5 justify-content-center">
           <p1>Azonosítsd magad</p1>
           <br />
           <a href='/login'>
             <button className="btn btn-primary">Bejelentkezés</button>
           </a>
-        </div>
-      {/* )} */}
+        </div> 
+       )}
     </div>
   )
 }
