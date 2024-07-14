@@ -1,5 +1,5 @@
 import React from 'react';
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Home, Termekek, Raktar, Ajanlat, Forgalom, NotFound, Login } from './pages';
 import { AddProduct, EditProduct, ProductPhotos } from './components';

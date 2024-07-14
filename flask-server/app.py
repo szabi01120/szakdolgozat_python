@@ -2,12 +2,21 @@ from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS 
 from flask_bcrypt import Bcrypt
 from flask_session import Session
+from werkzeug.utils import secure_filename
 from dbConfig import app, db, Termekek, Felhasznalok
+import urllib.request
+import os
 
 CORS(app, resources={r"*": {"origins": "http://localhost:3000"}})
 
 bcrypt = Bcrypt(app)
 server_session = Session(app)
+
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 # ------------------------------------- ENDPOINT FRONTEND ------------------------------------- #
 # endpoints - get termekek
@@ -60,6 +69,50 @@ def add_termek():
         db.session.add(termek)
         db.session.commit()
         return jsonify({"message": "Termék sikeresen hozzáadva!"}), 200
+    
+
+# endpoints - upload image
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS    
+
+@app.route("/api/img_upload", methods=["POST"])
+def upload_file():
+    # megnézzük hogy a req tartalmazza e a file-t
+    if 'files[]' not in request.files:
+        resp = jsonify({
+            "message": "A kérés nem tartalmaz fájlt",
+            "status": 'failed'
+        })
+        resp.status_code = 400
+        return resp
+    
+    files = request.files.getlist('files[]') # body-ban lévő files[]-t lekérjük
+    print(files)
+    
+    success = False
+    
+    for file in files: # végigmegyünk a files[]-on megvizsgáljuk hogy megfelelő formátumú e
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            
+            success = True
+        else:
+            resp = jsonify({
+                "message": "Nem megfelelő fájl formátum",
+                "status": 'failed'
+            })
+            resp.status_code = 400
+            return resp
+    
+    if success: # ha minden rendben van akkor visszaküldjük a választ
+        resp = jsonify({
+            "message": "Sikeres fájl feltöltés",
+            "status": 'success'
+        })
+        resp.status_code = 201
+        return resp
 
 @app.route("/")
 def index():

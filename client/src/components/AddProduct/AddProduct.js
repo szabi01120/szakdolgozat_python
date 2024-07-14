@@ -67,7 +67,18 @@ export default function AddProduct() {
   }
 
   function uploadImage() {
-    console.log("Képek: ", images);
+    const formData = new FormData();
+    images.forEach((image) => {
+      formData.append('files[]', image.name);
+    });
+
+    axios.post('http://localhost:3000/api/img_upload', formData)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
   //képfeltöltés vége
 
