@@ -7,7 +7,7 @@ export default function ProductPhotos() {
             <Navbar />
             <div className="container">
                 <h1>Termék szerkesztése</h1>
-            </div>
+            </div> 
         </div>
     );
 };

@@ -10,7 +10,7 @@ def get_uuid():
 def create_app(): 
     app = Flask(__name__)
     from flask_cors import CORS
-    CORS(app, resources={r"*": {"origins": "http://localhost:3000"}}, supports_credentials=True, allow_headers=["Content-Type", "Authorization"])
+    CORS(app, resources={r"*": {"origins": "http://localhost:3000", "supports_credentials":True }})
     # database config
     app.config.from_object(ApplicationConfig)
     app.config['SESSION_COOKIE_HTTPONLY'] = False
@@ -20,6 +20,11 @@ def create_app():
 
 app = create_app()
 db = SQLAlchemy(app)
+
+class Image(db.Model):
+    __tablename__ = 'images'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(120), index=True)
 
 class Termekek(db.Model):
     __tablename__ = 'termekek'

@@ -1,93 +1,84 @@
 import { Navbar } from '..';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './AddProduct.css';
 
 export default function AddProduct() {
-  //képfeltöltés
   const [images, setImages] = useState([]); // képek tömb
   const [isDragging, setIsDragging] = useState(false); // drag and drop állapota
   const fileInputRef = useRef(); // input referencia
-
-  function selectFiles() {
-    fileInputRef.current.click();
-  }
-
-  function onFileSelect(event) {
-    const files = event.target.files;
-    if (files.length === 0) return;
-    for (const element of files) {
-      if (element.type.split('/')[0] !== 'image') continue;
-      if (!images.some((e) => e.name === element.name)) {
-        setImages((prevImages) => [
-          ...prevImages,
-          {
-            name: element.name,
-            url: URL.createObjectURL(element),
-          },
-        ]);
-      }
-    }
-  }
-
-  function deleteImage(index) {
-    setImages((prevImages) =>
-      prevImages.filter((_, i) => i !== index)
-    );
-  }
-
-  function onDragOver(event) {
-    event.preventDefault();
-    setIsDragging(true);
-    event.dataTransfer.dropEffect = 'copy';
-  }
-
-  function onDragLeave(event) {
-    event.preventDefault();
-    setIsDragging(false);
-  }
-
-  function onDrop(event) {
-    event.preventDefault();
-    setIsDragging(false);
-    const files = event.dataTransfer.files;
-
-    for (const element of files) {
-      if (element.type.split('/')[0] !== 'image') continue;
-      if (!images.some((e) => e.name === element.name)) {
-        setImages((prevImages) => [
-          ...prevImages,
-          {
-            name: element.name,
-            url: URL.createObjectURL(element),
-          },
-        ]);
-      }
-    }
-  }
-
-  function uploadImage() {
-    const formData = new FormData();
-    images.forEach((image) => {
-      formData.append('files[]', image.name);
-    });
-
-    axios.post('http://localhost:3000/api/img_upload', formData)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-  //képfeltöltés vége
-
   const [isError, setIsError] = useState(false);
   const [formData, setFormData] = useState({
     termeknev: '',
     tipus: '',
     meret: ''
   });
+  const [responseMsg, setResponseMsg] = useState({
+    status: "",
+    message: "",
+    error: "",
+  });
+  const [showImageUpload, setShowImageUpload] = useState(false);
+  const [isFormFilled, setIsFormFilled] = useState(false);
+
+  useEffect(() => {
+    if (showImageUpload) {
+      setIsFormFilled(
+        Object.values(formData).every(value => value !== '') && images.length > 0
+      );
+    } else {
+      setIsFormFilled(Object.values(formData).every(value => value !== ''));
+    }
+  }, [formData, images, showImageUpload]);
+
+  function selectFiles() {
+    if (!showImageUpload) return;
+    fileInputRef.current.click();
+  }
+
+  function onFileSelect(event) {
+    if (!showImageUpload) return;
+    const files = event.target.files;
+    if (files.length === 0) return;
+    const newImages = Array.from(files).filter(file => file.type.split('/')[0] === 'image' && !images.some((e) => e.name === file.name));
+    setImages((prevImages) => [
+      ...prevImages,
+      ...newImages,
+    ]);
+  }
+
+  function deleteImage(index) {
+    if (!showImageUpload) return;
+    setImages((prevImages) =>
+      prevImages.filter((_, i) => i !== index)
+    );
+  }
+
+  function onDragOver(event) {
+    if (!showImageUpload) return;
+    event.preventDefault();
+    setIsDragging(true);
+    event.dataTransfer.dropEffect = 'copy';
+  }
+
+  function onDragLeave(event) {
+    if (!showImageUpload) return;
+    event.preventDefault();
+    setIsDragging(false);
+  }
+
+  function onDrop(event) {
+    if (!showImageUpload) return;
+    event.preventDefault();
+    setIsDragging(false);
+    const files = event.dataTransfer.files;
+
+    const newImages = Array.from(files).filter(file => file.type.split('/')[0] === 'image' && !images.some((e) => e.name === file.name));
+    setImages((prevImages) => [
+      ...prevImages,
+      ...newImages,
+    ]);
+  }
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -96,11 +87,37 @@ export default function AddProduct() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/add_termek', formData);
+      const response = await axios.post('http://127.0.0.1:5000/api/add_termek', formData, { withCredentials: true });
 
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
+        const termek_id = response.data.termek_id;
+        console.log('Termék ID:', termek_id);
+
+        if (showImageUpload) {
+          // Képek feltöltése a termék ID alapján
+          const data = new FormData();
+          for (let i = 0; i < images.length; i++) {
+            data.append("files[]", images[i]);
+          }
+
+          try {
+            await axios.post(`http://127.0.0.1:5000/api/img_upload/${termek_id}`, data, { withCredentials: true })
+              .then((response) => {
+                console.log(response);
+              })
+              .catch((error) => {
+                console.error(error);
+              });
+          } catch (error) {
+            console.log('Hiba történt:', error);
+            setIsError(true);
+            return;
+          }
+        }
+        
         alert('Sikeres hozzáadás! Az oldal frissítésre kerül.');
         window.location.href = '/termekek';
       }
@@ -116,8 +133,6 @@ export default function AddProduct() {
   ];
 
   const types = ['Típus 1', 'Típus 2', 'Típus 3']; // Típusok listája
-
-  const isFormFilled = Object.values(formData).every(value => value !== '');
 
   const renderForm = (
     <div className='pt-4'>
@@ -143,42 +158,47 @@ export default function AddProduct() {
             <button type="submit" className="btn btn-primary w-25 mb-3 mt-2" disabled={!isFormFilled}>Hozzáadás</button>
             {isError && <p className='text-danger'>Hiba történt a hozzáadás során!</p>}
           </div>
-        </form>
 
-        <h2>Képfeltöltés</h2> {/* drag and drop feltöltés*/}
-        <div className='card'>
-          <div className='top'>
-            <p>Képfeltöltés | Drag & Drop</p>
+          <h2>Képfeltöltés</h2>
+          <div className='col-md-12'>
+            <div className='form-check'>
+              <input className='form-check-input' type='checkbox' id='showImageUpload' checked={showImageUpload} onChange={() => setShowImageUpload(!showImageUpload)} />
+              <label className='form-check-label' htmlFor='showImageUpload'>
+                Képfeltöltés engedélyezése
+              </label>
+            </div>
           </div>
-          <div className='drag-area' onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
-            {isDragging ? (
-              <span className='select'>
-                Húzd ide a képeket
-              </span>
-            ) : (
-              <>
-                Húzd ide a képeket vagy {" "}
-                <span className='select' role='button' onClick={selectFiles}>
-                  VÁLASZD KI
-                </span>
-              </>
-            )}
-            <input name='file' type='file' className='file' multiple ref={fileInputRef} onChange={onFileSelect}></input>
-          </div>
-          <div className='container'>
-            {images.map((images, index) => (
-              <div className="image" key={index}>
-                <span className="delete" onClick={() => deleteImage(index)}>&times;</span>
-                <img src={images.url} alt={images.name} />
+          {showImageUpload && (
+            <div className='card'>
+              <div className='top'>
+                <p>Képfeltöltés | Drag & Drop</p>
               </div>
-            ))}
-          </div>
-          <button type='button' onClick={uploadImage}>
-            Feltöltés
-          </button>
-        </div>
-
-
+              <div className='drag-area' onDragOver={onDragOver} onDragLeave={onDragLeave} onDrop={onDrop}>
+                {isDragging ? (
+                  <span className='select'>
+                    Húzd ide a képeket
+                  </span>
+                ) : (
+                  <>
+                    Húzd ide a képeket vagy {" "}
+                    <span className='select' role='button' onClick={selectFiles}>
+                      VÁLASZD KI
+                    </span>
+                  </>
+                )}
+                <input name='file' type='file' className='file' multiple ref={fileInputRef} onChange={onFileSelect}></input>
+              </div>
+              <div className='container'>
+                {images.map((image, index) => (
+                  <div className="image" key={index}>
+                    <span className="delete" onClick={() => deleteImage(index)}>&times;</span>
+                    <img src={URL.createObjectURL(image)} alt={image.name} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </form>
       </div>
     </div>
   );
@@ -188,5 +208,5 @@ export default function AddProduct() {
       <Navbar />
       {renderForm}
     </div>
-  )
+  );
 }
