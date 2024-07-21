@@ -94,7 +94,8 @@ export default function Termekek() {
               </table>
             </div>
           }
-          <div class="container mt-5 px-2">
+
+          {/*<div class="container mt-5 px-2">
 
             <div class="mb-2 d-flex justify-content-between align-items-center">
 
@@ -110,7 +111,7 @@ export default function Termekek() {
               </div>
 
             </div>
-            <div class="table-responsive">
+             <div class="table-responsive">
               <table class="table table-responsive table-borderless">
 
                 <thead>
@@ -180,9 +181,9 @@ export default function Termekek() {
                 </tbody>
               </table>
 
-            </div>
+            </div> 
 
-          </div>
+          </div>*/}
         </div>
       </div>
     </div>

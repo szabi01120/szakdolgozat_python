@@ -1,6 +1,6 @@
 # Import szükséges modulok és csomagok
 from flask import Flask, render_template, request, jsonify, session
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from werkzeug.utils import secure_filename
@@ -12,12 +12,14 @@ import os
 # Flask bővítmények inicializálása
 bcrypt = Bcrypt(app)
 server_session = Session(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, supports_credentials=True)
 ma = Marshmallow(app)
 
 # Feltöltési mappa és megengedett fájlméret beállítása
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max
+app.config['MAX_CONTENT_LENGTH'] = 512 * 1024 * 1024  # 512 MB max
 
 # Megengedett fájlkiterjesztések
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -83,7 +85,7 @@ def add_termek():
         db.session.add(termek)
         db.session.commit()
         
-        termek_id = termek.id  # Új termék ID lekérdezése
+        termek_id = termek.id
         return jsonify({
             "message": "Termék sikeresen hozzáadva!",
             "termek_id": termek_id
@@ -147,15 +149,42 @@ def index():
     return render_template("index.html", termekek=termekek)
 
 # Aktív felhasználó lekérdezése
-@app.route("/active_user")
+@app.route("/@me", methods=["GET"])
 def get_current_user():
     user_id = session.get("user_id")
+    print("session from @me: ", user_id)
+    print("user.id: ", Felhasznalok.query.filter_by(id=user_id).first())
     if not user_id:
         return jsonify({"error": "Nincs bejelentkezve!"}), 401
     
     user = Felhasznalok.query.filter_by(id=user_id).first()
-    return jsonify({"id": user.id, "username": user.username}), 200
+    return jsonify({
+        "id": user.id, 
+        "username": user.username
+    }), 200
+    
+@app.route("/register", methods=["POST"])
+def register_user():
+    username = request.json["username"]
+    password = request.json["password"]
 
+    user_exists = Felhasznalok.query.filter_by(username=username).first() is not None
+
+    if user_exists:
+        return jsonify({"error": "User already exists"}), 409
+
+    hashed_password = bcrypt.generate_password_hash(password)
+    new_user = Felhasznalok(username=username, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+    
+    session["user_id"] = new_user.id
+
+    return jsonify({
+        "id": new_user.id,
+        "username": new_user.username
+    })
+    
 # Bejelentkezés kezelése
 @app.route("/login", methods=["POST"])
 def login_user():
@@ -170,11 +199,17 @@ def login_user():
         return jsonify({"error": "Hibás jelszó!"}), 401
     
     session["user_id"] = user.id
-    return jsonify({"id": user.id, "username": user.username}), 200
+    print("session from login_user: ", session)
+    
+    return jsonify({
+        "id": user.id, 
+        "username": user.username
+    }), 200
 
 # Kijelentkezés kezelése
 @app.route("/logout", methods=["POST"])
 def logout_user():
+    print("session from logout: ", session.get("user_id"))
     session.pop("user_id")
     return jsonify({"message": "Sikeres kijelentkezés!"}), 200
 

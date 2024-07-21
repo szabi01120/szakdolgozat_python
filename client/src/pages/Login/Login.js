@@ -9,11 +9,13 @@ export default function Login() {
 
     const logInUser = async () => {
         try {
-            await axios.post('http://localhost:5000/login', {
+            const response = await axios.post('http://localhost:5000/login', {
                 "username": username,
                 "password": password
-            })
-            window.location.href = '/';
+            }, { withCredentials: true });
+            console.log("szerver válasz:", response.data);
+            // window.location.href = '/';
+
         } catch (error) {
             console.log(error);
             alert('Hibás felhasználónév vagy jelszó!');

@@ -89,7 +89,7 @@ export default function AddProduct() {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/add_termek', formData, { withCredentials: true });
+      const response = await axios.post('http://127.0.0.1:5000/api/add_termek', formData);
 
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
@@ -104,7 +104,7 @@ export default function AddProduct() {
           }
 
           try {
-            await axios.post(`http://127.0.0.1:5000/api/img_upload/${termek_id}`, data, { withCredentials: true })
+            axios.post(`http://127.0.0.1:5000/api/img_upload/${termek_id}`, data)
               .then((response) => {
                 console.log(response);
               })

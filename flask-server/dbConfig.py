@@ -14,7 +14,6 @@ def create_app():
     # database config
     app.config.from_object(ApplicationConfig)
     app.config['SESSION_COOKIE_HTTPONLY'] = False
-    
 
     return app
 
@@ -34,9 +33,9 @@ class Termekek(db.Model):
     meretek = db.Column(db.String(255), nullable=False)
 
 class Felhasznalok(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = "users"
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
-    username = db.Column(db.String(255), nullable=False)
+    username = db.Column(db.String(345), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
 
 # database create
