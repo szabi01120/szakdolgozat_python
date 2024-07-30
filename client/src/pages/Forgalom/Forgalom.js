@@ -2,10 +2,10 @@ import React from 'react'
 import { Navbar } from '../../components'
 import './Forgalom.css'
 
-export default function Forgalom() {
+export default function Forgalom({user}) {
   return (
     <div>
-      <Navbar />    
+      <Navbar user={user}/>    
     </div>
   )
 };

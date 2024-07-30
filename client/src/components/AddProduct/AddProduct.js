@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './AddProduct.css';
 
-export default function AddProduct() {
+export default function AddProduct({user}) {
   const [images, setImages] = useState([]); // képek tömb
   const [isDragging, setIsDragging] = useState(false); // drag and drop állapota
   const fileInputRef = useRef(); // input referencia
@@ -205,7 +205,7 @@ export default function AddProduct() {
 
   return (
     <div>
-      <Navbar />
+      <Navbar user={user}/>
       {renderForm}
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Navbar.css';
 
-export default function MyNavbar() {
+export default function MyNavbar({ user }) {
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
 
@@ -19,21 +19,25 @@ export default function MyNavbar() {
                 </button>
                 <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarNav">
                     <ul className="navbar-nav ms-auto">
-                        <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-                            <Link className="nav-link" to="/">Kezdőoldal</Link>
-                        </li>
-                        <li className={`nav-item ${location.pathname === '/termekek' ? 'active' : ''}`}>
-                            <Link className="nav-link" to="/termekek">Termékek</Link>
-                        </li>
-                        <li className={`nav-item ${location.pathname === '/forgalom' ? 'active' : ''}`}>
-                            <Link className="nav-link" to="/forgalom">Forgalom</Link>
-                        </li>
-                        <li className={`nav-item ${location.pathname === '/raktar' ? 'active' : ''}`}>
-                            <Link className="nav-link" to="/raktar">Raktár</Link>
-                        </li>
-                        <li className={`nav-item ${location.pathname === '/ajanlat' ? 'active' : ''}`}>
-                            <Link className="nav-link" to="/ajanlat">Ajánlatkészítés</Link>
-                        </li>
+                        {user && (
+                            <>
+                                <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+                                    <Link className="nav-link" to="/">Kezdőoldal</Link>
+                                </li>
+                                <li className={`nav-item ${location.pathname === '/termekek' ? 'active' : ''}`}>
+                                    <Link className="nav-link" to="/termekek">Termékek</Link>
+                                </li>
+                                <li className={`nav-item ${location.pathname === '/forgalom' ? 'active' : ''}`}>
+                                    <Link className="nav-link" to="/forgalom">Forgalom</Link>
+                                </li>
+                                <li className={`nav-item ${location.pathname === '/raktar' ? 'active' : ''}`}>
+                                    <Link className="nav-link" to="/raktar">Raktár</Link>
+                                </li>
+                                <li className={`nav-item ${location.pathname === '/ajanlat' ? 'active' : ''}`}>
+                                    <Link className="nav-link" to="/ajanlat">Ajánlatkészítés</Link>
+                                </li>
+                            </>
+                        )}
                     </ul>
                 </div>
             </div>

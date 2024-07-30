@@ -3,7 +3,7 @@ import { Navbar } from '..';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export default function EditProduct() {
+export default function EditProduct({user}) {
     const params = useParams();
     const [products, setProducts] = useState([]);
 
@@ -65,7 +65,7 @@ export default function EditProduct() {
 
     return (
         <div>
-            <Navbar />
+            <Navbar user={user}/>
             <div className='container mt-4 pt-5 d-flex justify-content-center'>
                 <form className='border border-info-subtle border-3 p-5 shadow' onSubmit={handleSubmit}>
                     <h1 className='text-center'>Termék szerkesztés</h1>

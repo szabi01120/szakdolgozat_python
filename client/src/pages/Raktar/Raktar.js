@@ -2,10 +2,10 @@ import React from 'react'
 import { Navbar } from '../../components'
 import './Raktar.css'
 
-export default function Raktar() {
+export default function Raktar({user}) {
   return (
     <div>
-      <Navbar />    
+      <Navbar user={user}/>    
     </div>
   )
 }
