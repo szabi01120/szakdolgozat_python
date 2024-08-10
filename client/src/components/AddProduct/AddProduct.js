@@ -1,17 +1,19 @@
 import { Navbar } from '..';
 import React, { useState, useRef, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './AddProduct.css';
 
-export default function AddProduct({user}) {
+export default function AddProduct({ user }) {
   const [images, setImages] = useState([]); // képek tömb
   const [isDragging, setIsDragging] = useState(false); // drag and drop állapota
+  const [redirectToTermekek, setRedirectToTermekek] = useState(false); // termékek oldalra irányítás
   const fileInputRef = useRef(); // input referencia
   const [isError, setIsError] = useState(false);
   const [formData, setFormData] = useState({
-    termeknev: '',
-    tipus: '',
-    meret: ''
+    product_name: '',
+    product_type: '',
+    product_size: ''
   });
   const [responseMsg, setResponseMsg] = useState({
     status: "",
@@ -89,47 +91,42 @@ export default function AddProduct({user}) {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/add_termek', formData);
+      const response = await axios.post('http://127.0.0.1:5000/api/add_product', formData);
+      console.log('Válasz:', response.data);
 
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
-        const termek_id = response.data.termek_id;
-        console.log('Termék ID:', termek_id);
+        const product_id = response.data.product_id;
+        console.log('Termék ID:', product_id);
 
         if (showImageUpload) {
-          // Képek feltöltése a termék ID alapján
           const data = new FormData();
           for (let i = 0; i < images.length; i++) {
             data.append("files[]", images[i]);
           }
 
           try {
-            axios.post(`http://127.0.0.1:5000/api/img_upload/${termek_id}`, data)
-              .then((response) => {
-                console.log(response);
-              })
-              .catch((error) => {
-                console.error(error);
-              });
+            await axios.post(`http://127.0.0.1:5000/api/img_upload/${product_id}`, data);
           } catch (error) {
             console.log('Hiba történt:', error);
             setIsError(true);
             return;
           }
         }
-        
+
+        // Sikeres hozzáadás esetén állítsd be az átirányítást
         alert('Sikeres hozzáadás! Az oldal frissítésre kerül.');
-        window.location.href = '/termekek';
+        setRedirectToTermekek(true);
       }
     } catch (error) {
-      console.log('Hiba történt:', error);
+      console.log('Hiba történt:', error.response);
       setIsError(true);
     }
   };
 
   const inputFields = [
-    { label: 'Terméknév', name: 'termeknev', placeholder: 'Terméknév' },
-    { label: 'Méret', name: 'meret', placeholder: 'Méret' }
+    { label: 'Terméknév', name: 'product_name', placeholder: 'Terméknév' },
+    { label: 'Méret', name: 'product_size', placeholder: 'Méret' }
   ];
 
   const types = ['Típus 1', 'Típus 2', 'Típus 3']; // Típusok listája
@@ -146,8 +143,8 @@ export default function AddProduct({user}) {
             </div>
           ))}
           <div className='col-md-4'>
-            <label htmlFor="tipus">Típus</label>
-            <select className="form-select" id="tipus" name="tipus" onChange={handleChange} value={formData.tipus}>
+            <label htmlFor="product_type">Típus</label>
+            <select className="form-select" id="product_type" name="product_type" onChange={handleChange} value={formData.product_type}>
               <option value="">Válassz típust</option>
               {types.map((type, index) => (
                 <option key={index} value={type}>{type}</option>
@@ -202,6 +199,11 @@ export default function AddProduct({user}) {
       </div>
     </div>
   );
+
+  // felhasználó átirányítása
+  if (redirectToTermekek) {
+    return <Navigate to="/termekek" />;
+  }
 
   return (
     <div>

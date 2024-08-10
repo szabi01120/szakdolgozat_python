@@ -24,19 +24,19 @@ export default function App() {
   return (
     <div>      
       <BrowserRouter>
-        <Routes>
+        <Routes>          
           <Route path='/' exact element={<Home user={user}/>} />
           <Route path='/login' element={user ? <Navigate to="/" /> : <Login />} />
-          <Route path="*" element={user ? <Navigate to="/" /> : <NotFound />} />
+          <Route path="*" element={<NotFound />} />
           <Route index element={<Home user={user}/>} />
           <Route path="/home" element={<Home user={user}/>} />
-          <Route path="/termekek" element={user ? <Navigate to="/" /> : <Termekek user={user}/>} />
-          <Route path="/forgalom" element={user ? <Navigate to="/" /> : <Forgalom user={user}/>} />
-          <Route path="/raktar" element={user ? <Navigate to="/" /> : <Raktar user={user}/>} />
-          <Route path="/ajanlat" element={user ? <Navigate to="/" /> : <Ajanlat user={user}/>} />
-          <Route path="/addproduct" element={user ? <Navigate to="/" /> : <AddProduct user={user}/>} />
-          <Route path="/editproduct/:id" element={user ? <Navigate to="/" /> : <EditProduct user={user}/>} />
-          <Route path="/productphotos/:id" element={user ? <Navigate to="/" /> : <ProductPhotos user={user}/>} />
+          <Route path="/termekek" element={user ? <Termekek user={user}/> : <Navigate to="/" />} />
+          <Route path="/forgalom" element={user ? <Forgalom user={user}/> : <Navigate to="/" />} />
+          <Route path="/raktar" element={user ? <Raktar user={user}/> : <Navigate to="/" />} />
+          <Route path="/ajanlat" element={user ? <Ajanlat user={user}/> : <Navigate to="/" />} />
+          <Route path="/addproduct" element={user ? <AddProduct user={user}/> : <Navigate to="/" />} />
+          <Route path="/editproduct/:id" element={user ? <EditProduct user={user}/> : <Navigate to="/" />} />
+          <Route path="/productphotos/:id" element={user ? <ProductPhotos user={user}/> : <Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
     </div>

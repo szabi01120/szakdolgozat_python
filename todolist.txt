@@ -5,3 +5,7 @@
 -Backend összekapcsolása a termekek táblával DONE
 -CRUD implementálás backenden
 -----------------------------------------------------------------------------------
+
+2024.08.10
+
+-termékfotók not found -- DONE

@@ -9,7 +9,6 @@ def get_uuid():
 
 def create_app(): 
     app = Flask(__name__)
-    from flask_cors import CORS
     CORS(app, resources={r"*": {"origins": "http://localhost:3000", "supports_credentials":True }})
     # database config
     app.config.from_object(ApplicationConfig)
@@ -23,17 +22,18 @@ db = SQLAlchemy(app)
 class Image(db.Model):
     __tablename__ = 'images'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     title = db.Column(db.String(120), index=True)
 
-class Termekek(db.Model):
-    __tablename__ = 'termekek'
+class Products(db.Model):
+    __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    termeknev = db.Column(db.String(255), nullable=False)
-    tipus = db.Column(db.String(255), nullable=False)
-    meretek = db.Column(db.String(255), nullable=False)
+    product_name = db.Column(db.String(255), nullable=False)
+    product_type = db.Column(db.String(255), nullable=False)
+    product_size = db.Column(db.String(255), nullable=False)
 
-class Felhasznalok(db.Model):
-    __tablename__ = "users"
+class Users(db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
     username = db.Column(db.String(345), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)

@@ -1,11 +1,12 @@
 # Import szükséges modulok és csomagok
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, send_from_directory
 from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from werkzeug.utils import secure_filename
 from flask_marshmallow import Marshmallow
-from dbConfig import app, db, Termekek, Felhasznalok, Image
+import shutil
+from dbConfig import app, db, Products, Image, Users
 import urllib.request
 import os
 
@@ -27,68 +28,83 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 # Marshmallow séma az Image modellhez
 class ImageSchema(ma.Schema):
     class Meta:
-        fields = ("id", "title")
+        fields = ("id", "product_id", "title")
 
 image_schema = ImageSchema(many=True)
 
 # ------------------------------------- ENDPOINT FRONTEND ------------------------------------- #
 
 # Termékek lekérdezése
-@app.route("/api/termekek", methods=["GET"])
-def get_termekek():
+@app.route("/api/products", methods=["GET"])
+def get_products():
     with app.app_context():
-        termekek = Termekek.query.all()
+        products = Products.query.all()
         return jsonify([{
-            "id": termek.id,
-            "termeknev": termek.termeknev,
-            "tipus": termek.tipus,
-            "meretek": termek.meretek
-        } for termek in termekek]), 200
+            "id": product.id,
+            "product_name": product.product_name,
+            "product_type": product.product_type,
+            "product_size": product.product_size
+        } for product in products]), 200
 
 # Termék frissítése
-@app.route("/api/update_termek/<int:id>", methods=["PUT"])
-def update_termek(id):
-    termeknev = request.json.get("termeknev")
-    tipus = request.json.get("tipus")
-    meretek = request.json.get("meretek")
+@app.route("/api/update_product/<int:id>", methods=["PUT"])
+def update_product(id):
+    productName = request.json.get("product_name")
+    productType = request.json.get("product_type")
+    productSize = request.json.get("product_size")
 
     with app.app_context():
-        termek = Termekek.query.get(id)
-        if termek is None:
+        product = Products.query.get(id)
+        if product is None:
             return jsonify({"error": "Nincs ilyen termék!"}), 404
-        termek.termeknev = termeknev
-        termek.tipus = tipus
-        termek.meretek = meretek
+        
+        product.product_name = productName
+        product.product_type = productType
+        product.product_size = productSize
         db.session.commit()
         return jsonify({"message": "Termék sikeresen frissítve!"}), 200
 
 # Termék törlése
-@app.route("/api/delete_termek/<int:id>", methods=["DELETE"])
-def delete_termek(id):
+@app.route("/api/delete_product/<int:id>", methods=["DELETE"])
+def delete_product(id):
     with app.app_context():
-        termek = Termekek.query.get(id)
-        if termek is None:
+        product = Products.query.get(id)
+        product_img = Image.query.filter_by(product_id=id).all()
+        
+        if product is None:
             return jsonify({"error": "Nincs ilyen termék!"}), 404
-        db.session.delete(termek)
+        db.session.delete(product)
         db.session.commit()
+        print("TERMEK KEP:", product_img)
+        
+        # id mappa törlés ha van kép
+        if product_img is not None:
+            folder_path = os.path.join(app.config['UPLOAD_FOLDER'], str(id))
+            if os.path.exists(folder_path):
+                shutil.rmtree(folder_path)
+                
+            for image in product_img: # product_img egy listát ad vissza, végigteráljuk
+                db.session.delete(image)
+            db.session.commit()
+        
         return jsonify({"message": "Termék sikeresen törölve!"}), 200
 
 # Termék hozzáadása
-@app.route("/api/add_termek", methods=["POST"])
-def add_termek():
-    termeknev = request.json.get("termeknev")
-    tipus = request.json.get("tipus")
-    meretek = request.json.get("meret")
+@app.route("/api/add_product", methods=["POST"])
+def add_product():
+    productName = request.json.get("product_name")
+    productType = request.json.get("product_type")
+    productSize = request.json.get("product_size")
 
     with app.app_context():
-        termek = Termekek(termeknev=termeknev, tipus=tipus, meretek=meretek)
-        db.session.add(termek)
+        product = Products(product_name=productName, product_type=productType, product_size=productSize)
+        db.session.add(product)
         db.session.commit()
         
-        termek_id = termek.id
+        product_id = product.id
         return jsonify({
             "message": "Termék sikeresen hozzáadva!",
-            "termek_id": termek_id
+            "product_id": product_id
         }), 200
 
 # Fájlfeltöltés kezelése
@@ -115,7 +131,7 @@ def upload_file(product_id):
             filename = secure_filename(file.filename)
             file.save(os.path.join(product_folder, filename))
             
-            newFile = Image(title=filename)
+            newFile = Image(title=filename, product_id=product_id)
             db.session.add(newFile)
             db.session.commit()
             
@@ -139,25 +155,43 @@ def images():
     results = image_schema.dump(all_images)
     return jsonify(results)
 
+# Kép lekérdezése id alapján majd küldés a frontendnek
+@app.route('/api/images/<int:id>', methods=['GET'])
+def image(id):
+    # A termék képeinek mappája az UPLOAD_FOLDER alapján
+    product_folder = os.path.join(UPLOAD_FOLDER, str(id))
+
+    # Ellenőrizzük, hogy a mappa létezik-e
+    if not os.path.exists(product_folder):
+        return jsonify({"error": "A megadott termékhez nem találhatóak képek."}), 404
+
+    # A mappában lévő összes kép listázása
+    images = []
+    for filename in os.listdir(product_folder):
+        if filename.endswith(('.png', '.jpg', '.jpeg')):
+            image_url = os.path.join(product_folder, filename)
+            images.append({"url": image_url})
+
+    return jsonify(images)
 # ------------------------------------- ENDPOINT FRONTEND END ------------------------------------- #
 
 # Kezdőoldal renderelése
 @app.route("/")
 def index():
     with app.app_context():
-        termekek = Termekek.query.all()
-    return render_template("index.html", termekek=termekek)
+        products = Products.query.all()
+    return render_template("index.html", products=products)
 
 # Aktív felhasználó lekérdezése
 @app.route("/@me", methods=["GET"])
 def get_current_user():
     user_id = session.get("user_id")
     print("session from @me: ", user_id)
-    print("user.id: ", Felhasznalok.query.filter_by(id=user_id).first())
+    print("user.id: ", Users.query.filter_by(id=user_id).first())
     if not user_id:
         return jsonify({"error": "Nincs bejelentkezve!"}), 401
     
-    user = Felhasznalok.query.filter_by(id=user_id).first()
+    user = Users.query.filter_by(id=user_id).first()
     return jsonify({
         "id": user.id, 
         "username": user.username
@@ -168,13 +202,13 @@ def register_user():
     username = request.json["username"]
     password = request.json["password"]
 
-    user_exists = Felhasznalok.query.filter_by(username=username).first() is not None
+    user_exists = Users.query.filter_by(username=username).first() is not None
 
     if user_exists:
-        return jsonify({"error": "User already exists"}), 409
+        return jsonify({"error": "Ez a felhasználó már létezik!"}), 409
 
     hashed_password = bcrypt.generate_password_hash(password)
-    new_user = Felhasznalok(username=username, password=hashed_password)
+    new_user = Users(username=username, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
     
@@ -191,7 +225,7 @@ def login_user():
     username = request.json["username"]
     password = request.json["password"]
 
-    user = Felhasznalok.query.filter_by(username=username).first()
+    user = Users.query.filter_by(username=username).first()
     if user is None:
         return jsonify({"error": "Nincs ilyen felhasználó!"}), 404
     

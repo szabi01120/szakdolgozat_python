@@ -1,11 +1,13 @@
 import { useParams } from 'react-router-dom';
 import { Navbar } from '..';
 import React, { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function EditProduct({user}) {
+export default function EditProduct({ user }) {
     const params = useParams();
     const [products, setProducts] = useState([]);
+    const [redirectToTermekek, setRedirectToTermekek] = useState(false); // termékek oldalra irányítás
 
     useEffect(() => {
         loadProduct();
@@ -13,7 +15,7 @@ export default function EditProduct({user}) {
 
     const loadProduct = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/termekek');
+            const response = await axios.get('http://localhost:5000/api/products');
             if (response.status === 200) {
                 setProducts(response.data);                
             }
@@ -28,9 +30,9 @@ export default function EditProduct({user}) {
 
     products.map((product) => {
         if (product.id.toString() === params.id) {
-            currentProductName = product.termeknev;
-            currentProductType = product.tipus;
-            currentProductSize = product.meretek;
+            currentProductName = product.product_name;
+            currentProductType = product.product_type;
+            currentProductSize = product.product_size;
         }
         return product;
     });
@@ -40,27 +42,37 @@ export default function EditProduct({user}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = new FormData(e.target);
-        const name = data.get('name');
-        const tipus = data.get('tipus');
-        const meret = data.get('meret');
+        const name = currentProductName;
+        const type = currentProductType;
+        const size = currentProductSize;
 
         try {
-            const response = await axios.put(`http://localhost:5000/api/update_termek/${params.id}`, {
-                termeknev: name,
-                tipus: tipus,
-                meretek: meret
+            const response = await axios.put(`http://localhost:5000/api/update_product/${params.id}`, {
+                product_name: name,
+                product_type: type,
+                product_size: size
             });
-            if (response.status === 200) {
-                alert('Sikeres szerkesztés!');
-                window.location.href = '/termekek';
-            }
         } catch (error) {
             console.error('Hiba', error);
         }
+        alert('Sikeres szerkesztés! Az oldal frissítésre kerül.');
+        setRedirectToTermekek(true);
     };
 
     const productNameChange = event => {
         currentProductName = event.target.value;
+    }
+
+    const productTypeChange = event => {
+        currentProductType = event.target.value;
+    }
+
+    const productSizeChange = event => {
+        currentProductSize = event.target.value;
+    }
+
+    if (redirectToTermekek) {
+        return <Navigate to='/termekek' />;
     }
 
     return (
@@ -81,8 +93,8 @@ export default function EditProduct({user}) {
                         />
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="tipus" className="form-label">Típus</label>
-                        <select className="form-select" id="tipus" name="tipus" placeholder={currentProductType} onChange={(e) => currentProductType = e.target.value} >
+                        <label htmlFor="type" className="form-label">Típus</label>
+                        <select className="form-select" id="type" name="type" placeholder={currentProductType} onChange={productTypeChange} >
                             <option>{currentProductType}</option>
                             {types.map((type, index) => (
                                 <option key={index} value={type}>{type}</option>
@@ -90,12 +102,12 @@ export default function EditProduct({user}) {
                         </select>
                     </div>
                     <div className="mb-3">
-                        <label htmlFor="meret" className="form-label">Méret</label>
+                        <label htmlFor="size" className="form-label">Méret</label>
                         <input type="text" className="form-control"
-                            name="meret"
+                            name="size"
                             placeholder={currentProductSize}
-                            id="meret"
-                            onChange={(e) => currentProductSize = e.target.value}
+                            id="size"
+                            onChange={productSizeChange}
                         />
                     </div>
                     <button type="submit" className="btn btn-primary mt-3">Szerkesztés</button>

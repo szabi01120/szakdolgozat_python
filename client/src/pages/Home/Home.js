@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Navbar } from '../../components';
 import './Home.css';
 import axios from 'axios';
 
 export default function Home({ user }) {
-  async function logoutUser() {
+  const logoutUser = useCallback(async () => {
     try {
       await axios.post('http://localhost:5000/logout', {}, { withCredentials: true });
       window.location.href = '/'; 
     } catch (error) {
       console.error("Hiba a kijelentkezéskor!", error);
     }
-  }
+  }, []);
 
   return (
     <div>
@@ -31,7 +31,6 @@ export default function Home({ user }) {
               <button type="button" className="btn btn-primary">Bejelentkezés</button>
             </a>
           </form>
-          
         </div>
       )}
     </div>
