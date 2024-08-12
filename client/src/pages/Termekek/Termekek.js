@@ -23,8 +23,7 @@ export default function Termekek({ user }) {
               product.hasPhotos = false;
             }
           } catch (error) {
-            console.log(`Error fetching photos for product ID ${product.id}: `, error);
-            product.hasPhotos = false;
+            console.log("Hiba a képek lekérdezésekor: ", error);
           }
           return product;
         }));
@@ -38,7 +37,6 @@ export default function Termekek({ user }) {
     setProductData(!productData);
   };
 
-  // Handle product deletion
   const handleDeleteButtonClick = async (id) => {
     try {
       const response = await axios.delete(`http://127.0.0.1:5000/api/delete_product/${id}`);

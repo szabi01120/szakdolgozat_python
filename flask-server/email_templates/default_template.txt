@@ -1,0 +1,14 @@
+Kedves {customer_name},
+
+Köszönjük érdeklődését a {product_name} iránt.
+Az alábbi árajánlatot készítettük önnek:
+
+Termék neve: {product_name}
+Nettó ár: {product_price} Ft
+Mennyiség: {quantity}
+Összesen: {total_price} Ft
+
+További információért lépjen velünk kapcsolatba.
+
+Üdvözlettel,
+Melinda Sauna Sro.

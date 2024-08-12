@@ -5,6 +5,9 @@ from flask_bcrypt import Bcrypt
 from flask_session import Session
 from werkzeug.utils import secure_filename
 from flask_marshmallow import Marshmallow
+from flask_mail import Mail, Message
+
+import traceback
 import shutil
 from dbConfig import app, db, Products, Image, Users
 import urllib.request
@@ -31,6 +34,14 @@ class ImageSchema(ma.Schema):
         fields = ("id", "product_id", "title")
 
 image_schema = ImageSchema(many=True)
+
+# Flask-Mail konfigurálása (ha emailt is szeretnél küldeni)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'tesztflasktesztflask@gmail.com'
+app.config['MAIL_PASSWORD'] = os.environ["MAIL_PASSWORD"]
+mail = Mail(app)
 
 # ------------------------------------- ENDPOINT FRONTEND ------------------------------------- #
 
@@ -163,7 +174,7 @@ def image(id):
 
     # Ellenőrizzük, hogy a mappa létezik-e
     if not os.path.exists(product_folder):
-        return jsonify({"error": "A megadott termékhez nem találhatóak képek."}), 404
+        return jsonify({"error": "A megadott termékhez nem találhatóak képek."})
 
     # A mappában lévő összes kép listázása
     images = []
@@ -173,6 +184,88 @@ def image(id):
             images.append({"url": image_url})
 
     return jsonify(images)
+
+# Sablon hozzáadása (POST kérés)
+@app.route("/api/add_template", methods=["POST"])
+def add_template():
+    template_name = request.json.get("template_name")
+    template_content = request.json.get("template_content")
+
+    print("template_name: ", template_name)
+    print("template_content: ", template_content)
+    print(not template_name)
+    if not template_name or not template_content:
+        return jsonify({"error": "Hiányzó adatok!"}), 400
+    
+    template_path = os.path.join('email_templates', f'{template_name}_template.txt')
+
+    try:
+        with open(template_path, 'w', encoding='utf-8') as file:
+            file.write(template_content)
+        return jsonify({"message": "Sablon sikeresen hozzáadva!"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Sablonok lekérdezése
+@app.route("/api/templates", methods=["GET"])
+def get_templates():
+    template_files = [f for f in os.listdir('email_templates') if f.endswith('_template.txt')]
+    templates = [f.rsplit('_template.txt', 1)[0] for f in template_files]
+    return jsonify(templates), 200
+
+def load_template(template_name):
+    template_path = os.path.join('email_templates', f'{template_name}_template.txt')
+    if not os.path.isfile(template_path):
+        raise FileNotFoundError(f"A sablon nem található: {template_name}")
+    
+    with open(template_path, 'r', encoding='utf-8') as file:
+        template_content = file.read()
+    return template_content
+
+@app.route('/api/send_quotation', methods=['POST'])
+def send_quotation():
+    data = request.json
+    customer_name = data.get('customerName')
+    customer_email = data.get('customerEmail')
+    product_name = data.get('productName')
+    product_price = data.get('productPrice')
+    quantity = data.get('quantity')
+    template = data.get('template')
+    print(data)
+    
+    if not all([customer_name, customer_email, product_name, product_price, quantity, template]):
+        return jsonify({"message": "Hiányzó adat(ok)!"}), 400
+    
+    try:
+        # betöltjük a sablont a fájlból
+        template_content = load_template(template)
+        
+        # kiszedjük a requestből az adatokat
+        email_body = template_content.format(
+            customer_name=customer_name,
+            product_name=product_name,
+            product_price=product_price,
+            quantity=quantity,
+            total_price=int(product_price) * int(quantity)
+        )
+        # E-mail küldése
+        msg = Message(f"Árajánlat: {product_name}",
+                      sender=app.config['MAIL_USERNAME'],
+                      recipients=[customer_email])
+        msg.body = email_body
+        mail.send(msg)
+
+        return jsonify({"message": "Az ajánlat sikeresen elküldve!"}), 200
+
+    except FileNotFoundError:
+        return jsonify({"message": f"A sablon nem található: {template}"}), 404
+    except Exception as e:
+        print(template_content)
+        print(app.config['MAIL_USERNAME'])
+        print("hiba", e)
+        print(traceback.format_exc())
+        return jsonify({"message": "Hiba történt az ajánlat küldése során."}), 500
+
 # ------------------------------------- ENDPOINT FRONTEND END ------------------------------------- #
 
 # Kezdőoldal renderelése
