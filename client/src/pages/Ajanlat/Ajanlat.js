@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';  // Axios importálása
+import axios from 'axios';
 import { Navbar } from '../../components';
 import './Ajanlat.css';
 
@@ -16,15 +16,24 @@ export default function Ajanlat({ user }) {
   // árajánlat messages
   const [successMessageQuotation, setSuccessMessageQuotation] = useState('');
   const [errorMessageQuotation, setErrorMessageQuotation] = useState('');
-  
+
   // sablon hozzáadás messages
   const [successMessageTemplate, setSuccessMessageTemplate] = useState('');
   const [errorMessageTemplate, setErrorMessageTemplate] = useState('');
-  
+
+  // sablon törlés messages
+  const [successMessageDeleteTemplate, setSuccessMessageDeleteTemplate] = useState('');
+  const [errorMessageDeleteTemplate, setErrorMessageDeleteTemplate] = useState('');
 
   // Sablon hozzáadásához szükséges állapotok
   const [newTemplateName, setNewTemplateName] = useState('');
   const [newTemplateContent, setNewTemplateContent] = useState('');
+
+  // Törlésre kiválasztott sablon állapota
+  const [selectedTemplateToDelete, setSelectedTemplateToDelete] = useState('');
+
+  // Accordion megjelenítés állapot
+  const [accordionData, setAccordionData] = useState(false);
 
   // Új sablon hozzáadása
   const handleAddTemplate = async () => {
@@ -40,12 +49,13 @@ export default function Ajanlat({ user }) {
 
     try {
       const response = await axios.post('/api/add_template', newTemplate);
-      if (response.status === 200) {
+      if (response.status === 201) {
         setSuccessMessageTemplate('Sablon sikeresen hozzáadva!');
         setErrorMessageTemplate('');
         setTemplates([...templates, newTemplateName]); // Hozzáadjuk a legördülő listához
         setNewTemplateName('');
         setNewTemplateContent('');
+        console.log('Sablon hozzáadva:', newTemplate);
       }
     } catch (error) {
       console.error('Hiba történt a sablon hozzáadása során:', error);
@@ -53,9 +63,36 @@ export default function Ajanlat({ user }) {
     }
   };
 
+  // Sablon törlése
+  const handleDeleteTemplate = async () => {
+    if (!selectedTemplateToDelete) {
+      setErrorMessageDeleteTemplate('Nincs kiválasztva sablon a törléshez.');
+      return;
+    }
+
+    const templateToDelete = {
+      template_name: selectedTemplateToDelete,
+    };
+
+    try {
+      const response = await axios.delete('http://localhost:5000/api/delete_template', { data: templateToDelete });
+      if (response.status === 200) {
+        setSuccessMessageDeleteTemplate('Sablon sikeresen törölve!');
+        setErrorMessageDeleteTemplate('');
+        setTemplates(templates.filter(template => template !== selectedTemplateToDelete)); // Eltávolítjuk a legördülő listából
+        setSelectedTemplateToDelete('');
+        console.log('Sablon törölve:', response.data);
+      }
+    } catch (error) {
+      console.log(selectedTemplateToDelete);
+      console.error('Hiba történt a sablon törlése során:', error);
+      setErrorMessageDeleteTemplate('Hiba történt a sablon törlése során.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const quotationData = {
       customerName,
       customerEmail,
@@ -70,7 +107,6 @@ export default function Ajanlat({ user }) {
       if (response.status === 200) {
         setSuccessMessageQuotation('Az ajánlat sikeresen elküldve!');
         setErrorMessageQuotation('');
-        // Űrlap alaphelyzetbe állítása sikeres küldés után
         setCustomerName('');
         setCustomerEmail('');
         setProductName('');
@@ -84,6 +120,11 @@ export default function Ajanlat({ user }) {
       setErrorMessageQuotation(error.response?.data?.message || 'Hiba történt az ajánlat küldése során.');
       setSuccessMessageQuotation('');
     }
+  };
+
+  // Toggle product data display
+  const handleAccordionButtonClick = () => {
+    setAccordionData(!accordionData);
   };
 
   return (
@@ -153,7 +194,7 @@ export default function Ajanlat({ user }) {
               ))}
             </select>
           </label>
-          <button type="submit">Ajánlat küldése</button>
+          <button type="submit" >Ajánlat küldése</button>
         </form>
       </div>
 
@@ -179,7 +220,53 @@ export default function Ajanlat({ user }) {
             required
           />
         </label>
-        <button onClick={handleAddTemplate}>Sablon hozzáadása</button>
+        <div class="accordion" id="leirasAccord">
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onClick={handleAccordionButtonClick}>
+                Sablon tartalom leírás
+              </button>
+            </h2>
+            {accordionData &&
+              <div id="collapseOne" className="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                  Az ajánlatkészítés max 5 változóval rendelkezik, hivatkozni rájuk "{"{ }"}" lehet. <br /><br />
+                  Tehát a sablon tartalmának meg kell adni
+                  a változókat, pl.: <strong>{"{customerName}"}</strong>.<br /><br />
+                  Ezek a változók:
+                  <ul>
+                    <li><strong>{"{customer_name}"}</strong> - Ügyfél neve</li>
+                    <li><strong>{"{customer_mail}"}</strong> - Ügyfél e-mail címe</li>
+                    <li><strong>{"{product_name}"}</strong> - Termék neve</li>
+                    <li><strong>{"{product_price}"}</strong> - Termék nettó ára</li>
+                    <li><strong>{"{quantity}"}</strong> - Mennyiség</li>
+                  </ul>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+        <div className="template-delete-container">
+          <button onClick={handleAddTemplate}>Sablon hozzáadása</button>
+          <h2 className='mt-5'>Sablon törlése</h2>
+          <label>
+            Törölni kívánt sablon:
+            <select
+              value={selectedTemplateToDelete}
+              onChange={(e) => setSelectedTemplateToDelete(e.target.value)}
+            >
+              <option value="">Válasszon sablont</option>
+              {templates.map((template) => (
+                <option key={template} value={template}>
+                  {template}
+                </option>
+              ))}
+            </select>
+          </label>
+          {errorMessageDeleteTemplate && <p className="error-message">{errorMessageDeleteTemplate}</p>}
+          {successMessageDeleteTemplate && <p className="success-message">{successMessageDeleteTemplate}</p>}
+          <button onClick={handleDeleteTemplate} id='deleteButton'>Sablon törlése</button>
+        </div>
       </div>
     </div>
   );

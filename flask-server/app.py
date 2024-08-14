@@ -213,6 +213,21 @@ def get_templates():
     templates = [f.rsplit('_template.txt', 1)[0] for f in template_files]
     return jsonify(templates), 200
 
+# Sablon törlése
+@app.route("/api/delete_template", methods=["DELETE"])
+def delete_template():
+    print("request.json: ", request.json.get("template_name"))
+    template_name = request.json.get("template_name")
+    if not template_name:
+        return jsonify({"error": "Hiányzó adatok!"}), 400
+    
+    template_path = os.path.join('email_templates', f'{template_name}_template.txt')
+    if not os.path.isfile(template_path):
+        return jsonify({"error": "A megadott sablon nem található!"}), 404
+    
+    os.remove(template_path)
+    return jsonify({"message": "Sablon sikeresen törölve!"}), 200
+
 def load_template(template_name):
     template_path = os.path.join('email_templates', f'{template_name}_template.txt')
     if not os.path.isfile(template_path):
