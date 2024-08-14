@@ -11,7 +11,7 @@ export default function Ajanlat({ user }) {
   const [quantity, setQuantity] = useState(1);
   const [template, setTemplate] = useState('default');
 
-  const [templates, setTemplates] = useState(['default', 'simple', 'detailed']); // Alapértelmezett sablonok
+  const [templates, setTemplates] = useState(['default']); // Alapértelmezett sablonok
 
   // árajánlat messages
   const [successMessageQuotation, setSuccessMessageQuotation] = useState('');
