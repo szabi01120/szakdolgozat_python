@@ -42,7 +42,7 @@ export default function ProductPhotos({ user }) {
         <div>
             <Navbar user={user} />
             <div className="container">
-                <h1>Termék fotók</h1>
+                <h1 className='label-container'>Termék fotók</h1>
                 <div className="photos-container">
                     <div className="photos">
                         {photos.map((photo, index) => (
