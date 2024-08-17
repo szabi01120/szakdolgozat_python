@@ -9,7 +9,7 @@ from flask_mail import Mail, Message
 
 import traceback
 import shutil
-from dbConfig import app, db, Products, Image, Users
+from dbConfig import app, db, Products, Image, Templates, Users
 import urllib.request
 import os
 
@@ -202,6 +202,10 @@ def add_template():
     try:
         with open(template_path, 'w', encoding='utf-8') as file:
             file.write(template_content)
+        template = Templates(template_name=template_name)
+        db.session.add(template)
+        db.session.commit()
+        
         return jsonify({"message": "Sablon sikeresen hozzáadva!"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -209,23 +213,31 @@ def add_template():
 # Sablonok lekérdezése
 @app.route("/api/templates", methods=["GET"])
 def get_templates():
-    template_files = [f for f in os.listdir('email_templates') if f.endswith('_template.txt')]
-    templates = [f.rsplit('_template.txt', 1)[0] for f in template_files]
-    return jsonify(templates), 200
+    templates = Templates.query.all() 
+    template_names = [template.template_name for template in templates]
+    
+    return jsonify(template_names), 200
 
 # Sablon törlése
 @app.route("/api/delete_template", methods=["DELETE"])
 def delete_template():
-    print("request.json: ", request.json.get("template_name"))
     template_name = request.json.get("template_name")
     if not template_name:
         return jsonify({"error": "Hiányzó adatok!"}), 400
     
     template_path = os.path.join('email_templates', f'{template_name}_template.txt')
     if not os.path.isfile(template_path):
-        return jsonify({"error": "A megadott sablon nem található!"}), 404
+        return jsonify({"error": "A megadott sablon nem található!"}), 404 # fájlokban nem található
     
     os.remove(template_path)
+    
+    template = Templates.query.filter_by(template_name=template_name).first()
+    if not template:
+        return jsonify({"error": "A megadott sablon nem található!"}), 404 # adatbázisban nem található
+    
+    db.session.delete(template)
+    db.session.commit()
+    
     return jsonify({"message": "Sablon sikeresen törölve!"}), 200
 
 def load_template(template_name):
