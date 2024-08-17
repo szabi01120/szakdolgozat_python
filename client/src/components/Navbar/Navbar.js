@@ -24,17 +24,17 @@ export default function MyNavbar({ user }) {
                                 <li className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
                                     <Link className="nav-link" to="/">Kezdőoldal</Link>
                                 </li>
-                                <li className={`nav-item ${location.pathname === '/termekek' ? 'active' : ''}`}>
-                                    <Link className="nav-link" to="/termekek">Termékek</Link>
+                                <li className={`nav-item ${location.pathname === '/raktar' ? 'active' : ''}`}>
+                                    <Link className="nav-link" to="/raktar">Raktár</Link>
                                 </li>
                                 <li className={`nav-item ${location.pathname === '/forgalom' ? 'active' : ''}`}>
                                     <Link className="nav-link" to="/forgalom">Forgalom</Link>
                                 </li>
-                                <li className={`nav-item ${location.pathname === '/raktar' ? 'active' : ''}`}>
-                                    <Link className="nav-link" to="/raktar">Raktár</Link>
-                                </li>
                                 <li className={`nav-item ${location.pathname === '/ajanlat' ? 'active' : ''}`}>
                                     <Link className="nav-link" to="/ajanlat">Ajánlatkészítés</Link>
+                                </li>
+                                <li className={`nav-item ${location.pathname === '/addproduct' ? 'active' : ''}`}>
+                                    <Link className="nav-link" to="/addproduct">Termék hozzáadása</Link>
                                 </li>
                             </>
                         )}

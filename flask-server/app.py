@@ -176,14 +176,35 @@ def image(id):
     if not os.path.exists(product_folder):
         return jsonify({"error": "A megadott termékhez nem találhatóak képek."})
 
-    # A mappában lévő összes kép listázása
+    # összes listázás
     images = []
     for filename in os.listdir(product_folder):
         if filename.endswith(('.png', '.jpg', '.jpeg')):
             image_url = os.path.join(product_folder, filename)
-            images.append({"url": image_url})
+            image_id = Image.query.filter_by(title=filename).first().id
+            images.append({"id": image_id, "url": image_url})
 
-    return jsonify(images)
+    return jsonify(images), 200
+
+# Adott kép törlése id alapján
+@app.route('/api/delete_image/<int:id>', methods=['DELETE'])
+def delete_image(id):
+    image = Image.query.get(id)
+    if image is None:
+        return jsonify({"error": "Nincs ilyen kép!"}), 404
+    
+    product_folder = os.path.join(app.config['UPLOAD_FOLDER'], str(image.product_id))
+    image_path = os.path.join(product_folder, image.title)
+    
+    if not os.path.exists(image_path):
+        return jsonify({"error": "A megadott kép nem található!"}), 404
+    
+    os.remove(image_path)
+
+    db.session.delete(image)
+    db.session.commit()
+
+    return jsonify({"message": "Kép sikeresen törölve!"}), 200
 
 # Sablon hozzáadása (POST kérés)
 @app.route("/api/add_template", methods=["POST"])

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Home, Termekek, Raktar, Ajanlat, Forgalom, NotFound, Login } from './pages';
-import { AddProduct, EditProduct, ProductPhotos } from './components';
+import { Home, AddProduct, Products, Quotation, Traffic, NotFound, Login } from './pages';
+import { EditProduct, ProductPhotos } from './components';
 import './App.css';
 import axios from 'axios';
 
@@ -30,11 +30,10 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
           <Route index element={<Home user={user}/>} />
           <Route path="/home" element={<Home user={user}/>} />
-          <Route path="/termekek" element={user ? <Termekek user={user}/> : <Navigate to="/" />} />
-          <Route path="/forgalom" element={user ? <Forgalom user={user}/> : <Navigate to="/" />} />
-          <Route path="/raktar" element={user ? <Raktar user={user}/> : <Navigate to="/" />} />
-          <Route path="/ajanlat" element={user ? <Ajanlat user={user}/> : <Navigate to="/" />} />
           <Route path="/addproduct" element={user ? <AddProduct user={user}/> : <Navigate to="/" />} />
+          <Route path="/forgalom" element={user ? <Traffic user={user}/> : <Navigate to="/" />} />
+          <Route path="/raktar" element={user ? <Products user={user}/> : <Navigate to="/" />} />
+          <Route path="/ajanlat" element={user ? <Quotation user={user}/> : <Navigate to="/" />} />
           <Route path="/editproduct/:id" element={user ? <EditProduct user={user}/> : <Navigate to="/" />} />
           <Route path="/productphotos/:id" element={user ? <ProductPhotos user={user}/> : <Navigate to="/" />} />
         </Routes>
