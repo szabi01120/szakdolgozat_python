@@ -54,7 +54,11 @@ def get_products():
             "id": product.id,
             "product_name": product.product_name,
             "product_type": product.product_type,
-            "product_size": product.product_size
+            "product_size": product.product_size,
+            "quantity": product.quantity,
+            "manufacturer": product.manufacturer,
+            "price": product.price,
+            "currency": product.currency
         } for product in products]), 200
 
 # Termék frissítése
@@ -63,6 +67,10 @@ def update_product(id):
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
     productSize = request.json.get("product_size")
+    productQuantity = request.json.get("product_quantity")
+    productManufacturer = request.json.get("product_manufacturer")
+    productPrice = request.json.get("product_price")
+    productCurrency = request.json.get("product_currency")
 
     with app.app_context():
         product = Products.query.get(id)
@@ -72,7 +80,13 @@ def update_product(id):
         product.product_name = productName
         product.product_type = productType
         product.product_size = productSize
+        product.quantity = int(productQuantity)
+        product.manufacturer = productManufacturer
+        product.price = float(productPrice)
+        product.currency = productCurrency
+        
         db.session.commit()
+        
         return jsonify({"message": "Termék sikeresen frissítve!"}), 200
 
 # Termék törlése
@@ -106,9 +120,13 @@ def add_product():
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
     productSize = request.json.get("product_size")
+    productQuantity = request.json.get("quantity")
+    productManufacturer = request.json.get("manufacturer")
+    productPrice = request.json.get("price")
+    productCurrency = request.json.get("currency")
 
     with app.app_context():
-        product = Products(product_name=productName, product_type=productType, product_size=productSize)
+        product = Products(product_name=productName, product_type=productType, product_size=productSize, quantity=productQuantity, manufacturer=productManufacturer, price=productPrice, currency=productCurrency)
         db.session.add(product)
         db.session.commit()
         

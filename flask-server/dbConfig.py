@@ -31,11 +31,29 @@ class Products(db.Model):
     product_name = db.Column(db.String(255), nullable=False)
     product_type = db.Column(db.String(255), nullable=False)
     product_size = db.Column(db.String(255), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    manufacturer = db.Column(db.String(255), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(255), nullable=False)
+    
 class Templates(db.Model):
     __tablename__ = 'templates'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     template_name = db.Column(db.String(255), nullable=False)
 
+class SoldProducts(db.Model):
+    __tablename__ = 'sold_products'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    product_name = db.Column(db.String(255), nullable=False)
+    product_type = db.Column(db.String(255), nullable=False)
+    product_size = db.Column(db.String(255), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    manufacturer = db.Column(db.String(255), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(255), nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
+    
 class Users(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)

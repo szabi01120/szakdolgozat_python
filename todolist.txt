@@ -13,4 +13,23 @@
 
 NEXT TO DO:
 
-ELMENTENI ADATBÁZISBA A SABLONOKAT ÉS ONNAN OLVASNI A LEGÖRDÜLŐ LISTÁBA
+ELMENTENI ADATBÁZISBA A SABLONOKAT ÉS ONNAN OLVASNI A LEGÖRDÜLŐ LISTÁBA -- DONE
+
+products tábla:
+termék neve
+típusa
+méret
+képek
+darabszám
+gyártó
+nettó érték
+
+talon gomb
+
+soldproducts tábla:
+termék neve
+típusa
+méret
+darabszám
+gyártó
+nettó érték

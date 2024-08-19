@@ -77,12 +77,16 @@ export default function Products({ user }) {
                     <th scope="productName">Terméknév</th>
                     <th scope="productType">Típus</th>
                     <th scope="productSize">Méret</th>
+                    <th scope="quantity">Mennyiség</th>
+                    <th scope="manufacturer">Gyártó</th>
+                    <th scope="price">Nettó ár</th>
+                    <th scope="currency">Pénznem</th>
                     <th scope="operations">Műveletek</th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.length === 0 ? (
-                    <tr><td colSpan="6">Nincs termék adat</td></tr>
+                    <tr><td colSpan="10">Nincs termék adat</td></tr>
                   ) : (
                     products.map(product => (
                       <tr key={product.id}>
@@ -91,6 +95,10 @@ export default function Products({ user }) {
                         <td>{product.product_name}</td>
                         <td>{product.product_type}</td>
                         <td>{product.product_size}</td>
+                        <td>{product.quantity}</td>
+                        <td>{product.manufacturer}</td>
+                        <td>{product.price}</td>
+                        <td>{product.currency}</td>
                         <td>
                           <button type="button" className="btn btn-danger me-2 btn-sm d-block d-md-inline mt-2 mt-md-0" onClick={() => handleDeleteButtonClick(product.id)}>
                             Törlés

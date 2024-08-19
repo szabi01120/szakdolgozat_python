@@ -8,12 +8,18 @@ export default function AddProduct({ user }) {
   const [images, setImages] = useState([]); // képek tömb
   const [isDragging, setIsDragging] = useState(false); // drag and drop állapota
   const [redirectToRaktar, setRedirectToRaktar] = useState(false); // termékek oldalra irányítás
+
   const fileInputRef = useRef(); // input referencia
+
   const [isError, setIsError] = useState(false);
   const [formData, setFormData] = useState({
     product_name: '',
     product_type: '',
-    product_size: ''
+    product_size: '',
+    quantity: '',
+    manufacturer: '',
+    price: '',
+    currency: ''
   });
   const [responseMsg, setResponseMsg] = useState({
     status: "",
@@ -84,7 +90,22 @@ export default function AddProduct({ user }) {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
+
+    if (name === 'price') {
+      // Eltávolítunk minden nem numerikus karaktert, hogy csak számok maradjanak
+      const numericValue = value.replace(/\D/g, '');
+
+      // A számot formázzuk tizedes elválasztókkal
+      const formattedValue = new Intl.NumberFormat('hu-HU').format(numericValue);
+
+      // Frissítjük az input mezőt formázott értékkel
+      setFormData({ ...formData, [name]: numericValue });
+
+      // Az input mezőt frissítjük formázott értékkel
+      event.target.value = formattedValue;
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -125,11 +146,15 @@ export default function AddProduct({ user }) {
   };
 
   const inputFields = [
-    { label: 'Terméknév', name: 'product_name', placeholder: 'Terméknév' },
-    { label: 'Méret', name: 'product_size', placeholder: 'Méret' }
+    { label: 'Terméknév', name: 'product_name', placeholder: 'Terméknév', type: 'text' },
+    { label: 'Méret', name: 'product_size', placeholder: 'Méret', type: 'text' },
+    { label: 'Mennyiség', name: 'quantity', placeholder: 'Mennyiség', type: 'number', min: '0' },
+    { label: 'Gyártó', name: 'manufacturer', placeholder: 'Gyártó', type: 'text' },
+    { label: 'Nettó ár', name: 'price', placeholder: 'Nettó ár', type: 'text' }, // Fontos: itt text, hogy formázhassuk
   ];
 
   const types = ['Típus 1', 'Típus 2', 'Típus 3']; // Típusok listája
+  const currencyTypes = ['HUF', 'EUR', 'USD']; // Pénznem listája
 
   const renderForm = (
     <div className='pt-4'>
@@ -137,12 +162,30 @@ export default function AddProduct({ user }) {
         <h2>Termék hozzáadása</h2>
         <form onSubmit={handleSubmit} className='row g-3'>
           {inputFields.map((field, index) => (
-            <div className='col-md-4' key={index}>
+            <div className='col-md-3' key={index}>
               <label htmlFor={field.name}>{field.label}</label>
-              <input type="text" className="form-control" id={field.name} name={field.name} onChange={handleChange} placeholder={field.placeholder} value={formData[field.name]} />
+              <input
+                type={field.type}
+                className="form-control"
+                id={field.name}
+                name={field.name}
+                onChange={handleChange}
+                placeholder={field.placeholder}
+                value={field.name === 'price' ? new Intl.NumberFormat('hu-HU').format(formData[field.name]) : formData[field.name]} // nettó ár formázás
+                min={field.min}
+                step={field.step} />
             </div>
           ))}
-          <div className='col-md-4'>
+          <div className='col-md-3'>
+            <label htmlFor="currenc">Pénznem</label>
+            <select className="form-select" id="currency" name="currency" onChange={handleChange} value={formData.currency}>
+              <option value="">Válassz pénznemet</option>
+              {currencyTypes.map((currency, index) => (
+                <option key={index} value={currency}>{currency}</option>
+              ))}
+            </select>
+          </div>
+          <div className='col-md-3'>
             <label htmlFor="product_type">Típus</label>
             <select className="form-select" id="product_type" name="product_type" onChange={handleChange} value={formData.product_type}>
               <option value="">Válassz típust</option>
@@ -207,7 +250,7 @@ export default function AddProduct({ user }) {
 
   return (
     <div>
-      <Navbar user={user}/>
+      <Navbar user={user} />
       {renderForm}
     </div>
   );

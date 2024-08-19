@@ -7,7 +7,7 @@ import axios from 'axios';
 export default function EditProduct({ user }) {
     const params = useParams();
     const [products, setProducts] = useState([]);
-    const [redirectToTermekek, setRedirectToTermekek] = useState(false); // termékek oldalra irányítás
+    const [redirectToProducts, setRedirectToProducts] = useState(false); // termékek oldalra irányítás
 
     useEffect(() => {
         loadProduct();
@@ -27,12 +27,20 @@ export default function EditProduct({ user }) {
     let currentProductName = "";
     let currentProductType = "";
     let currentProductSize = "";
+    let currentProductQuantity = 1;
+    let currentProductManufacturer = "";
+    let currentProductPrice = 1.0;
+    let currentProductCurrency = "";
 
     products.map((product) => {
         if (product.id.toString() === params.id) {
             currentProductName = product.product_name;
             currentProductType = product.product_type;
             currentProductSize = product.product_size;
+            currentProductQuantity = product.quantity;
+            currentProductManufacturer = product.manufacturer;
+            currentProductPrice = product.price;
+            currentProductCurrency = product.currency;
         }
         return product;
     });
@@ -45,18 +53,27 @@ export default function EditProduct({ user }) {
         const name = currentProductName;
         const type = currentProductType;
         const size = currentProductSize;
+        const quantity = currentProductQuantity;
+        const manufacturer = currentProductManufacturer;
+        const price = currentProductPrice;
+        const currency = currentProductCurrency;
 
         try {
             const response = await axios.put(`http://localhost:5000/api/update_product/${params.id}`, {
                 product_name: name,
                 product_type: type,
-                product_size: size
+                product_size: size,
+                product_quantity: quantity,
+                product_manufacturer: manufacturer,
+                product_price: price,
+                product_currency: currency
             });
         } catch (error) {
-            console.error('Hiba', error);
+            return console.error('Hiba', error);
         }
+        console.log('req: ', )
         alert('Sikeres szerkesztés! Az oldal frissítésre kerül.');
-        setRedirectToTermekek(true);
+        setRedirectToProducts(true);
     };
 
     const productNameChange = event => {
@@ -71,8 +88,24 @@ export default function EditProduct({ user }) {
         currentProductSize = event.target.value;
     }
 
-    if (redirectToTermekek) {
-        return <Navigate to='/termekek' />;
+    const productQuantityChange = event => {
+        currentProductQuantity = event.target.value;
+    }
+
+    const productManufacturerChange = event => {
+        currentProductManufacturer = event.target.value;
+    }
+
+    const productPriceChange = event => {
+        currentProductPrice = event.target.value;
+    }
+
+    const productCurrencyChange = event => {
+        currentProductCurrency = event.target.value;
+    }
+
+    if (redirectToProducts) {
+        return <Navigate to='/raktar' />;
     }
 
     return (
@@ -108,6 +141,42 @@ export default function EditProduct({ user }) {
                             placeholder={currentProductSize}
                             id="size"
                             onChange={productSizeChange}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="size" className="form-label">Mennyiség</label>
+                        <input type="text" className="form-control"
+                            name="quantity"
+                            placeholder={currentProductQuantity}
+                            id="quantity"
+                            onChange={productQuantityChange}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="size" className="form-label">Gyártó</label>
+                        <input type="text" className="form-control"
+                            name="manufacturer"
+                            placeholder={currentProductManufacturer}
+                            id="manufacturer"
+                            onChange={productManufacturerChange}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="size" className="form-label">Nettó ár</label>
+                        <input type="text" className="form-control"
+                            name="price"
+                            placeholder={currentProductPrice}
+                            id="price"
+                            onChange={productPriceChange}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="size" className="form-label">Pénznem</label>
+                        <input type="text" className="form-control"
+                            name="currency"
+                            placeholder={currentProductCurrency}
+                            id="currency"
+                            onChange={productCurrencyChange}
                         />
                     </div>
                     <button type="submit" className="btn btn-primary mt-3">Szerkesztés</button>
