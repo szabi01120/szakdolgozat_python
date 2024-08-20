@@ -5,9 +5,12 @@ import './Products.css';
 import { Navbar } from '../../components';
 
 export default function Products({ user }) {
-
   const [productData, setProductData] = useState(false);
   const [products, setProducts] = useState([{}]);
+  const [updatedProducts, setUpdatedProducts] = useState([]);
+
+  // Ár formázó létrehozása
+  const priceFormatter = new Intl.NumberFormat('hu-HU');
 
   // termékek lekérdezése
   useEffect(() => {
@@ -15,15 +18,12 @@ export default function Products({ user }) {
       .then(async response => {
         const productsWithPhotos = await Promise.all(response.data.map(async (product) => {
           try {
-            // megnézi van e kép a termékhez
+            // megnézi van-e kép a termékhez
             const photoResponse = await axios.get(`http://127.0.0.1:5000/api/images/${product.id}`);
-            if (photoResponse.data.length > 0) {
-              product.hasPhotos = true;
-            } else {
-              product.hasPhotos = false;
-            }
+            product.hasPhotos = photoResponse.data.length > 0;
           } catch (error) {
             console.log("Hiba a képek lekérdezésekor: ", error);
+            product.hasPhotos = false;
           }
           return product;
         }));
@@ -32,17 +32,18 @@ export default function Products({ user }) {
       .catch(error => console.log("Hiba a termékek lekérdezésekor: ", error));
   }, []);
 
-  // Toggle product data display
+  // Termék adatok megjelenítésének kapcsolása
   const handleProductsButtonClick = () => {
     setProductData(!productData);
   };
 
+  // Termék törlése
   const handleDeleteButtonClick = async (id) => {
     try {
       const response = await axios.delete(`http://127.0.0.1:5000/api/delete_product/${id}`);
       if (response.status === 200) {
         console.log('Sikeres törlés');
-        // Remove deleted product from the list
+        // A törölt termék eltávolítása a listából
         const updatedProducts = products.filter(product => product.id !== id);
         setProducts(updatedProducts);
       } else {
@@ -50,6 +51,52 @@ export default function Products({ user }) {
       }
     } catch (error) {
       console.log("Hiba történt a törlés közben: ", error);
+    }
+  };
+
+  // Checkbox állapot kezelése és frissítendő termékek hozzáadása
+  const handleCheckboxChange = (index, field) => {
+    const updatedProductsCopy = [...products];
+    updatedProductsCopy[index][field] = !updatedProductsCopy[index][field];
+    setProducts(updatedProductsCopy);
+
+    // Frissítendő termékek azonosítása
+    const product = updatedProductsCopy[index];
+    if (product.sold || product.shipped) {
+      setUpdatedProducts((prev) => {
+        const exists = prev.find((p) => p.id === product.id);
+        if (exists) {
+          return prev.map((p) =>
+            p.id === product.id ? { ...p, [field]: product[field] } : p
+          );
+        } else {
+          return [...prev, { id: product.id, sold: product.sold, shipped: product.shipped }];
+        }
+      });      
+    } else {
+      setUpdatedProducts((prev) => prev.filter((p) => p.id !== product.id));
+    }
+  };
+  console.log("updatedproducts: ", updatedProducts);
+
+  // Mentés gomb kezelése
+  const handleSaveButtonClick = async () => {
+    for (const product of updatedProducts) {
+      if (product.sold && product.shipped) {
+        try {
+          const response = await axios.post(`/api/update_product_status/${product.id}`, {
+            sold: product.sold,
+            shipped: product.shipped
+          });
+          if (response.status === 200) {
+            console.log('Sikeres módosítás');
+          } else {
+            console.log('Sikertelen módosítás');
+          }
+        } catch (error) {
+          console.log("Hiba történt a módosítás közben: ", error);
+        }
+      }
     }
   };
 
@@ -63,16 +110,18 @@ export default function Products({ user }) {
             <button type="button" className="btn btn-primary mb-3 mt-2 me-2" onClick={handleProductsButtonClick}>
               Lekérdezés
             </button>
-            <Link to="/addproduct" type="button" className="btn btn-primary w-25 mb-3 mt-2" width="10%">
+            <Link to="/addproduct" type="button" className="btn btn-primary w-25 mb-3 mt-2">
               Termék hozzáadása
             </Link>
+            <button type="button" className="btn btn-success mb-3 mt-2 ms-auto" onClick={handleSaveButtonClick}>
+              Mentés
+            </button>
           </div>
           {productData &&
             <div className="container pt-3">
               <table className="table table-striped">
                 <thead>
                   <tr>
-                    <th scope="col" width="5%"><input className="form-check-input" type="checkbox" /></th>
                     <th>Id</th>
                     <th scope="productName">Terméknév</th>
                     <th scope="productType">Típus</th>
@@ -81,6 +130,8 @@ export default function Products({ user }) {
                     <th scope="manufacturer">Gyártó</th>
                     <th scope="price">Nettó ár</th>
                     <th scope="currency">Pénznem</th>
+                    <th scope="operations">Eladva?</th>
+                    <th scope="operations">Szállítva?</th>
                     <th scope="operations">Műveletek</th>
                   </tr>
                 </thead>
@@ -88,17 +139,32 @@ export default function Products({ user }) {
                   {products.length === 0 ? (
                     <tr><td colSpan="10">Nincs termék adat</td></tr>
                   ) : (
-                    products.map(product => (
+                    products.map((product, index) => (
                       <tr key={product.id}>
-                        <th scope="col" width="5%"><input className="form-check-input" type="checkbox" /></th>
                         <th scope="row">{product.id}</th>
                         <td>{product.product_name}</td>
                         <td>{product.product_type}</td>
                         <td>{product.product_size}</td>
-                        <td>{product.quantity}</td>
+                        <td>{product.quantity} db</td>
                         <td>{product.manufacturer}</td>
-                        <td>{product.price}</td>
+                        <td>{priceFormatter.format(product.price)}</td> {/* Ár formázás */}
                         <td>{product.currency}</td>
+                        <td>
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            checked={product.sold || false}
+                            onChange={() => handleCheckboxChange(index, 'sold')}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            checked={product.shipped || false}
+                            onChange={() => handleCheckboxChange(index, 'shipped')}
+                          />
+                        </td>
                         <td>
                           <button type="button" className="btn btn-danger me-2 btn-sm d-block d-md-inline mt-2 mt-md-0" onClick={() => handleDeleteButtonClick(product.id)}>
                             Törlés

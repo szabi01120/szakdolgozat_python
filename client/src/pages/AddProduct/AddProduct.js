@@ -7,7 +7,7 @@ import './AddProduct.css';
 export default function AddProduct({ user }) {
   const [images, setImages] = useState([]); // képek tömb
   const [isDragging, setIsDragging] = useState(false); // drag and drop állapota
-  const [redirectToRaktar, setRedirectToRaktar] = useState(false); // termékek oldalra irányítás
+  const [redirectToProducts, setRedirectToProducts] = useState(false); // termékek oldalra irányítás
 
   const fileInputRef = useRef(); // input referencia
 
@@ -137,7 +137,7 @@ export default function AddProduct({ user }) {
 
         // Sikeres hozzáadás esetén állítsd be az átirányítást
         alert('Sikeres hozzáadás! Az oldal frissítésre kerül.');
-        setRedirectToRaktar(true);
+        setRedirectToProducts(true);
       }
     } catch (error) {
       console.log('Hiba történt:', error.response);
@@ -244,7 +244,7 @@ export default function AddProduct({ user }) {
   );
 
   // felhasználó átirányítása
-  if (redirectToRaktar) {
+  if (redirectToProducts) {
     return <Navigate to="/raktar" />;
   }
 
