@@ -59,6 +59,7 @@ class Users(db.Model):
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
     username = db.Column(db.String(345), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
+    name = db.Column(db.String(255), nullable=False)
     
 # database create
 with app.app_context():

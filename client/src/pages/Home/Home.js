@@ -18,7 +18,7 @@ export default function Home({ user }) {
       <Navbar user={user}/>
       {user ? (
         <div className="container mt-4 pt-5 justify-content-center">
-          <h1>Üdvözöllek, {user.username}!</h1>
+          <h1>Üdvözöllek, {user.name}!</h1>
           <h1>Id: {user.id}</h1>
           <button onClick={logoutUser} className="btn btn-danger">Kijelentkezés</button>
         </div>

@@ -1,3 +1,89 @@
+/* Alapvető oldal stílusok */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=SUSE:wght@100..800&display=swap');
 body {
-    background-color: #f0ece2;
+    font-family: "Open Sans", sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Tartalom konténer stílusok */
+h1 {
+    text-align: center;
+    color: #333;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+/* Gomb stílusok */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+.btn-edit {
+    background-color: #2ecc71;
+    color: #ffffff;
+}
+
+.btn-edit:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px);
+}
+
+.btn-photo {
+    background-color: #9b59b6;
+    color: #ffffff;
+}
+
+.btn-photo:hover {
+    background-color: #8e44ad;
+    transform: translateY(-2px);
+}
+
+.btn-save {
+    background-color: #3498db;
+    color: #ffffff;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+.btn-save:hover {
+    background-color: #2980b9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }

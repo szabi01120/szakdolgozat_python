@@ -16,20 +16,24 @@ NEXT TO DO:
 ELMENTENI ADATBÁZISBA A SABLONOKAT ÉS ONNAN OLVASNI A LEGÖRDÜLŐ LISTÁBA -- DONE
 
 products tábla:
-termék neve
-típusa
-méret
-képek
-darabszám
-gyártó
-nettó érték
+termék neve - DONE
+típusa - DONE
+méret - DONE
+képek - DONE
+darabszám - DONE
+gyártó - DONE
+nettó érték - DONE
 
 talon gomb
 
 soldproducts tábla:
-termék neve
-típusa
-méret
-darabszám
-gyártó
-nettó érték
+termék neve - DONE
+típusa - DONE
+méret - DONE
+darabszám - DONE
+gyártó - DONE
+nettó érték - DONE
+
+
+
+navbar color: #2c3e50;

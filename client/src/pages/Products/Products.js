@@ -72,7 +72,7 @@ export default function Products({ user }) {
         } else {
           return [...prev, { id: product.id, sold: product.sold, shipped: product.shipped }];
         }
-      });      
+      });
     } else {
       setUpdatedProducts((prev) => prev.filter((p) => p.id !== product.id));
     }
@@ -107,19 +107,19 @@ export default function Products({ user }) {
         <div className="container shadow d-flex flex-column pt-4">
           <h2>Termékek</h2>
           <div className="d-flex">
-            <button type="button" className="btn btn-primary mb-3 mt-2 me-2" onClick={handleProductsButtonClick}>
+            <button type="button" className="btn btn-primary mb-3" onClick={handleProductsButtonClick}>
               Lekérdezés
             </button>
-            <Link to="/addproduct" type="button" className="btn btn-primary w-25 mb-3 mt-2">
+            <Link to="/addproduct" type="button" className="btn btn-primary mb-3">
               Termék hozzáadása
             </Link>
-            <button type="button" className="btn btn-success mb-3 mt-2 ms-auto" onClick={handleSaveButtonClick}>
+            <button type="button" className="btn btn-edit mb-3" onClick={handleSaveButtonClick}>
               Mentés
             </button>
           </div>
           {productData &&
-            <div className="container pt-3">
-              <table className="table table-striped">
+            <div className="">
+              <table className="product-table">
                 <thead>
                   <tr>
                     <th>Id</th>
@@ -130,8 +130,8 @@ export default function Products({ user }) {
                     <th scope="manufacturer">Gyártó</th>
                     <th scope="price">Nettó ár</th>
                     <th scope="currency">Pénznem</th>
-                    <th scope="operations">Eladva?</th>
-                    <th scope="operations">Szállítva?</th>
+                    <th scope="sold">Eladva?</th>
+                    <th scope="shipped">Szállítva?</th>
                     <th scope="operations">Műveletek</th>
                   </tr>
                 </thead>
@@ -151,29 +151,34 @@ export default function Products({ user }) {
                         <td>{product.currency}</td>
                         <td>
                           <input
-                            className="form-check-input"
                             type="checkbox"
+                            id={`checkbox-sold-${index}`}
                             checked={product.sold || false}
                             onChange={() => handleCheckboxChange(index, 'sold')}
+                            
                           />
+                          <label htmlFor={`checkbox-sold-${index}`}></label>
                         </td>
                         <td>
                           <input
-                            className="form-check-input"
                             type="checkbox"
+                            id={`checkbox-shipped-${index}`}
                             checked={product.shipped || false}
                             onChange={() => handleCheckboxChange(index, 'shipped')}
+                            
                           />
+                          <label htmlFor={`checkbox-shipped-${index}`}></label>
                         </td>
+
                         <td>
-                          <button type="button" className="btn btn-danger me-2 btn-sm d-block d-md-inline mt-2 mt-md-0" onClick={() => handleDeleteButtonClick(product.id)}>
+                          <button className="btn btn-danger me-2" onClick={() => handleDeleteButtonClick(product.id)}>
                             Törlés
                           </button>
-                          <Link to={`/editproduct/${product.id}`} type="button" className="btn btn-success btn-sm me-2 d-block d-md-inline mt-2 mt-md-0">
+                          <Link to={`/editproduct/${product.id}`} type="button" className="btn btn-edit me-2">
                             Edit
                           </Link>
                           {product.hasPhotos && (
-                            <Link to={`/productphotos/${product.id}`} type="button" className="btn btn-info btn-sm d-block d-md-inline mt-2 mt-md-0">
+                            <Link to={`/productphotos/${product.id}`} type="button" className="btn btn-photo">
                               Fotók
                             </Link>
                           )}

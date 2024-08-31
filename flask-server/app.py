@@ -353,13 +353,15 @@ def get_current_user():
     user = Users.query.filter_by(id=user_id).first()
     return jsonify({
         "id": user.id, 
-        "username": user.username
+        "username": user.username,
+        "name": user.name
     }), 200
     
 @app.route("/register", methods=["POST"])
 def register_user():
     username = request.json["username"]
     password = request.json["password"]
+    name = request.json["name"]
 
     user_exists = Users.query.filter_by(username=username).first() is not None
 
@@ -367,7 +369,7 @@ def register_user():
         return jsonify({"error": "Ez a felhasználó már létezik!"}), 409
 
     hashed_password = bcrypt.generate_password_hash(password)
-    new_user = Users(username=username, password=hashed_password)
+    new_user = Users(username=username, password=hashed_password, name=name)
     db.session.add(new_user)
     db.session.commit()
     
@@ -375,7 +377,8 @@ def register_user():
 
     return jsonify({
         "id": new_user.id,
-        "username": new_user.username
+        "username": new_user.username,
+        "name": new_user.name
     })
     
 # Bejelentkezés kezelése
