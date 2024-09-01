@@ -55,6 +55,7 @@ h1 {
 .btn-edit:hover {
     background-color: #27ae60;
     transform: translateY(-2px);
+    color:white;
 }
 
 .btn-photo {

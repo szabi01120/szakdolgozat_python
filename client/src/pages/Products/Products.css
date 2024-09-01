@@ -98,3 +98,12 @@ input[type="checkbox"]:checked + label:after {
     border: solid #fff;
     border-width: 0 2px 2px 0;
 }
+
+/* Vízszintes vonal stílusok */
+.section-divider {
+    border: none;
+    height: 2px;
+    background-color: #d6cece;
+    margin: 0px auto; /* Középre igazítás */
+    width: 100%; /* Szélesség beállítása */
+}

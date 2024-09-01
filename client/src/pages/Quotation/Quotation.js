@@ -224,7 +224,7 @@ export default function Quotation({ user }) {
                 )}
               </select>
             </label>
-            <button type="submit" disabled={template === 'no-template'}>Ajánlat küldése</button>
+            <button className="btn btn-edit" type="submit" disabled={template === 'no-template'}>Ajánlat küldése</button>
           </form>
         </div>
 
@@ -285,7 +285,7 @@ export default function Quotation({ user }) {
             </div>
           </div>
 
-          <button onClick={handleAddTemplate}>Sablon hozzáadása</button>
+          <button className="btn btn-edit" onClick={handleAddTemplate}>Sablon hozzáadása</button>
 
           {/* Sablon törlése form - csak akkor jelenik meg, ha van sablon */}
           {templates.length > 0 && (
@@ -307,7 +307,7 @@ export default function Quotation({ user }) {
               </label>
               {errorMessageDeleteTemplate && <p className="error-message">{errorMessageDeleteTemplate}</p>}
               {successMessageDeleteTemplate && <p className="success-message">{successMessageDeleteTemplate}</p>}
-              <button onClick={handleDeleteTemplate} id='deleteButton' disabled={!selectedTemplateToDelete}>Sablon törlése</button>
+              <button className="btn-danger" onClick={handleDeleteTemplate} disabled={!selectedTemplateToDelete}>Sablon törlése</button>
             </div>
           )}
         </div>

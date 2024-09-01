@@ -297,7 +297,7 @@ def send_quotation():
     product_price = data.get('productPrice')
     quantity = data.get('quantity')
     template = data.get('template')
-    print(data)
+    print("data:", data)
     
     if not all([customer_name, customer_email, product_name, product_price, quantity, template]):
         return jsonify({"message": "Hiányzó adat(ok)!"}), 400
@@ -326,8 +326,8 @@ def send_quotation():
     except FileNotFoundError:
         return jsonify({"message": f"A sablon nem található: {template}"}), 404
     except Exception as e:
-        print(template_content)
-        print(app.config['MAIL_USERNAME'])
+        print("template content:", template_content)
+        print("mail username:", app.config['MAIL_USERNAME'])
         print("hiba", e)
         print(traceback.format_exc())
         return jsonify({"message": "Hiba történt az ajánlat küldése során."}), 500
