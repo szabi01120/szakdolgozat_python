@@ -105,7 +105,7 @@ export default function Products({ user }) {
       <Navbar user={user} />
       <div className="pt-4">
         <div className="container shadow d-flex flex-column pt-4">
-          <h2>Termékek</h2>
+          <h2 céas>Termékek</h2>
           <hr className="section-divider" />
           <div className="d-flex">
             <button type="button" className="btn btn-primary mb-3" onClick={handleProductsButtonClick}>

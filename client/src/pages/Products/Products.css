@@ -13,7 +13,7 @@ h2 {
     text-align: center;
     color: #333;
     font-weight: 400;
-    margin-bottom: 20px;
+    margin-bottom: 2px;
 }
 
 /* Gombok csoportja */
@@ -106,4 +106,5 @@ input[type="checkbox"]:checked + label:after {
     background-color: #d6cece;
     margin: 0px auto; /* Középre igazítás */
     width: 100%; /* Szélesség beállítása */
+    margin-bottom: 5px;
 }
