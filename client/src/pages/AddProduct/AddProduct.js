@@ -13,6 +13,7 @@ export default function AddProduct({ user }) {
 
   const [isError, setIsError] = useState(false);
   const [formData, setFormData] = useState({
+    incoming_invoice: '',
     product_name: '',
     product_type: '',
     product_size: '',
@@ -141,6 +142,7 @@ export default function AddProduct({ user }) {
       }
     } catch (error) {
       console.log('Hiba történt:', error.response);
+      console.log('data:', formData);
       setIsError(true);
     }
   };
@@ -151,6 +153,7 @@ export default function AddProduct({ user }) {
     { label: 'Mennyiség', name: 'quantity', placeholder: 'Mennyiség', type: 'number', min: '0' },
     { label: 'Gyártó', name: 'manufacturer', placeholder: 'Gyártó', type: 'text' },
     { label: 'Nettó ár', name: 'price', placeholder: 'Nettó ár', type: 'text' }, // Fontos: itt text, hogy formázhassuk
+    { label: 'Bejövő számla', name: 'incoming_invoice', placeholder: 'Bejövő számla', type: 'text' },
   ];
 
   const types = ['Típus 1', 'Típus 2', 'Típus 3']; // Típusok listája

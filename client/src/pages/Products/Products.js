@@ -25,6 +25,7 @@ export default function Products({ user }) {
             console.log("Hiba a képek lekérdezésekor: ", error);
             product.hasPhotos = false;
           }
+          console.log("products: ", response.data);
           return product;
         }));
         setProducts(productsWithPhotos);
@@ -125,12 +126,12 @@ export default function Products({ user }) {
                   <tr>
                     <th>Id</th>
                     <th scope="productName">Terméknév</th>
+                    <th scope="incomingInvoice">Bejövő számla</th>
                     <th scope="productType">Típus</th>
                     <th scope="productSize">Méret</th>
                     <th scope="quantity">Mennyiség</th>
                     <th scope="manufacturer">Gyártó</th>
                     <th scope="price">Nettó ár</th>
-                    <th scope="currency">Pénznem</th>
                     <th scope="sold">Eladva?</th>
                     <th scope="shipped">Szállítva?</th>
                     <th scope="operations">Műveletek</th>
@@ -144,12 +145,12 @@ export default function Products({ user }) {
                       <tr key={product.id}>
                         <th scope="row">{product.id}</th>
                         <td>{product.product_name}</td>
+                        <td>{product.incoming_invoice}</td>
                         <td>{product.product_type}</td>
                         <td>{product.product_size}</td>
                         <td>{product.quantity} db</td>
                         <td>{product.manufacturer}</td>
                         <td>{priceFormatter.format(product.price)}</td> {/* Ár formázás */}
-                        <td>{product.currency}</td>
                         <td>
                           <input
                             type="checkbox"

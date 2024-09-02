@@ -28,6 +28,7 @@ class Image(db.Model):
 class Products(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    incoming_invoice = db.Column(db.String(255), nullable=False) 
     product_name = db.Column(db.String(255), nullable=False)
     product_type = db.Column(db.String(255), nullable=False)
     product_size = db.Column(db.String(255), nullable=False)
@@ -45,6 +46,8 @@ class SoldProducts(db.Model):
     __tablename__ = 'sold_products'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    incoming_invoice = db.Column(db.String(255), nullable=False)
+    outgoing_invoice = db.Column(db.String(255), nullable=False)
     product_name = db.Column(db.String(255), nullable=False)
     product_type = db.Column(db.String(255), nullable=False)
     product_size = db.Column(db.String(255), nullable=False)

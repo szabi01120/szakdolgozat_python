@@ -12,37 +12,38 @@ def get_products():
     products = Products.query.all()
     return jsonify([{
         "id": product.id,
+        "incoming_invoice": product.incoming_invoice,
         "product_name": product.product_name,
         "product_type": product.product_type,
         "product_size": product.product_size,
         "quantity": product.quantity,
         "manufacturer": product.manufacturer,
         "price": product.price,
-        "currency": product.currency
+        "currency": product.currency,
     } for product in products]), 200
 
 # Termék frissítése
 @products_bp.route("/api/update_product/<int:id>", methods=["PUT"])
 def update_product(id):
+    incomingInvoice = request.json.get("incoming_invoice")
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
     productSize = request.json.get("product_size")
     productQuantity = request.json.get("product_quantity")
     productManufacturer = request.json.get("product_manufacturer")
     productPrice = request.json.get("product_price")
-    productCurrency = request.json.get("product_currency")
 
     product = Products.query.get(id)
     if product is None:
         return jsonify({"error": "Nincs ilyen termék!"}), 404
     
+    product.incoming_invoice = incomingInvoice
     product.product_name = productName
     product.product_type = productType
     product.product_size = productSize
     product.quantity = int(productQuantity)
     product.manufacturer = productManufacturer
     product.price = float(productPrice)
-    product.currency = productCurrency
     
     db.session.commit()
     
@@ -75,6 +76,7 @@ def delete_product(id):
 # Termék hozzáadása
 @products_bp.route("/api/add_product", methods=["POST"])
 def add_product():
+    incomingInvoice = request.json.get("incoming_invoice")
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
     productSize = request.json.get("product_size")
@@ -83,7 +85,7 @@ def add_product():
     productPrice = request.json.get("price")
     productCurrency = request.json.get("currency")
 
-    product = Products(product_name=productName, product_type=productType, product_size=productSize, quantity=productQuantity, manufacturer=productManufacturer, price=productPrice, currency=productCurrency)
+    product = Products(incoming_invoice=incomingInvoice, product_name=productName, product_type=productType, product_size=productSize, quantity=productQuantity, manufacturer=productManufacturer, price=productPrice, currency=productCurrency)
     db.session.add(product)
     db.session.commit()
     
