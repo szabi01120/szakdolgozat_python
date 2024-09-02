@@ -1,5 +1,3 @@
-import os
-from werkzeug.utils import secure_filename
 from dbConfig import Image
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
