@@ -9,13 +9,12 @@ export default function Products({ user }) {
   const [products, setProducts] = useState([]);
   const [productsToMove, setProductsToMove] = useState([]);
 
-  // Ár formázó létrehozása
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
-  // termékek lekérdezése
   useEffect(() => {
     axios.get('/api/products')
       .then(async response => {
+        const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
         const productsWithPhotos = await Promise.all(response.data.map(async (product) => {
           try {
             const photoResponse = await axios.get(`http://127.0.0.1:5000/api/images/${product.id}`);
@@ -25,8 +24,7 @@ export default function Products({ user }) {
             product.hasPhotos = false;
           }
 
-          // LocalStorage-ból betöltjük a korábban mentett állapotokat
-          const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
+          // Alapértelmezett értékek beállítása, ha nincs mentett állapot
           product.sold = storedStates[product.id]?.sold || false;
           product.shipped = storedStates[product.id]?.shipped || false;
 
@@ -37,20 +35,20 @@ export default function Products({ user }) {
       .catch(error => console.log('Hiba a termékek lekérdezésekor: ', error));
   }, []);
 
-
-  // Termék adatok megjelenítésének kapcsolása
   const handleProductsButtonClick = () => {
     setProductData(!productData);
   };
 
-  // Termék törlése
   const handleDeleteButtonClick = async (id) => {
     try {
       const response = await axios.delete(`http://127.0.0.1:5000/api/delete_product/${id}`);
       if (response.status === 200) {
         console.log('Sikeres törlés');
-        // A törölt termék eltávolítása a listából
         setProducts(products.filter(product => product.id !== id));
+        // Törölni kell a terméket a localStorage-ból is
+        const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
+        delete storedStates[id];
+        localStorage.setItem('productsStates', JSON.stringify(storedStates));
       } else {
         console.log('Sikertelen törlés');
       }
@@ -59,25 +57,32 @@ export default function Products({ user }) {
     }
   };
 
-  // Checkbox állapot kezelése és frissítendő termékek hozzáadása
   const handleCheckboxChange = (index, field) => {
     const updatedProductsCopy = [...products];
-    updatedProductsCopy[index][field] = !updatedProductsCopy[index][field];
-
+    const product = updatedProductsCopy[index];
+    product[field] = !product[field];
+  
     // Állapotok mentése localStorage-ba
     const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
-    const productId = updatedProductsCopy[index].id;
-    storedStates[productId] = {
-      sold: updatedProductsCopy[index].sold,
-      shipped: updatedProductsCopy[index].shipped,
-    };
+    const productId = product.id;
+  
+    // Ha mindkét checkbox false, töröljük az elemet a localStorage-ból
+    if (!product.sold && !product.shipped) {
+      delete storedStates[productId];
+    } else {
+      // Egyébként mentjük az aktuális állapotokat
+      storedStates[productId] = {
+        sold: product.sold,
+        shipped: product.shipped,
+      };
+    }
+  
     localStorage.setItem('productsStates', JSON.stringify(storedStates));
-
-    // Mindkét checkbox kezelésének logikája
+  
+    // Checkbox kezelésének logikája
     if (field === 'sold' || field === 'shipped') {
-      const product = updatedProductsCopy[index];
       const bothChecked = product.sold && product.shipped;
-
+  
       if (bothChecked) {
         if (!productsToMove.includes(product.id)) {
           setProductsToMove([...productsToMove, product.id]);
@@ -86,17 +91,28 @@ export default function Products({ user }) {
         setProductsToMove(productsToMove.filter(id => id !== product.id));
       }
     }
-
+  
     setProducts(updatedProductsCopy);
   };
+  
 
-  // Mentés gomb kezelése
   const handleSaveButtonClick = async () => {
     if (productsToMove.length > 0) {
       try {
         const response = await axios.post('/api/update_product_status', productsToMove);
         if (response.status === 200) {
           console.log('Sikeres módosítás');
+
+          // Frissítjük a localStorage-t is
+          const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
+
+          // Töröljük a localStorage-ból azokat az elemeket, amelyek már nem léteznek a products tömbben
+          productsToMove.forEach(id => {
+            delete storedStates[id];
+          });
+
+          localStorage.setItem('productsStates', JSON.stringify(storedStates));
+
           // Termékek eltávolítása a products listából
           setProducts(products.filter(product => !productsToMove.includes(product.id)));
           setProductsToMove([]); // Reset the moved products list
@@ -110,6 +126,7 @@ export default function Products({ user }) {
       console.log('Nincs termék a feltételekhez');
     }
   };
+
 
   return (
     <div>
@@ -160,7 +177,7 @@ export default function Products({ user }) {
                         <td>{product.product_size}</td>
                         <td>{product.quantity} db</td>
                         <td>{product.manufacturer}</td>
-                        <td>{priceFormatter.format(product.price)}</td> {/* Ár formázás */}
+                        <td>{priceFormatter.format(product.price)}</td>
                         <td>
                           <input
                             type="checkbox"
