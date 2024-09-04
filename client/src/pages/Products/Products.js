@@ -6,32 +6,37 @@ import { Navbar } from '../../components';
 
 export default function Products({ user }) {
   const [productData, setProductData] = useState(false);
-  const [products, setProducts] = useState([{}]);
-  const [updatedProducts, setUpdatedProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [productsToMove, setProductsToMove] = useState([]);
 
   // Ár formázó létrehozása
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
   // termékek lekérdezése
   useEffect(() => {
-    axios.get("/api/products")
+    axios.get('/api/products')
       .then(async response => {
         const productsWithPhotos = await Promise.all(response.data.map(async (product) => {
           try {
-            // megnézi van-e kép a termékhez
             const photoResponse = await axios.get(`http://127.0.0.1:5000/api/images/${product.id}`);
             product.hasPhotos = photoResponse.data.length > 0;
           } catch (error) {
-            console.log("Hiba a képek lekérdezésekor: ", error);
+            console.log('Hiba a képek lekérdezésekor: ', error);
             product.hasPhotos = false;
           }
-          console.log("products: ", response.data);
+
+          // LocalStorage-ból betöltjük a korábban mentett állapotokat
+          const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
+          product.sold = storedStates[product.id]?.sold || false;
+          product.shipped = storedStates[product.id]?.shipped || false;
+
           return product;
         }));
         setProducts(productsWithPhotos);
       })
-      .catch(error => console.log("Hiba a termékek lekérdezésekor: ", error));
+      .catch(error => console.log('Hiba a termékek lekérdezésekor: ', error));
   }, []);
+
 
   // Termék adatok megjelenítésének kapcsolása
   const handleProductsButtonClick = () => {
@@ -45,13 +50,12 @@ export default function Products({ user }) {
       if (response.status === 200) {
         console.log('Sikeres törlés');
         // A törölt termék eltávolítása a listából
-        const updatedProducts = products.filter(product => product.id !== id);
-        setProducts(updatedProducts);
+        setProducts(products.filter(product => product.id !== id));
       } else {
         console.log('Sikertelen törlés');
       }
     } catch (error) {
-      console.log("Hiba történt a törlés közben: ", error);
+      console.log('Hiba történt a törlés közben: ', error);
     }
   };
 
@@ -59,45 +63,51 @@ export default function Products({ user }) {
   const handleCheckboxChange = (index, field) => {
     const updatedProductsCopy = [...products];
     updatedProductsCopy[index][field] = !updatedProductsCopy[index][field];
-    setProducts(updatedProductsCopy);
 
-    // Frissítendő termékek azonosítása
-    const product = updatedProductsCopy[index];
-    if (product.sold || product.shipped) {
-      setUpdatedProducts((prev) => {
-        const exists = prev.find((p) => p.id === product.id);
-        if (exists) {
-          return prev.map((p) =>
-            p.id === product.id ? { ...p, [field]: product[field] } : p
-          );
-        } else {
-          return [...prev, { id: product.id, sold: product.sold, shipped: product.shipped }];
+    // Állapotok mentése localStorage-ba
+    const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
+    const productId = updatedProductsCopy[index].id;
+    storedStates[productId] = {
+      sold: updatedProductsCopy[index].sold,
+      shipped: updatedProductsCopy[index].shipped,
+    };
+    localStorage.setItem('productsStates', JSON.stringify(storedStates));
+
+    // Mindkét checkbox kezelésének logikája
+    if (field === 'sold' || field === 'shipped') {
+      const product = updatedProductsCopy[index];
+      const bothChecked = product.sold && product.shipped;
+
+      if (bothChecked) {
+        if (!productsToMove.includes(product.id)) {
+          setProductsToMove([...productsToMove, product.id]);
         }
-      });
-    } else {
-      setUpdatedProducts((prev) => prev.filter((p) => p.id !== product.id));
+      } else {
+        setProductsToMove(productsToMove.filter(id => id !== product.id));
+      }
     }
+
+    setProducts(updatedProductsCopy);
   };
-  console.log("updatedproducts: ", updatedProducts);
 
   // Mentés gomb kezelése
   const handleSaveButtonClick = async () => {
-    for (const product of updatedProducts) {
-      if (product.sold && product.shipped) {
-        try {
-          const response = await axios.post(`/api/update_product_status/${product.id}`, {
-            sold: product.sold,
-            shipped: product.shipped
-          });
-          if (response.status === 200) {
-            console.log('Sikeres módosítás');
-          } else {
-            console.log('Sikertelen módosítás');
-          }
-        } catch (error) {
-          console.log("Hiba történt a módosítás közben: ", error);
+    if (productsToMove.length > 0) {
+      try {
+        const response = await axios.post('/api/update_product_status', productsToMove);
+        if (response.status === 200) {
+          console.log('Sikeres módosítás');
+          // Termékek eltávolítása a products listából
+          setProducts(products.filter(product => !productsToMove.includes(product.id)));
+          setProductsToMove([]); // Reset the moved products list
+        } else {
+          console.log('Sikertelen módosítás');
         }
+      } catch (error) {
+        console.log('Hiba történt a módosítás közben: ', error);
       }
+    } else {
+      console.log('Nincs termék a feltételekhez');
     }
   };
 
@@ -106,7 +116,7 @@ export default function Products({ user }) {
       <Navbar user={user} />
       <div className="pt-4">
         <div className="container shadow d-flex flex-column pt-4">
-          <h2 céas>Termékek</h2>
+          <h2>Termékek</h2>
           <hr className="section-divider" />
           <div className="d-flex">
             <button type="button" className="btn btn-primary mb-3" onClick={handleProductsButtonClick}>
@@ -157,7 +167,6 @@ export default function Products({ user }) {
                             id={`checkbox-sold-${index}`}
                             checked={product.sold || false}
                             onChange={() => handleCheckboxChange(index, 'sold')}
-                            
                           />
                           <label htmlFor={`checkbox-sold-${index}`}></label>
                         </td>
@@ -167,11 +176,9 @@ export default function Products({ user }) {
                             id={`checkbox-shipped-${index}`}
                             checked={product.shipped || false}
                             onChange={() => handleCheckboxChange(index, 'shipped')}
-                            
                           />
                           <label htmlFor={`checkbox-shipped-${index}`}></label>
                         </td>
-
                         <td>
                           <button className="btn btn-danger me-2" onClick={() => handleDeleteButtonClick(product.id)}>
                             Törlés

@@ -99,6 +99,13 @@ input[type="checkbox"]:checked + label:after {
     border-width: 0 2px 2px 0;
 }
 
+/* Kicsit feljebb mozgatja a checkboxot */
+.asd {
+    margin-top: -2px; /* Igazítás pixel alapú */
+    transform: translateY(-2px); /* Alternatív megoldás a finom igazításhoz */
+}
+
+
 /* Vízszintes vonal stílusok */
 .section-divider {
     border: none;
