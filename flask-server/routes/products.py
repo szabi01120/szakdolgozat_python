@@ -3,6 +3,8 @@ from dbConfig import db, Products, Image, SoldProducts
 import config
 import os
 import shutil
+import pytz
+from datetime import datetime, timedelta
 
 products_bp = Blueprint('products', __name__)
 
@@ -107,6 +109,10 @@ def update_product_status():
 
     for product in products_to_move:
         # Új rekord létrehozása a sold_products táblában
+        # Get current time in GMT+2 timezone
+        tz = pytz.timezone('Europe/Budapest')
+        current_time = datetime.now(tz) + timedelta(hours=2)
+        
         sold_product = SoldProducts(
             product_id=product.id,
             incoming_invoice=product.incoming_invoice,
@@ -118,7 +124,7 @@ def update_product_status():
             manufacturer=product.manufacturer,
             price=product.price,
             currency=product.currency,
-            date=db.func.now()
+            date=current_time
         )
         db.session.add(sold_product)
         db.session.delete(product)

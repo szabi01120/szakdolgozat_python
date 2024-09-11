@@ -1,3 +1,4 @@
+// Relevant parts of Products component code
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -8,31 +9,35 @@ export default function Products({ user }) {
   const [productData, setProductData] = useState(false);
   const [products, setProducts] = useState([]);
   const [productsToMove, setProductsToMove] = useState([]);
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [editedProduct, setEditedProduct] = useState({});
 
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
   useEffect(() => {
-    axios.get('/api/products')
-      .then(async response => {
+    axios
+      .get('/api/products')
+      .then(async (response) => {
         const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
-        const productsWithPhotos = await Promise.all(response.data.map(async (product) => {
-          try {
-            const photoResponse = await axios.get(`http://127.0.0.1:5000/api/images/${product.id}`);
-            product.hasPhotos = photoResponse.data.length > 0;
-          } catch (error) {
-            console.log('Hiba a képek lekérdezésekor: ', error);
-            product.hasPhotos = false;
-          }
+        const productsWithPhotos = await Promise.all(
+          response.data.map(async (product) => {
+            try {
+              const photoResponse = await axios.get(`http://127.0.0.1:5000/api/images/${product.id}`);
+              product.hasPhotos = photoResponse.data.length > 0;
+            } catch (error) {
+              console.log('Hiba a képek lekérdezésekor: ', error);
+              product.hasPhotos = false;
+            }
 
-          // Alapértelmezett értékek beállítása, ha nincs mentett állapot
-          product.sold = storedStates[product.id]?.sold || false;
-          product.shipped = storedStates[product.id]?.shipped || false;
+            product.sold = storedStates[product.id]?.sold || false;
+            product.shipped = storedStates[product.id]?.shipped || false;
 
-          return product;
-        }));
+            return product;
+          })
+        );
         setProducts(productsWithPhotos);
       })
-      .catch(error => console.log('Hiba a termékek lekérdezésekor: ', error));
+      .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
   }, []);
 
   const handleProductsButtonClick = () => {
@@ -40,20 +45,24 @@ export default function Products({ user }) {
   };
 
   const handleDeleteButtonClick = async (id) => {
-    try {
-      const response = await axios.delete(`http://127.0.0.1:5000/api/delete_product/${id}`);
-      if (response.status === 200) {
-        console.log('Sikeres törlés');
-        setProducts(products.filter(product => product.id !== id));
-        // Törölni kell a terméket a localStorage-ból is
-        const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
-        delete storedStates[id];
-        localStorage.setItem('productsStates', JSON.stringify(storedStates));
-      } else {
-        console.log('Sikertelen törlés');
+    const confirmed = window.confirm("Biztosan törölni szeretnéd ezt a terméket?");
+    if (confirmed) {
+      try {
+        const response = await axios.delete(`http://127.0.0.1:5000/api/delete_product/${id}`);
+        if (response.status === 200) {
+          console.log('Sikeres törlés');
+          setProducts(products.filter((product) => product.id !== id));
+          const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
+          delete storedStates[id];
+          localStorage.setItem('productsStates', JSON.stringify(storedStates));
+        } else {
+          console.log('Sikertelen törlés');
+        }
+      } catch (error) {
+        console.log('Hiba történt a törlés közben: ', error);
       }
-    } catch (error) {
-      console.log('Hiba történt a törlés közben: ', error);
+    } else {
+      console.log('Törlés megszakítva');
     }
   };
 
@@ -61,40 +70,62 @@ export default function Products({ user }) {
     const updatedProductsCopy = [...products];
     const product = updatedProductsCopy[index];
     product[field] = !product[field];
-  
-    // Állapotok mentése localStorage-ba
+
     const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
     const productId = product.id;
-  
-    // Ha mindkét checkbox false, töröljük az elemet a localStorage-ból
+
     if (!product.sold && !product.shipped) {
       delete storedStates[productId];
     } else {
-      // Egyébként mentjük az aktuális állapotokat
       storedStates[productId] = {
         sold: product.sold,
         shipped: product.shipped,
       };
     }
-  
+
     localStorage.setItem('productsStates', JSON.stringify(storedStates));
-  
-    // Checkbox kezelésének logikája
+
     if (field === 'sold' || field === 'shipped') {
       const bothChecked = product.sold && product.shipped;
-  
+
       if (bothChecked) {
         if (!productsToMove.includes(product.id)) {
           setProductsToMove([...productsToMove, product.id]);
         }
       } else {
-        setProductsToMove(productsToMove.filter(id => id !== product.id));
+        setProductsToMove(productsToMove.filter((id) => id !== product.id));
       }
     }
-  
+
     setProducts(updatedProductsCopy);
   };
-  
+
+  const handleEditClick = (product) => {
+    setEditingProductId(product.id);
+    setEditedProduct(product);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type } = e.target;
+    setEditedProduct({
+      ...editedProduct,
+      [name]: type === 'number' ? parseInt(value, 10) || 0 : value,
+    });
+  };
+
+  const handleSaveEdit = () => {
+    const updatedProducts = products.map((product) =>
+      product.id === editingProductId ? editedProduct : product
+    );
+    setProducts(updatedProducts);
+    setEditingProductId(null);
+    setEditedProduct({});
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProductId(null);
+    setEditedProduct({});
+  };
 
   const handleSaveButtonClick = async () => {
     if (productsToMove.length > 0) {
@@ -102,20 +133,13 @@ export default function Products({ user }) {
         const response = await axios.post('/api/update_product_status', productsToMove);
         if (response.status === 200) {
           console.log('Sikeres módosítás');
-
-          // Frissítjük a localStorage-t is
           const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
-
-          // Töröljük a localStorage-ból azokat az elemeket, amelyek már nem léteznek a products tömbben
-          productsToMove.forEach(id => {
+          productsToMove.forEach((id) => {
             delete storedStates[id];
           });
-
           localStorage.setItem('productsStates', JSON.stringify(storedStates));
-
-          // Termékek eltávolítása a products listából
-          setProducts(products.filter(product => !productsToMove.includes(product.id)));
-          setProductsToMove([]); // Reset the moved products list
+          setProducts(products.filter((product) => !productsToMove.includes(product.id)));
+          setProductsToMove([]);
         } else {
           console.log('Sikertelen módosítás');
         }
@@ -126,7 +150,6 @@ export default function Products({ user }) {
       console.log('Nincs termék a feltételekhez');
     }
   };
-
 
   return (
     <div>
@@ -146,76 +169,155 @@ export default function Products({ user }) {
               Mentés
             </button>
           </div>
-          {productData &&
-            <div className="">
+          {productData && (
+            <div>
               <table className="product-table">
                 <thead>
                   <tr>
                     <th>Id</th>
-                    <th scope="productName">Terméknév</th>
-                    <th scope="incomingInvoice">Bejövő számla</th>
-                    <th scope="productType">Típus</th>
-                    <th scope="productSize">Méret</th>
-                    <th scope="quantity">Mennyiség</th>
-                    <th scope="manufacturer">Gyártó</th>
-                    <th scope="price">Nettó ár</th>
-                    <th scope="sold">Eladva?</th>
-                    <th scope="shipped">Szállítva?</th>
-                    <th scope="operations">Műveletek</th>
+                    <th>Terméknév</th>
+                    <th>Bejövő számla</th>
+                    <th>Típus</th>
+                    <th>Méret</th>
+                    <th>Mennyiség</th>
+                    <th>Gyártó</th>
+                    <th>Nettó ár</th>
+                    {!editingProductId && (
+                      <>
+                        <th>Eladva?</th>
+                        <th>Szállítva?</th>
+                      </>
+                    )}
+                    <th>Műveletek</th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.length === 0 ? (
-                    <tr><td colSpan="10">Nincs termék adat</td></tr>
+                    <tr>
+                      <td colSpan="10">Nincs termék adat</td>
+                    </tr>
                   ) : (
                     products.map((product, index) => (
                       <tr key={product.id}>
                         <th scope="row">{product.id}</th>
-                        <td>{product.product_name}</td>
-                        <td>{product.incoming_invoice}</td>
-                        <td>{product.product_type}</td>
-                        <td>{product.product_size}</td>
-                        <td>{product.quantity} db</td>
-                        <td>{product.manufacturer}</td>
-                        <td>{priceFormatter.format(product.price)}</td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            id={`checkbox-sold-${index}`}
-                            checked={product.sold || false}
-                            onChange={() => handleCheckboxChange(index, 'sold')}
-                          />
-                          <label htmlFor={`checkbox-sold-${index}`}></label>
-                        </td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            id={`checkbox-shipped-${index}`}
-                            checked={product.shipped || false}
-                            onChange={() => handleCheckboxChange(index, 'shipped')}
-                          />
-                          <label htmlFor={`checkbox-shipped-${index}`}></label>
-                        </td>
-                        <td>
-                          <button className="btn btn-danger me-2" onClick={() => handleDeleteButtonClick(product.id)}>
-                            Törlés
-                          </button>
-                          <Link to={`/editproduct/${product.id}`} type="button" className="btn btn-edit me-2">
-                            Edit
-                          </Link>
-                          {product.hasPhotos && (
-                            <Link to={`/productphotos/${product.id}`} type="button" className="btn btn-photo">
-                              Fotók
-                            </Link>
-                          )}
-                        </td>
+                        {editingProductId === product.id ? (
+                          <>
+                            <td>
+                              <input
+                                type="text"
+                                name="product_name"
+                                value={editedProduct.product_name || ''}
+                                onChange={handleInputChange}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                name="incoming_invoice"
+                                value={editedProduct.incoming_invoice || ''}
+                                onChange={handleInputChange}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                name="product_type"
+                                value={editedProduct.product_type || ''}
+                                onChange={handleInputChange}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                name="product_size"
+                                value={editedProduct.product_size || ''}
+                                onChange={handleInputChange}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                name="quantity"
+                                value={editedProduct.quantity || ''}
+                                onChange={handleInputChange}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                name="manufacturer"
+                                value={editedProduct.manufacturer || ''}
+                                onChange={handleInputChange}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                name="price"
+                                value={editedProduct.price || ''}
+                                onChange={handleInputChange}
+                              />
+                            </td>
+                            <td>
+                              <div className="btn-group">
+                                <button className="btn btn-edit me-2" onClick={handleSaveEdit}>
+                                  Mentés
+                                </button>
+                                <button className="btn btn-danger" onClick={handleCancelEdit}>
+                                  Mégse
+                                </button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td>{product.product_name}</td>
+                            <td>{product.incoming_invoice}</td>
+                            <td>{product.product_type}</td>
+                            <td>{product.product_size}</td>
+                            <td>{product.quantity}</td>
+                            <td>{product.manufacturer}</td>
+                            <td>{priceFormatter.format(product.price)}</td>
+                            {!editingProductId && (
+                              <>
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={product.sold}
+                                    onChange={() => handleCheckboxChange(index, 'sold')}
+                                  />
+                                </td>
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    checked={product.shipped}
+                                    onChange={() => handleCheckboxChange(index, 'shipped')}
+                                  />
+                                </td>
+                              </>
+                            )}
+                            <td>
+                              <div className="btn-group">
+                                <button className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)}>
+                                  Törlés
+                                </button>
+                                <button className="btn btn-edit me-2" onClick={() => handleEditClick(product)}>
+                                  Edit
+                                </button>
+                                <Link to={`/photos/${product.id}`} className="btn btn-primary me-2">
+                                  Képek
+                                </Link>
+                              </div>
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
             </div>
-          }
+          )}
         </div>
       </div>
     </div>
