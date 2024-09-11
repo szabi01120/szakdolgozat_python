@@ -113,14 +113,25 @@ export default function Products({ user }) {
     });
   };
 
-  const handleSaveEdit = () => {
-    const updatedProducts = products.map((product) =>
-      product.id === editingProductId ? editedProduct : product
-    );
-    setProducts(updatedProducts);
-    setEditingProductId(null);
-    setEditedProduct({});
+  const handleSaveEdit = async () => {
+    try {
+      const response = await axios.put(`/api/update_product/${editingProductId}`, editedProduct, { withCredentials: true });
+      if (response.status === 200) {
+        const updatedProducts = products.map((product) =>
+          product.id === editingProductId ? editedProduct : product
+        );
+        setProducts(updatedProducts);
+        setEditingProductId(null);
+        setEditedProduct({});
+        console.log("Termék sikeresen frissítve!");
+      }
+    } catch (error) {
+      console.log("editedproduct:", editedProduct)
+      console.log("editingproductid:", editingProductId)
+      console.error("Hiba a termék frissítése közben: ", error);
+    }
   };
+
 
   const handleCancelEdit = () => {
     setEditingProductId(null);
@@ -283,17 +294,22 @@ export default function Products({ user }) {
                                 <td>
                                   <input
                                     type="checkbox"
+                                    id={`checkbox-sold-${index}`}
                                     checked={product.sold}
                                     onChange={() => handleCheckboxChange(index, 'sold')}
                                   />
+                                  <label htmlFor={`checkbox-sold-${index}`}></label>
                                 </td>
                                 <td>
                                   <input
                                     type="checkbox"
+                                    id={`checkbox-shipped-${index}`}
                                     checked={product.shipped}
                                     onChange={() => handleCheckboxChange(index, 'shipped')}
                                   />
+                                  <label htmlFor={`checkbox-shipped-${index}`}></label>
                                 </td>
+
                               </>
                             )}
                             <td>
@@ -304,9 +320,11 @@ export default function Products({ user }) {
                                 <button className="btn btn-edit me-2" onClick={() => handleEditClick(product)}>
                                   Edit
                                 </button>
-                                <Link to={`/photos/${product.id}`} className="btn btn-primary me-2">
-                                  Képek
-                                </Link>
+                                {product.hasPhotos &&
+                                  <Link to={`/photos/${product.id}`} className="btn btn-photo me-2">
+                                    Fotók
+                                  </Link>
+                                }
                               </div>
                             </td>
                           </>

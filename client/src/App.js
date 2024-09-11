@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home, AddProduct, Products, Quotation, Traffic, NotFound, Login } from './pages';
-import { EditProduct, ProductPhotos } from './components';
+import { ProductPhotos } from './components';
 import './App.css';
 import axios from 'axios';
 
@@ -34,7 +34,6 @@ export default function App() {
           <Route path="/forgalom" element={user ? <Traffic user={user}/> : <Navigate to="/" />} />
           <Route path="/raktar" element={user ? <Products user={user}/> : <Navigate to="/" />} />
           <Route path="/ajanlat" element={user ? <Quotation user={user}/> : <Navigate to="/" />} />
-          <Route path="/editproduct/:id" element={user ? <EditProduct user={user}/> : <Navigate to="/" />} />
           <Route path="/productphotos/:id" element={user ? <ProductPhotos user={user}/> : <Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

@@ -31,9 +31,10 @@ def update_product(id):
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
     productSize = request.json.get("product_size")
-    productQuantity = request.json.get("product_quantity")
-    productManufacturer = request.json.get("product_manufacturer")
-    productPrice = request.json.get("product_price")
+    productQuantity = request.json.get("quantity")
+    productManufacturer = request.json.get("manufacturer")
+    productPrice = request.json.get("price")
+    productCurrency = request.json.get("currency")
 
     product = Products.query.get(id)
     if product is None:
@@ -43,9 +44,10 @@ def update_product(id):
     product.product_name = productName
     product.product_type = productType
     product.product_size = productSize
-    product.quantity = int(productQuantity)
+    product.quantity = productQuantity
     product.manufacturer = productManufacturer
-    product.price = float(productPrice)
+    product.price = productPrice
+    product.currency = productCurrency
     
     db.session.commit()
     

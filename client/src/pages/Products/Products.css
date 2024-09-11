@@ -1,6 +1,4 @@
-/* Products.css */
 
-/* General styling for product table */
 .product-table {
     width: 100%;
     border-collapse: collapse;
@@ -63,11 +61,6 @@
     border: none;
   }
   
-  .btn-group {
-    display: flex;
-    gap: 0px;
-  }  
-  
   .product-table .btn {
     margin-right: 5px;
     
@@ -76,6 +69,7 @@
   .product-table .btn:hover {
     opacity: 0.9;
   }
+
   
   /* Hide "Eladva?" and "Szállítva?" columns during editing */
   .product-table .hidden {
