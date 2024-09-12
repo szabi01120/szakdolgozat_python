@@ -321,7 +321,7 @@ export default function Products({ user }) {
                                   Edit
                                 </button>
                                 {product.hasPhotos &&
-                                  <Link to={`/photos/${product.id}`} className="btn btn-photo me-2">
+                                  <Link to={`/productphotos/${product.id}`} className="btn btn-photo me-2">
                                     Fotók
                                   </Link>
                                 }

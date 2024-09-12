@@ -143,7 +143,8 @@ def update_product_status():
 def get_sold_products():
     sold_products = SoldProducts.query.all()
     return jsonify([{
-        "id": product.product_id,
+        "id": product.id,
+        "product_id": product.product_id,
         "incoming_invoice": product.incoming_invoice,
         "outgoing_invoice": product.outgoing_invoice,
         "product_name": product.product_name,

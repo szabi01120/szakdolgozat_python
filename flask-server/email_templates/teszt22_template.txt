@@ -3,4 +3,3 @@
 {product_name} - Termék neve
 {product_price} - Termék nettó ára
 {quantity} - Mennyiség
-{total_price} - Végösszeg
