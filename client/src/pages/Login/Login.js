@@ -14,7 +14,7 @@ export default function Login({user}) {
                 "password": password
             }, { withCredentials: true });
             console.log("szerver válasz:", response.data);
-            //window.location.href = '/';
+            window.location.href = '/';
 
         } catch (error) {
             console.log(error);

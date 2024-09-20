@@ -37,3 +37,7 @@ nettó érték - DONE
 
 
 navbar color: #2c3e50;
+
+forgalom edit ugyanúgy mint a raktárnál
+localstorageből kiszedni az állapotokat raktárnál
+ajánlatkészítésnél a selected template bugos

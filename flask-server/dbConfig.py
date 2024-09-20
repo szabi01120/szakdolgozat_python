@@ -9,7 +9,7 @@ def get_uuid():
 
 def create_app(): 
     app = Flask(__name__)
-    CORS(app, resources={r"*": {"origins": "http://0.0.0.0:3000", "supports_credentials":True }})
+    CORS(app, resources={r"*": {"origins": "http://localhost:3000", "supports_credentials":True }})
     # database config
     app.config.from_object(ApplicationConfig)
     app.config['SESSION_COOKIE_HTTPONLY'] = False

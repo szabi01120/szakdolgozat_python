@@ -19,10 +19,7 @@ class ApplicationConfig:
     SESSION_TYPE = "redis"
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
-
-    # Használjuk a REDIS_HOST környezeti változót
-    redis_host = os.environ.get("REDIS_HOST", "localhost")
-    SESSION_REDIS = redis.from_url(f"redis://{redis_host}:6379")
+    SESSION_REDIS = redis.from_url("redis://localhost:6379")
 
     # Flask-Mail konfiguráció
     MAIL_SERVER = 'smtp.gmail.com'

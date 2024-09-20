@@ -41,6 +41,12 @@ export default function Quotation({ user }) {
         const response = await axios.get('/api/templates');
         console.log('Sablonok:', response.data);
         setTemplates(response.data);
+
+        // Ha csak egy sablon van, azt automatikusan kiválasztjuk
+        if (response.data.length === 1) {
+          setTemplate(response.data[0]); // Automatikusan beállítjuk az egyetlen sablont
+        }
+
         // ha nincs sablon, akkor valamilyen szöveg
         if (response.data.length === 0) {
           setTemplate('no-template');
@@ -116,6 +122,11 @@ export default function Quotation({ user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!template || template === 'no-template') {
+      setErrorMessageQuotation('Nincs kiválasztva sablon.');
+      return;
+    }
 
     const quotationData = {
       customerName,
@@ -274,7 +285,7 @@ export default function Quotation({ user }) {
                     Ezek a változók:
                     <ul>
                       <li><strong>{"{customer_name}"}</strong> - Ügyfél neve</li>
-                      <li><strong>{"{customer_mail}"}</strong> - Ügyfél e-mail címe</li>
+                      <li><strong>{"{customer_email}"}</strong> - Ügyfél e-mail címe</li>
                       <li><strong>{"{product_name}"}</strong> - Termék neve</li>
                       <li><strong>{"{product_price}"}</strong> - Termék nettó ára</li>
                       <li><strong>{"{quantity}"}</strong> - Mennyiség</li>
