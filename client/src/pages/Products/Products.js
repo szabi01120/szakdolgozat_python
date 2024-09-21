@@ -1,4 +1,3 @@
-// Relevant parts of Products component code
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -18,27 +17,44 @@ export default function Products({ user }) {
     axios
       .get('/api/products')
       .then(async (response) => {
-        const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
         const productsWithPhotos = await Promise.all(
           response.data.map(async (product) => {
             try {
+              // Fotók lekérése a szerverről
               const photoResponse = await axios.get(`http://127.0.0.1:5000/api/images/${product.id}`);
               product.hasPhotos = photoResponse.data.length > 0;
             } catch (error) {
               console.log('Hiba a képek lekérdezésekor: ', error);
               product.hasPhotos = false;
             }
-
-            product.sold = storedStates[product.id]?.sold || false;
-            product.shipped = storedStates[product.id]?.shipped || false;
-
+  
+            product.sold = product.sold || false;
+            product.shipped = product.shipped || false;
+            
+            if (product.sold && product.shipped) { // lekérdezésnél is kell tudni hogy van e termék amit move-olni kell
+              setProductsToMove((prevProductsToMove) => [...prevProductsToMove, product.id]);
+            }
             return product;
           })
         );
-        setProducts(productsWithPhotos);
+        setProducts(productsWithPhotos);  
       })
       .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
-  }, []);
+  }, []);  
+
+  const generateRandomProduct = () => { // FOR TESTING PURPOSES ONLY!!
+    const randomId = Math.floor(Math.random() * 10000);  // Véletlenszerű ID
+    return {
+      incoming_invoice: `Számla ${randomId}`,
+      product_name: `Termék ${randomId}`,
+      product_type: ['Típus1', 'Típus2', 'Típus3'][Math.floor(Math.random() * 3)], // Random típus
+      product_size: ['Kicsi', 'Közepes', 'Nagy'][Math.floor(Math.random() * 3)], // Random méret
+      quantity: Math.floor(Math.random() * 100) + 1, // Random mennyiség
+      manufacturer: ['Gyártó1', 'Gyártó2', 'Gyártó3'][Math.floor(Math.random() * 3)], // Random gyártó
+      price: Math.floor(Math.random() * 100000), // Random ár
+      currency: ['HUF', 'EUR', 'USD'][Math.floor(Math.random() * 3)], // Random pénznem
+    };
+  };
 
   const handleProductsButtonClick = () => {
     setProductData(!productData);
@@ -66,39 +82,41 @@ export default function Products({ user }) {
     }
   };
 
-  const handleCheckboxChange = (index, field) => {
+  const handleCheckboxChange = async (index, field) => {
     const updatedProductsCopy = [...products];
     const product = updatedProductsCopy[index];
-    product[field] = !product[field];
-
-    const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
-    const productId = product.id;
-
-    if (!product.sold && !product.shipped) {
-      delete storedStates[productId];
-    } else {
-      storedStates[productId] = {
-        sold: product.sold,
-        shipped: product.shipped,
-      };
-    }
-
-    localStorage.setItem('productsStates', JSON.stringify(storedStates));
-
-    if (field === 'sold' || field === 'shipped') {
-      const bothChecked = product.sold && product.shipped;
-
-      if (bothChecked) {
-        if (!productsToMove.includes(product.id)) {
-          setProductsToMove([...productsToMove, product.id]);
+    product[field] = !product[field]; // Váltás a checkbox értéken (true/false)
+  
+    try {
+      const response = await axios.put(`/api/update_checkbox_state/${product.id}`, {
+        [field]: product[field],
+      });
+  
+      if (response.status === 200) {
+        console.log(`Termék ${field} mezőjének frissítése sikeres`);
+        
+        // ha mindkettő true, akkor hozzáadjuk a terméket a productsToMove tömbhöz
+        if (product.sold && product.shipped) {
+          if (!productsToMove.includes(product.id)) {
+            setProductsToMove((prevProductsToMove) => [...prevProductsToMove, product.id]);
+          }
+        } else {
+          // ha valamelyik false, akkor kiszedjük mert nem kell oda
+          setProductsToMove((prevProductsToMove) =>
+            prevProductsToMove.filter((id) => id !== product.id)
+          );
         }
       } else {
-        setProductsToMove(productsToMove.filter((id) => id !== product.id));
+        console.log(`Sikertelen frissítés: ${field}`);
       }
+    } catch (error) {
+      console.error(`Hiba a ${field} mező frissítése közben: `, error);
     }
-
+  
+    // Frissítjük a komponens állapotát a helyi változásokkal
     setProducts(updatedProductsCopy);
   };
+  
 
   const handleEditClick = (product) => {
     setEditingProductId(product.id);
@@ -126,12 +144,9 @@ export default function Products({ user }) {
         console.log("Termék sikeresen frissítve!");
       }
     } catch (error) {
-      console.log("editedproduct:", editedProduct)
-      console.log("editingproductid:", editingProductId)
       console.error("Hiba a termék frissítése közben: ", error);
     }
   };
-
 
   const handleCancelEdit = () => {
     setEditingProductId(null);
@@ -143,14 +158,10 @@ export default function Products({ user }) {
       try {
         const response = await axios.post('/api/update_product_status', productsToMove);
         if (response.status === 200) {
-          console.log('Sikeres módosítás');
-          const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
-          productsToMove.forEach((id) => {
-            delete storedStates[id];
-          });
-          localStorage.setItem('productsStates', JSON.stringify(storedStates));
           setProducts(products.filter((product) => !productsToMove.includes(product.id)));
           setProductsToMove([]);
+          
+          console.log('Sikeres módosítás');
         } else {
           console.log('Sikertelen módosítás');
         }
@@ -159,6 +170,20 @@ export default function Products({ user }) {
       }
     } else {
       console.log('Nincs termék a feltételekhez');
+    }
+  };
+
+  // Véletlenszerű termék hozzáadása
+  const handleAddRandomProduct = async () => {
+    const randomProduct = generateRandomProduct();
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/api/add_product', randomProduct);
+      if (response.status === 200) {
+        setProducts([...products, randomProduct]);
+        console.log("Random termék sikeresen hozzáadva!");
+      }
+    } catch (error) {
+      console.log("Hiba a random termék hozzáadása közben: ", error);
     }
   };
 
@@ -178,6 +203,10 @@ export default function Products({ user }) {
             </Link>
             <button type="button" className="btn btn-edit mb-3" onClick={handleSaveButtonClick}>
               Mentés
+            </button>
+            {/* Random termék gomb */}
+            <button type="button" className="btn btn-secondary mb-3" onClick={handleAddRandomProduct}>
+              Véletlenszerű termék hozzáadása
             </button>
           </div>
           {productData && (
@@ -314,9 +343,6 @@ export default function Products({ user }) {
                             )}
                             <td>
                               <div className="btn-group">
-                                <button className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)}>
-                                  Törlés
-                                </button>
                                 <button className="btn btn-edit me-2" onClick={() => handleEditClick(product)}>
                                   Edit
                                 </button>
@@ -325,6 +351,9 @@ export default function Products({ user }) {
                                     Fotók
                                   </Link>
                                 }
+                                <button className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)}>
+                                  Törlés
+                                </button>
                               </div>
                             </td>
                           </>

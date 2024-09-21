@@ -38,6 +38,8 @@ nettó érték - DONE
 
 navbar color: #2c3e50;
 
+típust lehessen hozzáadni a legördülő listához valahogy
+frontend refactor
 forgalom edit ugyanúgy mint a raktárnál
-localstorageből kiszedni az állapotokat raktárnál
-ajánlatkészítésnél a selected template bugos
+localstorageből kiszedni az állapotokat raktárnál -DONE 
+ajánlatkészítésnél a selected template bugos - DONE

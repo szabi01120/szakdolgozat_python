@@ -22,6 +22,8 @@ def get_products():
         "manufacturer": product.manufacturer,
         "price": product.price,
         "currency": product.currency,
+        "sold": product.sold,
+        "shipped": product.shipped,
     } for product in products]), 200
 
 # Termék frissítése
@@ -35,6 +37,8 @@ def update_product(id):
     productManufacturer = request.json.get("manufacturer")
     productPrice = request.json.get("price")
     productCurrency = request.json.get("currency")
+    stateSold = request.json.get("sold")
+    stateShipped = request.json.get("shipped")
 
     product = Products.query.get(id)
     if product is None:
@@ -48,6 +52,8 @@ def update_product(id):
     product.manufacturer = productManufacturer
     product.price = productPrice
     product.currency = productCurrency
+    product.sold = stateSold
+    product.shipped = stateShipped
     
     db.session.commit()
     
@@ -98,6 +104,33 @@ def add_product():
         "message": "Termék sikeresen hozzáadva!",
         "product_id": product_id
     }), 200
+    
+# Termék checkbox state frissítése
+@products_bp.route("/api/update_checkbox_state/<int:id>", methods=["PUT"])
+def update_checkbox_state(id):
+    product_state = request.json
+    print("PRODUCT IDS:", product_state)
+    if product_state is None:
+        return jsonify({"error": "Érvénytelen kérésformátum!"}), 400
+
+    product_to_update = Products.query.get(id)
+    
+    if product_to_update is None:
+        return jsonify({"error": "Nincs ilyen termék!"}), 404
+    
+    try:
+        # Ne fordítsuk az állapotot, csak állítsuk be a kapott értéket
+        if "sold" in product_state:
+            product_to_update.sold = product_state.get("sold")  # True/False érték közvetlen beállítása
+            
+        if "shipped" in product_state:
+            product_to_update.shipped = product_state.get("shipped")  # True/False érték közvetlen beállítása
+            
+        db.session.commit()
+        return jsonify({"message": "Termék státusz sikeresen frissítve!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Hiba történt a frissítés során: {str(e)}"}), 500
 
 # Termékek áthelyezése a sold_products táblába
 @products_bp.route("/api/update_product_status", methods=["POST"])
@@ -106,14 +139,11 @@ def update_product_status():
     if not isinstance(product_ids, list):
         return jsonify({"error": "Érvénytelen kérésformátum!"}), 400
 
-    # Áthelyezendő termékek lekérdezése
     products_to_move = Products.query.filter(Products.id.in_(product_ids)).all()
 
     for product in products_to_move:
-        # Új rekord létrehozása a sold_products táblában
-        # Get current time in GMT+2 timezone
         tz = pytz.timezone('Europe/Budapest')
-        current_time = datetime.now(tz) + timedelta(hours=2)
+        current_time = datetime.now(tz)
         
         sold_product = SoldProducts(
             product_id=product.id,

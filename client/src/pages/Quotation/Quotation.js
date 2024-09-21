@@ -157,7 +157,6 @@ export default function Quotation({ user }) {
     }
   };
 
-  // Accordion gomb kattintás
   const handleAccordionButtonClick = () => {
     setAccordionData(!accordionData);
   };
