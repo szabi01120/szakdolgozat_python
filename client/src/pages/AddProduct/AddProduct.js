@@ -120,10 +120,20 @@ export default function AddProduct({ user }) {
     event.preventDefault();
 
     if (showImageUpload && images.length > 0) {
-      const allowedFormats = ['images/jpg', 'images/jpeg', 'images/png'];
-      const invalidFiles = images.filter((file) => !allowedFormats.includes(file.type));
+      const allowedExtensions = ['jpg', 'jpeg', 'png'];
+      const invalidFiles = images.filter((file) => {
+        const extension = file.name.split('.').pop().toLowerCase();
+        return !allowedExtensions.includes(extension);
+      });
+
+      // Logoljuk ki a fájlok típusát a pontosabb diagnosztikához
+      images.forEach((file) => {
+        console.log(`File name: ${file.name}, File type: ${file.type}`);
+      });
 
       if (invalidFiles.length > 0) {
+        console.log('Nem megfelelő fájlformátum');
+        console.log('Hibás fájlformátum:', invalidFiles);
         setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
         setIsError(true);
         return;

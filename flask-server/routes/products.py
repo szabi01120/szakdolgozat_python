@@ -4,7 +4,9 @@ import config
 import os
 import shutil
 import pytz
+
 from datetime import datetime, timedelta
+from .images import delete_image
 
 products_bp = Blueprint('products', __name__)
 
@@ -135,38 +137,73 @@ def update_checkbox_state(id):
 # Termékek áthelyezése a sold_products táblába
 @products_bp.route("/api/update_product_status", methods=["POST"])
 def update_product_status():
-    product_ids = request.json
-    if not isinstance(product_ids, list):
+    product_data = request.json  # frontendről id és darabszám
+
+    if not isinstance(product_data, list):
         return jsonify({"error": "Érvénytelen kérésformátum!"}), 400
 
-    products_to_move = Products.query.filter(Products.id.in_(product_ids)).all()
+    for product_info in product_data:
+        product_id = product_info.get("id")
 
-    for product in products_to_move:
+        product = Products.query.get(product_id)
+        if product is None:
+            return jsonify({"error": f"Nincs ilyen termék: {product_id}!"}), 404
+
         tz = pytz.timezone('Europe/Budapest')
         current_time = datetime.now(tz)
-        
+
+        # eladott terméket sold_products táblába rakjuk
         sold_product = SoldProducts(
             product_id=product.id,
             incoming_invoice=product.incoming_invoice,
-            outgoing_invoice="asd",
+            outgoing_invoice="asd",  # Tedd ide a megfelelő kimenő számlát
             product_name=product.product_name,
             product_type=product.product_type,
             product_size=product.product_size,
-            quantity=product.quantity,
+            quantity=1,  # Csak 1 darabot mozgatunk
             manufacturer=product.manufacturer,
             price=product.price,
             currency=product.currency,
             date=current_time
         )
         db.session.add(sold_product)
-        db.session.delete(product)
+
+        # Csökkentjük a termék darabszámát
+        product.quantity -= 1
+
+        # Ha a darabszám 0, töröljük a terméket
+        if product.quantity <= 0:
+            try:
+                print("product.id:", product.id)
+                print("product_id", product_id)
+                images = Image.query.filter_by(product_id=product.id).all()
+
+                if images is not None:
+                    folder_path = os.path.join(config.UPLOAD_FOLDER, str(product.id))
+                if os.path.exists(folder_path):
+                    shutil.rmtree(folder_path)
+                    
+                for image in images: # images egy listát ad vissza, végigteráljuk
+                    db.session.delete(image)
+
+                db.session.delete(product)
+                db.session.commit()
+            except Exception as e:
+                print(f"Hiba történt a képek törlésekor: {str(e)}")
+                db.session.rollback()
+                return jsonify({"error": f"Hiba történt a képek törlésekor: {str(e)}"}), 500
+        else:
+            # ha nem 0 akkor a checkboxot kinullázzuk
+            product.sold = False
+            product.shipped = False
 
     try:
         db.session.commit()
-        return jsonify({"message": "Termékek sikeresen áthelyezve."}), 200
+        return jsonify({"message": "Termékek sikeresen áthelyezve és frissítve."}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Hiba történt az áthelyezés során: {str(e)}"}), 500
+
     
 # SoldProducts tábla lekérdezése
 @products_bp.route("/api/sold_products", methods=["GET"])

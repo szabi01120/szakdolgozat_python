@@ -27,20 +27,20 @@ export default function Products({ user }) {
               console.log('Hiba a képek lekérdezésekor: ', error);
               product.hasPhotos = false;
             }
-  
+
             product.sold = product.sold || false;
             product.shipped = product.shipped || false;
-            
+
             if (product.sold && product.shipped) { // lekérdezésnél is kell tudni hogy van e termék amit move-olni kell
               setProductsToMove((prevProductsToMove) => [...prevProductsToMove, product.id]);
             }
             return product;
           })
         );
-        setProducts(productsWithPhotos);  
+        setProducts(productsWithPhotos);
       })
       .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
-  }, []);  
+  }, []);
 
   const generateRandomProduct = () => { // FOR TESTING PURPOSES ONLY!!
     const randomId = Math.floor(Math.random() * 10000);  // Véletlenszerű ID
@@ -68,9 +68,9 @@ export default function Products({ user }) {
         if (response.status === 200) {
           console.log('Sikeres törlés');
           setProducts(products.filter((product) => product.id !== id));
-          const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {};
+          const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {}; //???
           delete storedStates[id];
-          localStorage.setItem('productsStates', JSON.stringify(storedStates));
+          localStorage.setItem('productsStates', JSON.stringify(storedStates)); //???
         } else {
           console.log('Sikertelen törlés');
         }
@@ -86,15 +86,15 @@ export default function Products({ user }) {
     const updatedProductsCopy = [...products];
     const product = updatedProductsCopy[index];
     product[field] = !product[field]; // Váltás a checkbox értéken (true/false)
-  
+
     try {
       const response = await axios.put(`/api/update_checkbox_state/${product.id}`, {
         [field]: product[field],
       });
-  
+
       if (response.status === 200) {
         console.log(`Termék ${field} mezőjének frissítése sikeres`);
-        
+
         // ha mindkettő true, akkor hozzáadjuk a terméket a productsToMove tömbhöz
         if (product.sold && product.shipped) {
           if (!productsToMove.includes(product.id)) {
@@ -112,11 +112,11 @@ export default function Products({ user }) {
     } catch (error) {
       console.error(`Hiba a ${field} mező frissítése közben: `, error);
     }
-  
+
     // Frissítjük a komponens állapotát a helyi változásokkal
     setProducts(updatedProductsCopy);
   };
-  
+
 
   const handleEditClick = (product) => {
     setEditingProductId(product.id);
@@ -156,12 +156,42 @@ export default function Products({ user }) {
   const handleSaveButtonClick = async () => {
     if (productsToMove.length > 0) {
       try {
-        const response = await axios.post('/api/update_product_status', productsToMove);
+        // Termékek, amiket move-olni kell
+        const productsToMoveDetails = products
+          .filter((product) => productsToMove.includes(product.id))
+          .map((product) => ({
+            id: product.id,
+            quantity: product.quantity, // Az aktuális darabszám, amit ellenőrizni kell
+          }));
+
+        const response = await axios.post('/api/update_product_status', productsToMoveDetails);
+
         if (response.status === 200) {
-          setProducts(products.filter((product) => !productsToMove.includes(product.id)));
-          setProductsToMove([]);
-          
-          console.log('Sikeres módosítás');
+          // Sikeres válasz esetén frissítjük a termékeket
+          const updatedProducts = products.map((product) => {
+            if (productsToMove.includes(product.id)) {
+              const updatedQuantity = product.quantity - 1; // Csökkentjük a darabszámot
+
+              // Ha a darabszám 0, akkor eltávolítjuk a listából
+              if (updatedQuantity <= 0) {
+                return null; // Eltávolítjuk a nullákat
+              }
+
+              return {
+                ...product,
+                quantity: updatedQuantity,
+                sold: false,  // A backend false-ra állította, így itt is frissítjük
+                shipped: false,  // Szintén false-ra állítjuk
+              };
+            }
+            return product; // A többi termék változatlan marad
+          }).filter(Boolean); // Null elemek eltávolítása
+
+          // Frissítjük az állapotot
+          setProducts(updatedProducts);
+          setProductsToMove([]); // Kiürítjük a mozgatandó termékek listáját
+
+          console.log('Sikeres módosítás, termékek áthelyezve és frissítve.');
         } else {
           console.log('Sikertelen módosítás');
         }
@@ -172,6 +202,7 @@ export default function Products({ user }) {
       console.log('Nincs termék a feltételekhez');
     }
   };
+
 
   // Véletlenszerű termék hozzáadása
   const handleAddRandomProduct = async () => {
