@@ -66,11 +66,8 @@ export default function Products({ user }) {
       try {
         const response = await axios.delete(`http://127.0.0.1:5000/api/delete_product/${id}`);
         if (response.status === 200) {
-          console.log('Sikeres törlés');
           setProducts(products.filter((product) => product.id !== id));
-          const storedStates = JSON.parse(localStorage.getItem('productsStates')) || {}; //???
-          delete storedStates[id];
-          localStorage.setItem('productsStates', JSON.stringify(storedStates)); //???
+          console.log('Sikeres törlés');
         } else {
           console.log('Sikertelen törlés');
         }

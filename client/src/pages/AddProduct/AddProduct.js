@@ -120,8 +120,8 @@ export default function AddProduct({ user }) {
     event.preventDefault();
 
     if (showImageUpload && images.length > 0) {
-      const allowedExtensions = ['jpg', 'jpeg', 'png'];
-      const invalidFiles = images.filter((file) => {
+      const allowedExtensions = ['jpg', 'jpeg', 'png']; // Engedélyezett fájlformátumok
+      const invalidFiles = images.filter((file) => { // .type-al nem működik ('image/jpeg' stb.)
         const extension = file.name.split('.').pop().toLowerCase();
         return !allowedExtensions.includes(extension);
       });

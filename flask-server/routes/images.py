@@ -83,22 +83,18 @@ def image(id):
 @images_bp.route('/api/delete_image/<int:id>', methods=['DELETE'])
 def delete_image(id):
     image = Image.query.get(id)
-    print("törlés lefut1 image", image)
     if image is None:
         return jsonify({"error": "Nincs ilyen kép!"}), 404
 
     product_folder = os.path.join(config.UPLOAD_FOLDER, str(image.product_id))
     image_path = os.path.join(product_folder, image.title)
-    print("törlés lefut2 image path", image_path)
     
     if not os.path.exists(image_path):
         return jsonify({"error": "A megadott kép nem található!"}), 404
 
     os.remove(image_path)
-    print("törlés lefut3 os.remove utan")
 
     db.session.delete(image)
     db.session.commit()
-    print("törlés lefut4 db session delete utan")
 
     return jsonify({"message": "Kép sikeresen törölve!"}), 200
