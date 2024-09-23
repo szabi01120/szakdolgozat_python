@@ -47,7 +47,7 @@ def upload_file(product_id):
             return jsonify({
                 "message": "Nem megfelelő fájl formátum",
                 "status": 'failed'
-            }), 400
+            }), 415
     
     if success:
         return jsonify({

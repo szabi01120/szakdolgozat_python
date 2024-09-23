@@ -1,6 +1,6 @@
 from dbConfig import Image
 
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'gif'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 MAX_CONTENT_LENGTH = 512 * 1024 * 1024  # 512 MB max
 
 # Fájlfeltöltés kezelése

@@ -12,6 +12,13 @@ export default function AddProduct({ user }) {
   const fileInputRef = useRef(); // input referencia
 
   const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('Hiba történt a hozzáadás során!');
+  useEffect(() => {
+    if (isError) {
+      setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
+    }
+  }, [isError]);
+
   const [formData, setFormData] = useState({
     incoming_invoice: '',
     product_name: '',
@@ -112,25 +119,43 @@ export default function AddProduct({ user }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (showImageUpload && images.length > 0) {
+      const allowedFormats = ['images/jpg', 'images/jpeg', 'images/png'];
+      const invalidFiles = images.filter((file) => !allowedFormats.includes(file.type));
+
+      if (invalidFiles.length > 0) {
+        setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
+        setIsError(true);
+        return;
+      }
+    }
+
+    // ha érvényesek a fájlformátumok, akkor hozzáadjuk a terméket
     try {
       const response = await axios.post('http://127.0.0.1:5000/api/add_product', formData);
-      console.log('Válasz:', response.data);
-
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
         const product_id = response.data.product_id;
+        console.log('Válasz:', response.data);
         console.log('Termék ID:', product_id);
 
+        // ha van kép feltöltjük a termék után
+        // itt már tudjuk hogy jók a formátumok, feljebb lekezeltük
         if (showImageUpload) {
           const data = new FormData();
           for (let i = 0; i < images.length; i++) {
             data.append("files[]", images[i]);
           }
-
           try {
             await axios.post(`http://127.0.0.1:5000/api/img_upload/${product_id}`, data);
           } catch (error) {
+            if (error.response.status === 415) {
+              console.log('Nem megfelelő fájlformátum');
+              setIsError(true);
+              return;
+            }
             console.log('Hiba történt:', error);
+            setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
             setIsError(true);
             return;
           }
@@ -199,7 +224,7 @@ export default function AddProduct({ user }) {
           </div>
           <div className='col-md-12'>
             <button type="submit" className="btn btn-primary w-25 mb-3 mt-2" disabled={!isFormFilled}>Hozzáadás</button>
-            {isError && <p className='text-danger'>Hiba történt a hozzáadás során!</p>}
+            {isError && <p className='text-danger'>{errorMessage}</p>}
           </div>
 
           <h2>Képfeltöltés</h2>

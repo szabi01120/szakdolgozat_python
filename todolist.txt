@@ -38,8 +38,11 @@ nettó érték - DONE
 
 navbar color: #2c3e50;
 
-típust lehessen hozzáadni a legördülő listához valahogy
-frontend refactor
+képfeltöltésnél ha nem megfelelő a formátum, akk adjon hibát
 forgalom edit ugyanúgy mint a raktárnál
+típust lehessen hozzáadni a legördülő listához valahogy
+raktár darabszám count -1 ha forgalomba kerül a termék, ha 0 akkor drop
+frontend refactor
+
 localstorageből kiszedni az állapotokat raktárnál -DONE 
 ajánlatkészítésnél a selected template bugos - DONE
