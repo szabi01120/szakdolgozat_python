@@ -99,24 +99,29 @@ export default function Quotation({ user }) {
       template_name: selectedTemplateToDelete,
     };
 
-    try {
-      const response = await axios.delete('/api/delete_template', { data: templateToDelete });
-      if (response.status === 200) {
-        setSuccessMessageDeleteTemplate('Sablon sikeresen törölve!');
-        setErrorMessageDeleteTemplate('');
-        const updatedTemplates = templates.filter(template => template !== selectedTemplateToDelete);
-        setTemplates(updatedTemplates); // Eltávolítjuk a legördülő listából
-        setSelectedTemplateToDelete('');
+    const confirmed = window.confirm("Biztosan törölni szeretnéd ezt a sablont?");
+    if (confirmed) {
+      try {
+        const response = await axios.delete('/api/delete_template', { data: templateToDelete });
+        if (response.status === 200) {
+          setSuccessMessageDeleteTemplate('Sablon sikeresen törölve!');
+          setErrorMessageDeleteTemplate('');
+          const updatedTemplates = templates.filter(template => template !== selectedTemplateToDelete);
+          setTemplates(updatedTemplates); // Eltávolítjuk a legördülő listából
+          setSelectedTemplateToDelete('');
 
-        if (updatedTemplates.length === 0) {
-          setTemplate('no-template'); // Ha már nincs sablon, állítsuk be a "Nincs elérhető sablon" szöveget
+          if (updatedTemplates.length === 0) {
+            setTemplate('no-template'); // Ha már nincs sablon, állítsuk be a "Nincs elérhető sablon" szöveget
+          }
+          console.log('Sablon törölve:', response.data);
         }
-        console.log('Sablon törölve:', response.data);
+      } catch (error) {
+        console.log(selectedTemplateToDelete);
+        console.error('Hiba történt a sablon törlése során:', error);
+        setErrorMessageDeleteTemplate('Hiba történt a sablon törlése során.');
       }
-    } catch (error) {
-      console.log(selectedTemplateToDelete);
-      console.error('Hiba történt a sablon törlése során:', error);
-      setErrorMessageDeleteTemplate('Hiba történt a sablon törlése során.');
+    } else {
+      console.log('A törlés megszakítva.');
     }
   };
 

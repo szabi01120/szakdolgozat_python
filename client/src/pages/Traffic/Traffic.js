@@ -46,18 +46,23 @@ export default function Traffic({ user }) {
       console.log('Nincs kijelölt termék.');
       return;
     }
-    try {
-      await Promise.all(
-        selectedProducts.map((id) =>
-          axios.delete(`http://127.0.0.1:5000/api/delete_sold_product/${id}`)
-        )
-      );
-      console.log('Sikeres törlés.');
-      // A törölt termékek eltávolítása a listából
-      setProducts(products.filter((product) => !selectedProducts.includes(product.id)));
-      setSelectedProducts([]); // Kiválasztott termékek listájának alaphelyzetbe állítása
-    } catch (error) {
-      console.log('Hiba történt a törlés közben: ', error);
+    const confirmed = window.confirm("Biztosan törölni szeretnéd ezeket a termékeket?");
+    if (confirmed) {
+      try {
+        await Promise.all(
+          selectedProducts.map((id) =>
+            axios.delete(`http://127.0.0.1:5000/api/delete_sold_product/${id}`)
+          )
+        );
+        console.log('Sikeres törlés.');
+        // A törölt termékek eltávolítása a listából
+        setProducts(products.filter((product) => !selectedProducts.includes(product.id)));
+        setSelectedProducts([]); // Kiválasztott termékek listájának alaphelyzetbe állítása
+      } catch (error) {
+        console.log('Hiba történt a törlés közben: ', error);
+      }
+    } else {
+      console.log('A törlés megszakítva.');
     }
   };
 
