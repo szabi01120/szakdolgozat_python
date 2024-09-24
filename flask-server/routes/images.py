@@ -87,7 +87,9 @@ def delete_image(id):
         return jsonify({"error": "Nincs ilyen kép!"}), 404
 
     product_folder = os.path.join(config.UPLOAD_FOLDER, str(image.product_id))
+    print("product folder:",product_folder)
     image_path = os.path.join(product_folder, image.title)
+    print("image path:",image_path)
     
     if not os.path.exists(image_path):
         return jsonify({"error": "A megadott kép nem található!"}), 404
