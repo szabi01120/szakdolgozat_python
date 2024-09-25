@@ -1,15 +1,16 @@
 import React from 'react';
 import './Summary.css';
+import SoldProductsSummary from './SoldProductsSummary';
 
-const Summary = ({ user, soldItems, stockItems, incomeHUF, incomeEUR, latestProduct, latestCustomer, recentTransactions }) => {
+const Summary = ({ soldItems, stockItems, incomeHUF, incomeEUR, latestProduct, latestCustomer, recentTransactions }) => {
   return (
     <div className="summary-container">
       <div className="summary">
         {/* Bal oldali oszlop */}
         <div className="summary-column">
           <div className="summary-item">
-            <h3>Eladott termékek száma:</h3>
-            <p>{soldItems}</p>
+            {/* Eladott termékek száma: */}
+            <SoldProductsSummary />
           </div>
           <div className="summary-item">
             <h3>Raktáron lévő termékek száma:</h3>
