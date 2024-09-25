@@ -29,11 +29,6 @@ export default function AddProduct({ user }) {
     price: '',
     currency: ''
   });
-  const [responseMsg, setResponseMsg] = useState({
-    status: "",
-    message: "",
-    error: "",
-  });
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
 

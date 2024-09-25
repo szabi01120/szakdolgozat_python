@@ -8,6 +8,7 @@ auth_blueprint = Blueprint('auth', __name__)
 @auth_blueprint.route("/@me", methods=["GET"])
 def get_current_user():
     user_id = session.get("user_id")
+    print("session from get_current_user: ", session)
     print("session from @me: ", user_id)
     print("user.id: ", Users.query.filter_by(id=user_id).first())
     if not user_id:
