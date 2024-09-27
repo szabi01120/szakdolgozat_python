@@ -1,8 +1,14 @@
 import React from 'react';
 import './Summary.css';
 import SoldProductsSummary from './SoldProductsSummary';
+import StockSummary from './StockSummary';
+import TotalIncome from './TotalIncome';
 
-const Summary = ({ soldItems, stockItems, incomeHUF, incomeEUR, latestProduct, latestCustomer, recentTransactions }) => {
+const Summary = ({ latestProduct, latestCustomer, recentTransactions }) => {
+  const { incomeHUF, incomeEUR } = TotalIncome();
+
+  const priceFormatter = new Intl.NumberFormat('hu-HU');
+
   return (
     <div className="summary-container">
       <div className="summary">
@@ -13,16 +19,17 @@ const Summary = ({ soldItems, stockItems, incomeHUF, incomeEUR, latestProduct, l
             <SoldProductsSummary />
           </div>
           <div className="summary-item">
-            <h3>Raktáron lévő termékek száma:</h3>
-            <p>{stockItems}</p>
+            {/* Raktáron lévő termékek száma: */}
+            <StockSummary />
           </div>
           <div className="summary-item">
             <h3>Jövedelem (HUF):</h3>
-            <p>{incomeHUF} HUF</p>
+            <p>{priceFormatter.format(incomeHUF)} HUF</p>
+            
           </div>
           <div className="summary-item">
             <h3>Jövedelem (EUR):</h3>
-            <p>{incomeEUR} EUR</p>
+            <p>{priceFormatter.format(incomeEUR)} EUR</p>
           </div>
         </div>
         {/* Jobb oldali oszlop */}

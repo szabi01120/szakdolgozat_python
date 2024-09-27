@@ -25,16 +25,6 @@ def get_sold_products():
         "date": product.date.strftime("%Y-%m-%d %H:%M:%S")
     } for product in sold_products]), 200
 
-# SoldProducts tábla mennyiség visszaküldése
-@soldProducts_bp.route("/api/sold_products/quantity", methods=["GET"])
-def get_sold_products_quantity():
-    sold_products = SoldProducts.query.all()
-    return jsonify([{
-        "id": product.id,
-        "product_id": product.product_id,
-        "quantity": product.quantity
-    } for product in sold_products]), 200
-
 # SoldProducts tábla frissítése
 @soldProducts_bp.route("/api/update_sold_product/<int:id>", methods=["PUT"])
 def update_sold_product(id):
@@ -75,7 +65,7 @@ def delete_sold_product(id):
     db.session.delete(product)
     db.session.commit()
     
-    # Ellenőrizzük, hogy van-e kép az adott termékhez
+    # van e kép a termékhez
     if product_img:
         folder_path = os.path.join(config.UPLOAD_FOLDER, str(id))
         if os.path.exists(folder_path):
