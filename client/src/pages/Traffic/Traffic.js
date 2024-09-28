@@ -103,6 +103,7 @@ export default function Traffic({ user }) {
                     <th>Mennyiség</th>
                     <th>Gyártó</th>
                     <th>Nettó ár</th>
+                    <th>Pénznem</th>
                     <th>Eladás dátuma</th>
                     <th></th>
                   </tr>
@@ -124,6 +125,7 @@ export default function Traffic({ user }) {
                         <td>{product.quantity} db</td>
                         <td>{product.manufacturer}</td>
                         <td>{priceFormatter.format(product.price)}</td>
+                        <td>{product.currency}</td>
                         <td>{product.date}</td> {/* Dátum megjelenítése */}
                         <td>
                           <input

@@ -5,7 +5,7 @@ import StockSummary from './StockSummary';
 import TotalIncome from './TotalIncome';
 
 const Summary = ({ latestProduct, latestCustomer, recentTransactions }) => {
-  const { incomeHUF, incomeEUR } = TotalIncome();
+  const { incomeHUF, incomeEUR, incomeUSD } = TotalIncome();
 
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
@@ -25,11 +25,14 @@ const Summary = ({ latestProduct, latestCustomer, recentTransactions }) => {
           <div className="summary-item">
             <h3>Jövedelem (HUF):</h3>
             <p>{priceFormatter.format(incomeHUF)} HUF</p>
-            
           </div>
           <div className="summary-item">
             <h3>Jövedelem (EUR):</h3>
             <p>{priceFormatter.format(incomeEUR)} EUR</p>
+          </div>
+          <div className="summary-item">
+            <h3>Jövedelem (USD):</h3>
+            <p>{priceFormatter.format(incomeUSD)} USD</p>
           </div>
         </div>
         {/* Jobb oldali oszlop */}
