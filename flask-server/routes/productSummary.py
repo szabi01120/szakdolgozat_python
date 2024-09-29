@@ -54,3 +54,18 @@ def get_sold_products_income():
             "total_income_eur": 0,
             "total_income_usd": 0
         }), 500
+    
+# SoldProducts legutóbb eladott termék
+@productSummary_bp.route("/api/sold_products/latest", methods=["GET"])
+def get_latest_sold_product():
+    try:
+        latest_sold_product = db.session.query(SoldProducts).order_by(SoldProducts.date.desc()).first()
+
+        if latest_sold_product:
+            return jsonify({
+                "product_name": latest_sold_product.product_name
+            }), 200
+        else:
+            return jsonify({"message": "Nincs termék!"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

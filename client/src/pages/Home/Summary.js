@@ -3,8 +3,9 @@ import './Summary.css';
 import SoldProductsSummary from './SoldProductsSummary';
 import StockSummary from './StockSummary';
 import TotalIncome from './TotalIncome';
+import LatestSoldProduct from './LatestSoldProduct';
 
-const Summary = ({ latestProduct, latestCustomer, recentTransactions }) => {
+const Summary = ({ latestCustomer, recentTransactions }) => {
   const { incomeHUF, incomeEUR, incomeUSD } = TotalIncome();
 
   const priceFormatter = new Intl.NumberFormat('hu-HU');
@@ -39,7 +40,7 @@ const Summary = ({ latestProduct, latestCustomer, recentTransactions }) => {
         <div className="summary-column">
           <div className="summary-item">
             <h3>Legutóbbi eladott termék:</h3>
-            <p>{latestProduct}</p>
+            <p>{<LatestSoldProduct />}</p>
           </div>
           <div className="summary-item">
             <h3>Legutóbbi vásárló neve:</h3>

@@ -2,16 +2,19 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Traffic.css';
 import { Navbar } from '../../components';
+import { Modal, Button } from 'react-bootstrap';
+
 
 export default function Traffic({ user }) {
   const [productData, setProductData] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [editedProduct, setEditedProduct] = useState({});
+  const [showModal, setShowModal] = useState(false); // Modális állapot
 
-  // Ár formázó létrehozása
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
-  // SoldProducts lekérdezése
   useEffect(() => {
     if (productData) {
       axios
@@ -24,23 +27,20 @@ export default function Traffic({ user }) {
     }
   }, [productData]);
 
-  // Termék adatok megjelenítésének kapcsolása
   const handleProductsButtonClick = () => {
     setProductData(!productData);
   };
 
-  // Checkbox állapot kezelése
   const handleCheckboxChange = (index) => {
     const updatedProducts = [...selectedProducts];
     if (updatedProducts.includes(index)) {
-      updatedProducts.splice(updatedProducts.indexOf(index), 1); // Törli, ha már benne van
+      updatedProducts.splice(updatedProducts.indexOf(index), 1);
     } else {
-      updatedProducts.push(index); // Hozzáadja, ha nincs benne
+      updatedProducts.push(index);
     }
     setSelectedProducts(updatedProducts);
   };
 
-  // Kijelölt termékek törlése
   const handleDeleteSelectedProducts = async () => {
     if (selectedProducts.length === 0) {
       console.log('Nincs kijelölt termék.');
@@ -55,15 +55,52 @@ export default function Traffic({ user }) {
           )
         );
         console.log('Sikeres törlés.');
-        // A törölt termékek eltávolítása a listából
         setProducts(products.filter((product) => !selectedProducts.includes(product.id)));
-        setSelectedProducts([]); // Kiválasztott termékek listájának alaphelyzetbe állítása
+        setSelectedProducts([]);
       } catch (error) {
         console.log('Hiba történt a törlés közben: ', error);
       }
     } else {
       console.log('A törlés megszakítva.');
     }
+  };
+
+  const handleEditClick = (product) => {
+    setEditingProductId(product.id);
+    setEditedProduct(product);
+    setShowModal(true); // Modális megnyitása
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type } = e.target;
+    setEditedProduct({
+      ...editedProduct,
+      [name]: type === 'number' ? parseInt(value, 10) || 0 : value,
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const response = await axios.put(`/api/update_sold_product/${editingProductId}`, editedProduct, { withCredentials: true });
+      if (response.status === 200) {
+        const updatedProducts = products.map((product) =>
+          product.id === editingProductId ? editedProduct : product
+        );
+        setProducts(updatedProducts);
+        setEditingProductId(null);
+        setEditedProduct({});
+        setShowModal(false); // Modális bezárása
+        console.log("Termék sikeresen frissítve!");
+      }
+    } catch (error) {
+      console.error("Hiba a termék frissítése közben: ", error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProductId(null);
+    setEditedProduct({});
+    setShowModal(false); // Modális bezárása
   };
 
   return (
@@ -90,7 +127,7 @@ export default function Traffic({ user }) {
             </button>
           </div>
           {productData && (
-            <div className="">
+            <div>
               <table className="product-table">
                 <thead>
                   <tr>
@@ -106,17 +143,18 @@ export default function Traffic({ user }) {
                     <th>Pénznem</th>
                     <th>Eladás dátuma</th>
                     <th></th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.length === 0 ? (
                     <tr>
-                      <td colSpan="11">Nincs termék adat</td>
+                      <td colSpan="13">Nincs termék adat</td>
                     </tr>
                   ) : (
                     products.map((product, index) => (
                       <tr key={product.id}>
-                        <th scope="row">{product.id}</th>
+                        <td>{product.id}</td>
                         <td>{product.product_name}</td>
                         <td>{product.incoming_invoice}</td>
                         <td>{product.outgoing_invoice}</td>
@@ -126,7 +164,7 @@ export default function Traffic({ user }) {
                         <td>{product.manufacturer}</td>
                         <td>{priceFormatter.format(product.price)}</td>
                         <td>{product.currency}</td>
-                        <td>{product.date}</td> {/* Dátum megjelenítése */}
+                        <td>{product.date}</td>
                         <td>
                           <input
                             className='product-checkbox'
@@ -137,6 +175,16 @@ export default function Traffic({ user }) {
                           />
                           <label htmlFor={`checkbox-select-${index}`}></label>
                         </td>
+                        <td>
+                          <div className="btn-group">
+                            <button
+                              className="btn btn-edit"
+                              onClick={() => handleEditClick(product)}
+                            >
+                              Edit
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))
                   )}
@@ -144,6 +192,113 @@ export default function Traffic({ user }) {
               </table>
             </div>
           )}
+
+          {/* Modális ablak */}
+          <Modal show={showModal} onHide={handleCancelEdit}>
+            <Modal.Header closeButton>
+              <Modal.Title>Termék szerkesztése</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div>
+                <label>Terméknév</label>
+                <input
+                  type="text"
+                  name="product_name"
+                  value={editedProduct.product_name || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label>Bejövő számla</label>
+                <input
+                  type="text"
+                  name="incoming_invoice"
+                  value={editedProduct.incoming_invoice || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label>Kimenő számla</label>
+                <input
+                  type="text"
+                  name="outgoing_invoice"
+                  value={editedProduct.outgoing_invoice || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label>Típus</label>
+                <input
+                  type="text"
+                  name="product_type"
+                  value={editedProduct.product_type || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label>Méret</label>
+                <input
+                  type="text"
+                  name="product_size"
+                  value={editedProduct.product_size || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label>Mennyiség</label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={editedProduct.quantity || 0}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label>Gyártó</label>
+                <input
+                  type="text"
+                  name="manufacturer"
+                  value={editedProduct.manufacturer || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label>Nettó ár</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={editedProduct.price || 0}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+              <div>
+                <label>Pénznem</label>
+                <input
+                  type="text"
+                  name="currency"
+                  value={editedProduct.currency || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                />
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCancelEdit}>
+                Mégse
+              </Button>
+              <Button variant="primary" onClick={handleSaveEdit}>
+                Mentés
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </div>
     </div>

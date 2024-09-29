@@ -16,15 +16,6 @@
     font-weight: bold;
   }
   
-  .product-table input[type="text"],
-  .product-table input[type="number"] {
-    width: 95%;
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
   .product-table input[type="checkbox"] {
     margin: 0;
     width: 16px;

@@ -25,35 +25,7 @@ def get_sold_products():
         "date": product.date.strftime("%Y-%m-%d %H:%M:%S")
     } for product in sold_products]), 200
 
-# SoldProducts tábla frissítése
-@soldProducts_bp.route("/api/update_sold_product/<int:id>", methods=["PUT"])
-def update_sold_product(id):
-    incomingInvoice = request.json.get("incoming_invoice")
-    outgoingInvoice = request.json.get("outgoing_invoice")
-    productName = request.json.get("product_name")
-    productType = request.json.get("product_type")
-    productSize = request.json.get("product_size")
-    productQuantity = request.json.get("product_quantity")
-    productManufacturer = request.json.get("product_manufacturer")
-    productPrice = request.json.get("product_price")
-
-    product = SoldProducts.query.get(id)
-    if product is None:
-        return jsonify({"error": "Nincs ilyen termék!"}), 404
-    
-    product.incoming_invoice = incomingInvoice
-    product.outgoing_invoice = outgoingInvoice
-    product.product_name = productName
-    product.product_type = productType
-    product.product_size = productSize
-    product.quantity = int(productQuantity)
-    product.manufacturer = productManufacturer
-    product.price = float(productPrice)
-    
-    db.session.commit()
-    
-    return jsonify({"message": "Termék sikeresen frissítve!"}), 200
-
+# SoldProducts táblából törlés
 @soldProducts_bp.route("/api/delete_sold_product/<int:id>", methods=["DELETE"])
 def delete_sold_product(id):
     product = SoldProducts.query.get(id)
@@ -76,3 +48,34 @@ def delete_sold_product(id):
         db.session.commit()
     
     return jsonify({"message": "Termék sikeresen törölve!"}), 200
+
+# Termék frissítése
+@soldProducts_bp.route("/api/update_sold_product/<int:id>", methods=["PUT"])
+def update_sold_product(id):
+    incomingInvoice = request.json.get("incoming_invoice")
+    outgoingInvoice = request.json.get("outgoing_invoice")
+    productName = request.json.get("product_name")
+    productType = request.json.get("product_type")
+    productSize = request.json.get("product_size")
+    productQuantity = request.json.get("quantity") # KI LESZ TÖRÖLVE
+    productManufacturer = request.json.get("manufacturer")
+    productPrice = request.json.get("price")
+    productCurrency = request.json.get("currency")
+
+    product = SoldProducts.query.get(id)
+    if product is None:
+        return jsonify({"error": "Nincs ilyen termék!"}), 404
+    
+    product.incoming_invoice = incomingInvoice
+    product.outgoing_invoice = outgoingInvoice
+    product.product_name = productName
+    product.product_type = productType
+    product.product_size = productSize
+    product.quantity = productQuantity
+    product.manufacturer = productManufacturer
+    product.price = productPrice
+    product.currency = productCurrency
+    
+    db.session.commit()
+    
+    return jsonify({"message": "Termék sikeresen frissítve!"}), 200

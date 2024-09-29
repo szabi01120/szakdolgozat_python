@@ -41,7 +41,7 @@ navbar color: #2c3e50;
 navbart átrakni az App.js-be
 forgalom edit ugyanúgy mint a raktárnál
 típust lehessen hozzáadni a legördülő listához valahogy
-kezdőoldalon: eladott termékek száma, raktáron lévők száma, eladás utáni jövedelem: huf, eur
+kezdőoldalon: eladott termékek száma, raktáron lévők száma, eladás utáni jövedelem: huf, eur DONE
 frontend refactor
 
 
