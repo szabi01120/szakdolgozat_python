@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import './Products.css';
 import { Navbar } from '../../components';
+import { Modal, Button } from 'react-bootstrap'; // Import Modal and Button from react-bootstrap
+import './Products.css';
 
 export default function Products({ user }) {
   const [productData, setProductData] = useState(false);
@@ -10,6 +11,7 @@ export default function Products({ user }) {
   const [productsToMove, setProductsToMove] = useState([]);
   const [editingProductId, setEditingProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
+  const [showModal, setShowModal] = useState(false); // State to manage modal visibility
 
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
@@ -114,10 +116,10 @@ export default function Products({ user }) {
     setProducts(updatedProductsCopy);
   };
 
-
   const handleEditClick = (product) => {
     setEditingProductId(product.id);
     setEditedProduct(product);
+    setShowModal(true); // Show the modal
   };
 
   const handleInputChange = (e) => {
@@ -138,6 +140,7 @@ export default function Products({ user }) {
         setProducts(updatedProducts);
         setEditingProductId(null);
         setEditedProduct({});
+        setShowModal(false); // Close the modal
         console.log("Termék sikeresen frissítve!");
       }
     } catch (error) {
@@ -148,6 +151,7 @@ export default function Products({ user }) {
   const handleCancelEdit = () => {
     setEditingProductId(null);
     setEditedProduct({});
+    setShowModal(false); // Close the modal
   };
 
   const handleSaveButtonClick = async () => {
@@ -200,7 +204,6 @@ export default function Products({ user }) {
     }
   };
 
-
   // Véletlenszerű termék hozzáadása
   const handleAddRandomProduct = async () => {
     const randomProduct = generateRandomProduct();
@@ -232,7 +235,6 @@ export default function Products({ user }) {
             <button type="button" className="btn btn-edit mb-3" onClick={handleSaveButtonClick}>
               Mentés
             </button>
-            {/* Random termék gomb */}
             <button type="button" className="btn btn-secondary mb-3" onClick={handleAddRandomProduct}>
               Véletlenszerű termék hozzáadása
             </button>
@@ -243,158 +245,153 @@ export default function Products({ user }) {
                 <thead>
                   <tr>
                     <th>Id</th>
-                    <th>Terméknév</th>
-                    <th>Bejövő számla</th>
+                    <th>Termék neve</th>
                     <th>Típus</th>
                     <th>Méret</th>
                     <th>Mennyiség</th>
                     <th>Gyártó</th>
-                    <th>Nettó ár</th>
-                    {!editingProductId && (
-                      <>
-                        <th>Eladva?</th>
-                        <th>Szállítva?</th>
-                      </>
-                    )}
+                    <th>Ár</th>
+                    <th>Eladva?</th>
+                    <th>Szállítva?</th>
                     <th>Műveletek</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {products.length === 0 ? (
-                    <tr>
-                      <td colSpan="10">Nincs termék adat</td>
+                  {products.map((product, index) => (
+                    <tr key={product.id}>
+                      <td>{product.id}</td>
+                      <td>{product.product_name}</td>
+                      <td>{product.product_type}</td>
+                      <td>{product.product_size}</td>
+                      <td>{product.quantity}</td>
+                      <td>{product.manufacturer}</td>
+                      <td>{priceFormatter.format(product.price)} {product.currency}</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          id={`checkbox-sold-${index}`}
+                          checked={product.sold}
+                          onChange={() => handleCheckboxChange(index, 'sold')}
+                        />
+                        <label htmlFor={`checkbox-sold-${index}`}></label>
+                      </td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          id={`checkbox-shipped-${index}`}
+                          checked={product.shipped}
+                          onChange={() => handleCheckboxChange(index, 'shipped')}
+                        />
+                        <label htmlFor={`checkbox-shipped-${index}`}></label>
+                      </td>
+                      <td>
+                        <div className="btn-group">
+                          {product.hasPhotos &&
+                            <Link to={`/productphotos/${product.id}`} className="btn btn-photo me-2">
+                              Fotók
+                            </Link>
+                          }
+                          <button className="btn btn-edit me-2" onClick={() => handleEditClick(product)}>
+                            Edit
+                          </button>
+                          <button className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)}>
+                            Törlés
+                          </button>
+                        </div>
+                      </td>
                     </tr>
-                  ) : (
-                    products.map((product, index) => (
-                      <tr key={product.id}>
-                        <th scope="row">{product.id}</th>
-                        {editingProductId === product.id ? (
-                          <>
-                            <td>
-                              <input
-                                type="text"
-                                name="product_name"
-                                value={editedProduct.product_name || ''}
-                                onChange={handleInputChange}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="text"
-                                name="incoming_invoice"
-                                value={editedProduct.incoming_invoice || ''}
-                                onChange={handleInputChange}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="text"
-                                name="product_type"
-                                value={editedProduct.product_type || ''}
-                                onChange={handleInputChange}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="text"
-                                name="product_size"
-                                value={editedProduct.product_size || ''}
-                                onChange={handleInputChange}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="quantity"
-                                value={editedProduct.quantity || ''}
-                                onChange={handleInputChange}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="text"
-                                name="manufacturer"
-                                value={editedProduct.manufacturer || ''}
-                                onChange={handleInputChange}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="price"
-                                value={editedProduct.price || ''}
-                                onChange={handleInputChange}
-                              />
-                            </td>
-                            <td>
-                              <div className="btn-group">
-                                <button className="btn btn-edit me-2" onClick={handleSaveEdit}>
-                                  Mentés
-                                </button>
-                                <button className="btn btn-danger" onClick={handleCancelEdit}>
-                                  Mégse
-                                </button>
-                              </div>
-                            </td>
-                          </>
-                        ) : (
-                          <>
-                            <td>{product.product_name}</td>
-                            <td>{product.incoming_invoice}</td>
-                            <td>{product.product_type}</td>
-                            <td>{product.product_size}</td>
-                            <td>{product.quantity}</td>
-                            <td>{product.manufacturer}</td>
-                            <td>{priceFormatter.format(product.price)}</td>
-                            {!editingProductId && (
-                              <>
-                                <td>
-                                  <input
-                                    type="checkbox"
-                                    id={`checkbox-sold-${index}`}
-                                    checked={product.sold}
-                                    onChange={() => handleCheckboxChange(index, 'sold')}
-                                  />
-                                  <label htmlFor={`checkbox-sold-${index}`}></label>
-                                </td>
-                                <td>
-                                  <input
-                                    type="checkbox"
-                                    id={`checkbox-shipped-${index}`}
-                                    checked={product.shipped}
-                                    onChange={() => handleCheckboxChange(index, 'shipped')}
-                                  />
-                                  <label htmlFor={`checkbox-shipped-${index}`}></label>
-                                </td>
-
-                              </>
-                            )}
-                            <td>
-                              <div className="btn-group">
-                                <button className="btn btn-edit me-2" onClick={() => handleEditClick(product)}>
-                                  Edit
-                                </button>
-                                {product.hasPhotos &&
-                                  <Link to={`/productphotos/${product.id}`} className="btn btn-photo me-2">
-                                    Fotók
-                                  </Link>
-                                }
-                                <button className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)}>
-                                  Törlés
-                                </button>
-                              </div>
-                            </td>
-                          </>
-                        )}
-                      </tr>
-                    ))
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
           )}
         </div>
       </div>
+
+      {/* Modal for editing product */}
+      <Modal show={showModal} onHide={handleCancelEdit}>
+        <Modal.Header closeButton>
+          <Modal.Title>Termék szerkesztése</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            <div className="mb-3">
+              <label htmlFor="product_name" className="form-label">Termék neve</label>
+              <input
+                type="text"
+                className="form-control"
+                id="product_name"
+                name="product_name"
+                value={editedProduct.product_name || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="product_type" className="form-label">Típus</label>
+              <input
+                type="text"
+                className="form-control"
+                id="product_type"
+                name="product_type"
+                value={editedProduct.product_type || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="product_size" className="form-label">Méret</label>
+              <input
+                type="text"
+                className="form-control"
+                id="product_size"
+                name="product_size"
+                value={editedProduct.product_size || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="quantity" className="form-label">Mennyiség</label>
+              <input
+                type="number"
+                className="form-control"
+                id="quantity"
+                name="quantity"
+                value={editedProduct.quantity || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="manufacturer" className="form-label">Gyártó</label>
+              <input
+                type="text"
+                className="form-control"
+                id="manufacturer"
+                name="manufacturer"
+                value={editedProduct.manufacturer || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="price" className="form-label">Ár</label>
+              <input
+                type="number"
+                className="form-control"
+                id="price"
+                name="price"
+                value={editedProduct.price || ''}
+                onChange={handleInputChange}
+              />
+            </div>
+          </form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelEdit}>
+            Mégse
+          </Button>
+          <Button variant="primary" onClick={handleSaveEdit}>
+            Mentés
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

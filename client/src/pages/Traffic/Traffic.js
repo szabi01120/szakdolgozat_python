@@ -176,14 +176,12 @@ export default function Traffic({ user }) {
                           <label htmlFor={`checkbox-select-${index}`}></label>
                         </td>
                         <td>
-                          <div className="btn-group">
-                            <button
-                              className="btn btn-edit"
-                              onClick={() => handleEditClick(product)}
-                            >
-                              Edit
-                            </button>
-                          </div>
+                          <button
+                            className="btn btn-edit"
+                            onClick={() => handleEditClick(product)}
+                          >
+                            Edit
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -291,7 +289,7 @@ export default function Traffic({ user }) {
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={handleCancelEdit}>
+              <Button variant="danger" onClick={handleCancelEdit}>
                 Mégse
               </Button>
               <Button variant="primary" onClick={handleSaveEdit}>
