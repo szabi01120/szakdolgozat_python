@@ -8,7 +8,7 @@ import axios from 'axios';
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);  
 
   useEffect(() => {
     const checkUserSession = async () => {

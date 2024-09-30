@@ -13,22 +13,12 @@ export default function Home({ user }) {
     }
   }, []);
 
-  const soldItems = 150; 
-  const stockItems = 320;
-  const incomeHUF = 2500000;
-  const incomeEUR = 6500;
-
   return (
     <div>
       {user ? (
         <div className="container mt-4 pt-5 justify-content-center">
           <h1>Üdvözöllek, {user.name}!</h1>
           <Summary
-            soldItems={soldItems}
-            stockItems={stockItems}
-            incomeHUF={incomeHUF}
-            incomeEUR={incomeEUR}
-            latestProduct={"Samsung Galaxy S21"}
             latestCustomer={"Kiss Péter"}
             recentTransactions={[
               { date: "2024-09-23", product: "iPhone 12", customer: "Nagy Anna", amount: 299000 },
