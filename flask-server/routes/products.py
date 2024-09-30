@@ -155,11 +155,12 @@ def update_product_status():
         sold_product = SoldProducts(
             product_id=product.id,
             incoming_invoice=product.incoming_invoice,
-            outgoing_invoice="asd",  # Tedd ide a megfelelő kimenő számlát
+            outgoing_invoice="ÜRES",  # Tedd ide a megfelelő kimenő számlát
             product_name=product.product_name,
             product_type=product.product_type,
             product_size=product.product_size,
-            quantity=1,  # Csak 1 darabot mozgatunk
+            quantity=1,
+            customer_name="ÜRES",  
             manufacturer=product.manufacturer,
             price=product.price,
             currency=product.currency,

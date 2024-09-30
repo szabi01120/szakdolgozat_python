@@ -59,11 +59,11 @@ const EditSoldProductModal = ({ show, onHide, editedProduct, onInputChange, onSa
                     />
                 </div>
                 <div className='mb-3'>
-                    <label>Mennyiség</label>
+                    <label>Vásárló neve</label>
                     <input
-                        type="number"
-                        name="quantity"
-                        value={editedProduct.quantity || 0}
+                        type="text"
+                        name="customer_name"
+                        value={editedProduct.customer_name || ''}
                         onChange={onInputChange}
                         className="form-control"
                     />

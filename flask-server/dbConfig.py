@@ -54,6 +54,7 @@ class SoldProducts(db.Model):
     product_type = db.Column(db.String(255), nullable=False)
     product_size = db.Column(db.String(255), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+    customer_name = db.Column(db.String(255), nullable=False)
     manufacturer = db.Column(db.String(255), nullable=False)
     price = db.Column(db.Float, nullable=False)
     currency = db.Column(db.String(255), nullable=False)

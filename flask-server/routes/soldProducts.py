@@ -19,6 +19,7 @@ def get_sold_products():
         "product_type": product.product_type,
         "product_size": product.product_size,
         "quantity": product.quantity,
+        "customer_name": product.customer_name,
         "manufacturer": product.manufacturer,
         "price": product.price,
         "currency": product.currency,
@@ -57,7 +58,8 @@ def update_sold_product(id):
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
     productSize = request.json.get("product_size")
-    productQuantity = request.json.get("quantity") # KI LESZ TÖRÖLVE
+    quantity = request.json.get("quantity")
+    customer_name = request.json.get("customer_name") 
     productManufacturer = request.json.get("manufacturer")
     productPrice = request.json.get("price")
     productCurrency = request.json.get("currency")
@@ -71,7 +73,8 @@ def update_sold_product(id):
     product.product_name = productName
     product.product_type = productType
     product.product_size = productSize
-    product.quantity = productQuantity
+    product.quantity = quantity
+    product.customer_name = customer_name
     product.manufacturer = productManufacturer
     product.price = productPrice
     product.currency = productCurrency

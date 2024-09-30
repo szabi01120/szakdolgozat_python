@@ -118,6 +118,15 @@ export default function Traffic() {
         variant="danger"
         onConfirm={handleConfirmDeleteSelectedProducts}
       />
+      {/* Szerkesztés modál ablak */}
+      <EditSoldProductModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        editedProduct={editedProduct}
+        onInputChange={handleInputChange}
+        onSaveEdit={handleSaveEdit}
+        onCancelEdit={handleCancelEdit}
+      />
       <div className="pt-4">
         <div className="container shadow d-flex flex-column pt-4">
           <h2>Forgalom</h2>
@@ -149,7 +158,7 @@ export default function Traffic() {
                     <th>Kimenő számla</th>
                     <th>Típus</th>
                     <th>Méret</th>
-                    <th>Mennyiség</th>
+                    <th>Vásárló neve</th>
                     <th>Gyártó</th>
                     <th>Nettó ár</th>
                     <th>Pénznem</th>
@@ -172,7 +181,7 @@ export default function Traffic() {
                         <td>{product.outgoing_invoice}</td>
                         <td>{product.product_type}</td>
                         <td>{product.product_size}</td>
-                        <td>{product.quantity} db</td>
+                        <td>{product.customer_name}</td>
                         <td>{product.manufacturer}</td>
                         <td>{priceFormatter.format(product.price)}</td>
                         <td>{product.currency}</td>
@@ -202,15 +211,6 @@ export default function Traffic() {
               </table>
             </div>
           )}
-
-          {/* Szerkesztés modál ablak */}
-          <EditSoldProductModal
-            show={showModal}
-            editedProduct={editedProduct}
-            onInputChange={handleInputChange}
-            onSaveEdit={handleSaveEdit}
-            onCancelEdit={handleCancelEdit}
-          />
         </div>
       </div>
     </div>
