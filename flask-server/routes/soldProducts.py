@@ -22,7 +22,7 @@ def get_sold_products():
         "manufacturer": product.manufacturer,
         "price": product.price,
         "currency": product.currency,
-        "date": product.date.strftime("%Y-%m-%d %H:%M:%S")
+        "date": product.date.strftime("%Y-%m-%d")
     } for product in sold_products]), 200
 
 # SoldProducts táblából törlés

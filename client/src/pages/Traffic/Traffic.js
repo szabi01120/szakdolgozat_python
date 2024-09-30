@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import EditSoldProductModal from './EditSoldProductModal';
+import DeleteModal from '../../components/DeleteProductModal/DeleteModal';
 import './Traffic.css';
-import { Modal, Button } from 'react-bootstrap';
 
 
 export default function Traffic() {
@@ -11,6 +12,8 @@ export default function Traffic() {
   const [editingProductId, setEditingProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
   const [showModal, setShowModal] = useState(false); // Modális állapot
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
@@ -40,35 +43,38 @@ export default function Traffic() {
     setSelectedProducts(updatedProducts);
   };
 
-  const handleDeleteSelectedProducts = async () => {
+  const handleDeleteButtonClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDeleteSelectedProducts = async () => {
     if (selectedProducts.length === 0) {
       console.log('Nincs kijelölt termék.');
       return;
     }
-    const confirmed = window.confirm("Biztosan törölni szeretnéd ezeket a termékeket?");
-    if (confirmed) {
-      try {
-        await Promise.all(
-          selectedProducts.map((id) =>
-            axios.delete(`http://127.0.0.1:5000/api/delete_sold_product/${id}`)
-          )
-        );
-        console.log('Sikeres törlés.');
-        setProducts(products.filter((product) => !selectedProducts.includes(product.id)));
-        setSelectedProducts([]);
-      } catch (error) {
-        console.log('Hiba történt a törlés közben: ', error);
-      }
-    } else {
-      console.log('A törlés megszakítva.');
+    try {
+      await Promise.all(
+        selectedProducts.map((id) =>
+          axios.delete(`http://127.0.0.1:5000/api/delete_sold_product/${id}`)
+        )
+      );
+      setProducts(products.filter((product) => !selectedProducts.includes(product.id)));
+      setSelectedProducts([]);
+      console.log('Sikeres törlés.');
+    } catch (error) {
+      console.log('Hiba történt a törlés közben: ', error);
+      setShowDeleteModal(false);
+    } finally {
+      setShowDeleteModal(false);
     }
   };
 
   const handleEditClick = (product) => {
     setEditingProductId(product.id);
     setEditedProduct(product);
-    setShowModal(true); // Modális megnyitása
+    setShowModal(true); // modál megnyitása
   };
+
 
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
@@ -104,6 +110,14 @@ export default function Traffic() {
 
   return (
     <div>
+      {/* Törlés modal */}
+      <DeleteModal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        message="Biztosan törölni szeretnéd ezt a terméket?"
+        variant="danger"
+        onConfirm={handleConfirmDeleteSelectedProducts}
+      />
       <div className="pt-4">
         <div className="container shadow d-flex flex-column pt-4">
           <h2>Forgalom</h2>
@@ -119,7 +133,7 @@ export default function Traffic() {
             <button
               type="button"
               className="btn btn-danger mb-3 ms-2"
-              onClick={handleDeleteSelectedProducts}
+              onClick={handleDeleteButtonClick}
             >
               Törlés
             </button>
@@ -189,112 +203,14 @@ export default function Traffic() {
             </div>
           )}
 
-          {/* Modális ablak */}
-          <Modal show={showModal} onHide={handleCancelEdit}>
-            <Modal.Header closeButton>
-              <Modal.Title>Termék szerkesztése</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <div>
-                <label>Terméknév</label>
-                <input
-                  type="text"
-                  name="product_name"
-                  value={editedProduct.product_name || ''}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label>Bejövő számla</label>
-                <input
-                  type="text"
-                  name="incoming_invoice"
-                  value={editedProduct.incoming_invoice || ''}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label>Kimenő számla</label>
-                <input
-                  type="text"
-                  name="outgoing_invoice"
-                  value={editedProduct.outgoing_invoice || ''}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label>Típus</label>
-                <input
-                  type="text"
-                  name="product_type"
-                  value={editedProduct.product_type || ''}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label>Méret</label>
-                <input
-                  type="text"
-                  name="product_size"
-                  value={editedProduct.product_size || ''}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label>Mennyiség</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={editedProduct.quantity || 0}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label>Gyártó</label>
-                <input
-                  type="text"
-                  name="manufacturer"
-                  value={editedProduct.manufacturer || ''}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label>Nettó ár</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={editedProduct.price || 0}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-              <div>
-                <label>Pénznem</label>
-                <input
-                  type="text"
-                  name="currency"
-                  value={editedProduct.currency || ''}
-                  onChange={handleInputChange}
-                  className="form-control"
-                />
-              </div>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="danger" onClick={handleCancelEdit}>
-                Mégse
-              </Button>
-              <Button variant="primary" onClick={handleSaveEdit}>
-                Mentés
-              </Button>
-            </Modal.Footer>
-          </Modal>
+          {/* Szerkesztés modál ablak */}
+          <EditSoldProductModal
+            show={showModal}
+            editedProduct={editedProduct}
+            onInputChange={handleInputChange}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+          />
         </div>
       </div>
     </div>
