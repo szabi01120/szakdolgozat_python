@@ -384,7 +384,7 @@ export default function Products({ user }) {
           </form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancelEdit}>
+          <Button variant="danger" onClick={handleCancelEdit}>
             Mégse
           </Button>
           <Button variant="primary" onClick={handleSaveEdit}>
