@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Navbar } from '../../components';
 import { Modal, Button } from 'react-bootstrap'; // Import Modal and Button from react-bootstrap
 import './Products.css';
 
-export default function Products({ user }) {
+export default function Products() {
   const [productData, setProductData] = useState(false);
   const [products, setProducts] = useState([]);
   const [productsToMove, setProductsToMove] = useState([]);
@@ -220,7 +219,6 @@ export default function Products({ user }) {
 
   return (
     <div>
-      <Navbar user={user} />
       <div className="pt-4">
         <div className="container shadow d-flex flex-column pt-4">
           <h2>Termékek</h2>

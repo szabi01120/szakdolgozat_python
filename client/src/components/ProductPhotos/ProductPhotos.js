@@ -1,4 +1,3 @@
-import { Navbar } from '..';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -40,7 +39,6 @@ export default function ProductPhotos({ user }) {
 
     return (
         <div>
-            <Navbar user={user} />
             <div className="container">
                 <h1 className='label-container'>Termék fotók</h1>
                 <div className="photos-container">

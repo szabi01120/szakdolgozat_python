@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { Navbar } from '../../components';
 import Summary from './Summary';
 import axios from 'axios';
 
@@ -21,7 +20,6 @@ export default function Home({ user }) {
 
   return (
     <div>
-      <Navbar user={user} />
       {user ? (
         <div className="container mt-4 pt-5 justify-content-center">
           <h1>Üdvözöllek, {user.name}!</h1>

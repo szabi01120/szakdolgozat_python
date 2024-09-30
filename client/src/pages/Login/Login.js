@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { Navbar } from '../../components'
 import axios from 'axios';
 import './Login.css'
 
-export default function Login({user}) {
+export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
@@ -24,7 +23,6 @@ export default function Login({user}) {
 
     return (
         <div>
-            <Navbar user={user}/>
             <div className='container mt-4 pt-5 d-flex justify-content-center'>
                 <form className='border border-info-subtle border-3 p-5 shadow'>
                     <h1 className='text-center'>Bejelentkezés</h1>

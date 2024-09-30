@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Traffic.css';
-import { Navbar } from '../../components';
 import { Modal, Button } from 'react-bootstrap';
 
 
-export default function Traffic({ user }) {
+export default function Traffic() {
   const [productData, setProductData] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -105,7 +104,6 @@ export default function Traffic({ user }) {
 
   return (
     <div>
-      <Navbar user={user} />
       <div className="pt-4">
         <div className="container shadow d-flex flex-column pt-4">
           <h2>Forgalom</h2>

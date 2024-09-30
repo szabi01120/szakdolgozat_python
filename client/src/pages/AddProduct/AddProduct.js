@@ -1,10 +1,9 @@
-import { Navbar } from '../../components';
 import React, { useState, useRef, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './AddProduct.css';
 
-export default function AddProduct({ user }) {
+export default function AddProduct() {
   const [images, setImages] = useState([]); // képek tömb
   const [isDragging, setIsDragging] = useState(false); // drag and drop állapota
   const [redirectToProducts, setRedirectToProducts] = useState(false); // termékek oldalra irányítás
@@ -283,7 +282,6 @@ export default function AddProduct({ user }) {
 
   return (
     <div>
-      <Navbar user={user} />
       {renderForm}
     </div>
   );

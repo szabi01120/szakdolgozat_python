@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home, AddProduct, Products, Quotation, Traffic, NotFound, Login } from './pages';
-import { ProductPhotos } from './components';
+import { ProductPhotos, Navbar } from './components';
 import './App.css';
 import axios from 'axios';
 
@@ -24,6 +24,7 @@ export default function App() {
   return (
     <div>      
       <BrowserRouter>
+        <Navbar user={user} />
         <Routes>          
           <Route path='/' exact element={<Home user={user}/>} />
           <Route path='/login' element={user ? <Navigate to="/" /> : <Login />} />

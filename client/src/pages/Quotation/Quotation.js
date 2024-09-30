@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Navbar } from '../../components';
 import './Quotation.css';
 
-export default function Quotation({ user }) {
+export default function Quotation() {
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [productName, setProductName] = useState('');
@@ -168,7 +167,6 @@ export default function Quotation({ user }) {
 
   return (
     <div>
-      <Navbar user={user} />
       <div className="ajanlat-container">
         <div className="form-container">
           <h1>Árajánlat</h1>
