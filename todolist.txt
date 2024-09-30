@@ -38,13 +38,13 @@ nettó érték - DONE
 
 navbar color: #2c3e50;
 
-navbart átrakni az App.js-be
-forgalom edit ugyanúgy mint a raktárnál
 típust lehessen hozzáadni a legördülő listához valahogy
-kezdőoldalon: eladott termékek száma, raktáron lévők száma, eladás utáni jövedelem: huf, eur DONE
 frontend refactor
 
 
+navbart átrakni az App.js-be DONE
+forgalom edit ugyanúgy mint a raktárnál DONE
+kezdőoldalon: eladott termékek száma, raktáron lévők száma, eladás utáni jövedelem: huf, eur DONE
 kezdőoldalon id-t eltüntetni DONE
 raktár darabszám count -1 ha forgalomba kerül a termék, ha 0 akkor drop DONE
 képfeltöltésnél ha nem megfelelő a formátum, akk adjon hibát DONE

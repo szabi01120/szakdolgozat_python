@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Modal, Button } from 'react-bootstrap'; // Import Modal and Button from react-bootstrap
+import { Modal, Button } from 'react-bootstrap'; 
 import './Products.css';
 
 export default function Products() {
@@ -10,7 +10,7 @@ export default function Products() {
   const [productsToMove, setProductsToMove] = useState([]);
   const [editingProductId, setEditingProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
-  const [showModal, setShowModal] = useState(false); // State to manage modal visibility
+  const [showModal, setShowModal] = useState(false); 
 
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 

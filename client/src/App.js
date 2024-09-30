@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Home, AddProduct, Products, Quotation, Traffic, NotFound, Login } from './pages';
-import { ProductPhotos, Navbar } from './components';
+import { ProductPhotos, Navbar, LoadingSpinner } from './components';
 import './App.css';
 import axios from 'axios';
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const checkUserSession = async () => {
@@ -16,10 +17,17 @@ export default function App() {
         setUser(resp.data);
       } catch (error) {
         setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
+
     checkUserSession();
   }, []);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div>      
@@ -39,5 +47,5 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </div>
-  )
-};
+  );
+}

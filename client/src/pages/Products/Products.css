@@ -21,37 +21,7 @@
     width: 16px;
     height: 16px;
   }
-  
-  .btn {
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    transition: background-color 0.3s;
-  }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-  }
-  
-  .btn-secondary {
-    background-color: #6c757d;
-    color: #fff;
-    border: none;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-  }
-  
+
   .product-table .btn {
     margin-right: 5px;
     
@@ -59,11 +29,5 @@
   
   .product-table .btn:hover {
     opacity: 0.9;
-  }
-
-  
-  /* Hide "Eladva?" and "Szállítva?" columns during editing */
-  .product-table .hidden {
-    display: none;
   }
   
