@@ -4,7 +4,6 @@ import EditSoldProductModal from './EditSoldProductModal';
 import DeleteModal from '../../components/DeleteProductModal/DeleteModal';
 import './Traffic.css';
 
-
 export default function Traffic() {
   const [productData, setProductData] = useState(false);
   const [products, setProducts] = useState([]);
@@ -12,20 +11,24 @@ export default function Traffic() {
   const [editingProductId, setEditingProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
   const [showModal, setShowModal] = useState(false); // Modális állapot
-
+  const [loading, setLoading] = useState(false); 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
   useEffect(() => {
     if (productData) {
+      setLoading(true); // Indítsd el a töltést
       axios
         .get('/api/sold_products')
         .then((response) => {
           setProducts(response.data);
           console.log(response.data);
         })
-        .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
+        .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error))
+        .finally(() => {
+          setLoading(false); // Töltés vége
+        });
     }
   }, [productData]);
 
@@ -75,7 +78,6 @@ export default function Traffic() {
     setShowModal(true); // modál megnyitása
   };
 
-
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
     setEditedProduct({
@@ -94,7 +96,7 @@ export default function Traffic() {
         setProducts(updatedProducts);
         setEditingProductId(null);
         setEditedProduct({});
-        setShowModal(false); // Modális bezárása
+        setShowModal(false); // Modal bezárása
         console.log("Termék sikeresen frissítve!");
       }
     } catch (error) {
@@ -105,7 +107,7 @@ export default function Traffic() {
   const handleCancelEdit = () => {
     setEditingProductId(null);
     setEditedProduct({});
-    setShowModal(false); // Modális bezárása
+    setShowModal(false); // Modal bezárása
   };
 
   return (
@@ -168,44 +170,50 @@ export default function Traffic() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.length === 0 ? (
+                  {loading ? (
                     <tr>
-                      <td colSpan="13">Nincs termék adat</td>
+                      <td colSpan="13" style={{ textAlign: 'center' }}>Adatok betöltése folyamatban...</td>
                     </tr>
                   ) : (
-                    products.map((product, index) => (
-                      <tr key={product.id}>
-                        <td>{product.id}</td>
-                        <td>{product.product_name}</td>
-                        <td>{product.incoming_invoice}</td>
-                        <td>{product.outgoing_invoice}</td>
-                        <td>{product.product_type}</td>
-                        <td>{product.product_size}</td>
-                        <td>{product.customer_name}</td>
-                        <td>{product.manufacturer}</td>
-                        <td>{priceFormatter.format(product.price)}</td>
-                        <td>{product.currency}</td>
-                        <td>{product.date}</td>
-                        <td>
-                          <input
-                            className='product-checkbox'
-                            type="checkbox"
-                            id={`checkbox-select-${index}`}
-                            checked={selectedProducts.includes(product.id)}
-                            onChange={() => handleCheckboxChange(product.id)}
-                          />
-                          <label htmlFor={`checkbox-select-${index}`}></label>
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-edit"
-                            onClick={() => handleEditClick(product)}
-                          >
-                            Edit
-                          </button>
-                        </td>
+                    products.length === 0 ? (
+                      <tr>
+                        <td colSpan="13">Nincs termék adat</td>
                       </tr>
-                    ))
+                    ) : (
+                      products.map((product, index) => (
+                        <tr key={product.id}>
+                          <td>{product.id}</td>
+                          <td>{product.product_name}</td>
+                          <td>{product.incoming_invoice}</td>
+                          <td>{product.outgoing_invoice}</td>
+                          <td>{product.product_type}</td>
+                          <td>{product.product_size}</td>
+                          <td>{product.customer_name}</td>
+                          <td>{product.manufacturer}</td>
+                          <td>{priceFormatter.format(product.price)}</td>
+                          <td>{product.currency}</td>
+                          <td>{product.date}</td>
+                          <td>
+                            <input
+                              className='product-checkbox'
+                              type="checkbox"
+                              id={`checkbox-select-${index}`}
+                              checked={selectedProducts.includes(product.id)}
+                              onChange={() => handleCheckboxChange(product.id)}
+                            />
+                            <label htmlFor={`checkbox-select-${index}`}></label>
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-edit"
+                              onClick={() => handleEditClick(product)}
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )
                   )}
                 </tbody>
               </table>
