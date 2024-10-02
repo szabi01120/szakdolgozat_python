@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import EditProductModal from './EditProductModal';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import NotificationModal from './NotificationModal';
+import NotificationModal from '../../components/NotificationModal/NotificationModal';
 import DeleteModal from '../../components/DeleteProductModal/DeleteModal';
 import './Products.css';
 

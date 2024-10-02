@@ -69,3 +69,33 @@ def get_latest_sold_product():
             return jsonify({"message": "Nincs termék!"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+# SoldProducts legutóbbi vásárló neve
+@productSummary_bp.route("/api/sold_products/latest_customer", methods=["GET"])
+def get_latest_customer():
+    try:
+        latest_customer = db.session.query(SoldProducts.customer_name).order_by(SoldProducts.date.desc()).first()
+
+        if latest_customer:
+            return jsonify({
+                "customer_name": latest_customer[0]
+            }), 200
+        else:
+            return jsonify({"message": "Nincs vásárló!"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+# SoldProducts legutóbbi 5 vásárlás: dátum, termék, vásárló neve, ár, pénznem
+@productSummary_bp.route("/api/sold_products/last_five_customer", methods=["GET"])
+def get_last_five_customers():
+    try:
+        last_five_customers = db.session.query(SoldProducts.date, SoldProducts.product_name, SoldProducts.customer_name, SoldProducts.price, SoldProducts.currency).order_by(SoldProducts.date.desc()).limit(5).all()
+
+        if last_five_customers:
+            return jsonify({
+                "last_five_customers": [{"date": customer.date, "product_name": customer.product_name, "customer_name": customer.customer_name, "price": customer.price, "currency": customer.currency} for customer in last_five_customers]
+            }), 200
+        else:
+            return jsonify({"message": "Nincs vásárló!"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

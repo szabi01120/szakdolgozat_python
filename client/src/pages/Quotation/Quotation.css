@@ -1,192 +1,122 @@
 .ajanlat-container {
-  font-family: inherit;
-  /* background-color: #f4f4f9; */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
+  background-color: #f8f9fa; 
 }
 
-/* Form (Quotation) Container Styles */
-.form-container {
+.form-container, .template-add-container, .template-delete-container {
   max-width: 600px;
   flex: 1;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+  transition: box-shadow 0.3s ease;
 }
 
-.form-container h1 {
+.form-container:hover, .template-add-container:hover, .template-delete-container:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); 
+}
+
+.form-container h1, .template-add-container h2, .template-delete-container h2 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 24px;
-  color: #333;
+  color: #2c3e50; 
+  font-weight: 600;
 }
 
-.form-container label {
+.form-container label, .template-add-container label, .template-delete-container label {
   display: block;
   margin-bottom: 10px;
-  font-weight: normal;
-  color: #555;
+  font-weight: 500;
+  color: #7f8c8d; 
 }
 
-.form-container input,
-.form-container select {
+.form-container input, .form-container select,
+.template-add-container input, .template-add-container textarea,
+.template-delete-container select {
   width: calc(100% - 20px);
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid #dcdde1;
+  border-radius: 8px;
   font-size: 16px;
+  background-color: #f8f9fa; 
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
- button {
+.form-container input:focus, .form-container select:focus,
+.template-add-container input:focus, .template-add-container textarea:focus,
+.template-delete-container select:focus {
+  border-color: #3498db; 
+  background-color: #ffffff; 
+}
+
+button {
   padding: 12px;
-  
+  background-color: #3498db; 
   color: white;
   font-size: 18px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.form-container button:hover {
-  background-color: #45a049;  
-}
-
-/* Template Add Container Styles */
-.template-add-container {
-  max-width: 600px;
-  flex: 1;
-  background: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.template-add-container h2 {
-  text-align: center;
-  font-size: 24px;
-  color: #333;
-}
-
-.template-add-container label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: normal;
-  color: #555;
-}
-
-.template-add-container input,
-.template-add-container textarea {
-  width: calc(100% - 20px);
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-.template-add-container textarea {
-  height: 100px;
-  resize: vertical;
-}
-
-.template-add-container button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.3s, transform 0.2s;
+button:hover {
+  background-color: #2980b9; 
+  transform: translateY(-2px); 
 }
 
 .btn-danger {
-  background-color: #e74c3c;
-  color: #ffffff;
+  background-color: #e74c3c; 
 }
 
 .btn-danger:hover {
   background-color: #c0392b;
-  transform: translateY(-2px);
 }
 
 .btn-edit {
-  background-color: #2ecc71;
-  color: #ffffff;
+  background-color: #2ecc71; 
+  margin-bottom: 20px;
 }
 
 .btn-edit:hover {
   background-color: #27ae60;
-  transform: translateY(-2px);
-  color:white;
 }
 
-
-/* Template Delete Container Styles */
-.template-delete-container {
-  max-width: 600px;
-  flex: 1;
-  background: #fff;
-  border-radius: 10px;
-}
-
-.template-delete-container h2 {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #333;
-}
-
-.template-delete-container label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: normal;
-  color: #555;
-}
-
-.template-delete-container select {
-  width: calc(100% - 20px);
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-/* Reszponzív kialakítás */
 @media (max-width: 768px) {
   .ajanlat-container {
     flex-direction: column;
     align-items: center;
   }
 
-  .form-container,
-  .template-add-container,
-  .template-delete-container {
-    width: 100%; /* Full-width on smaller screens */
+  .form-container, .template-add-container, .template-delete-container {
+    width: 100%; 
     margin-bottom: 20px;
   }
 }
 
 .accordion-button:hover {
-  background-color: #abc8f7;
+  background-color: #ebf5fb; 
 }
+
 
 #leirasAccord {
   margin-bottom: 15px;
 }
 
 .success-message {
-  color: green;
+  color: #2ecc71;
   font-weight: bold;
 }
 
 .error-message {
-  color: red;
+  color: #e74c3c;
   font-weight: bold;
 }

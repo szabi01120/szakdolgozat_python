@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Quotation.css';
+import { DeleteModal } from '../../components';
 
 export default function Quotation() {
   const [customerName, setCustomerName] = useState('');
@@ -10,6 +11,7 @@ export default function Quotation() {
   const [quantity, setQuantity] = useState(1);
   const [template, setTemplate] = useState(''); // aktuálisan kiválasztott template
   const [templates, setTemplates] = useState([]); // összes template amiből választani lehet
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // árajánlat messages
   const [successMessageQuotation, setSuccessMessageQuotation] = useState('');
@@ -87,6 +89,14 @@ export default function Quotation() {
     }
   };
 
+  const handleDeleteButtonClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+  };
+
   // Sablon törlése
   const handleDeleteTemplate = async () => {
     if (!selectedTemplateToDelete) {
@@ -98,30 +108,27 @@ export default function Quotation() {
       template_name: selectedTemplateToDelete,
     };
 
-    const confirmed = window.confirm("Biztosan törölni szeretnéd ezt a sablont?");
-    if (confirmed) {
-      try {
-        const response = await axios.delete('/api/delete_template', { data: templateToDelete });
-        if (response.status === 200) {
-          setSuccessMessageDeleteTemplate('Sablon sikeresen törölve!');
-          setErrorMessageDeleteTemplate('');
-          const updatedTemplates = templates.filter(template => template !== selectedTemplateToDelete);
-          setTemplates(updatedTemplates); // Eltávolítjuk a legördülő listából
-          setSelectedTemplateToDelete('');
+    try {
+      const response = await axios.delete('/api/delete_template', { data: templateToDelete });
+      if (response.status === 200) {
+        setSuccessMessageDeleteTemplate('Sablon sikeresen törölve!');
+        setErrorMessageDeleteTemplate('');
+        const updatedTemplates = templates.filter(template => template !== selectedTemplateToDelete);
+        setTemplates(updatedTemplates); // Eltávolítjuk a legördülő listából
+        setSelectedTemplateToDelete('');
 
-          if (updatedTemplates.length === 0) {
-            setTemplate('no-template'); // Ha már nincs sablon, állítsuk be a "Nincs elérhető sablon" szöveget
-          }
-          console.log('Sablon törölve:', response.data);
+        if (updatedTemplates.length === 0) {
+          setTemplate('no-template'); // Ha már nincs sablon, állítsuk be a "Nincs elérhető sablon" szöveget
         }
-      } catch (error) {
-        console.log(selectedTemplateToDelete);
-        console.error('Hiba történt a sablon törlése során:', error);
-        setErrorMessageDeleteTemplate('Hiba történt a sablon törlése során.');
+        console.log('Sablon törölve:', response.data);
       }
-    } else {
-      console.log('A törlés megszakítva.');
-    }
+    } catch (error) {
+      console.log(selectedTemplateToDelete);
+      console.error('Hiba történt a sablon törlése során:', error);
+      setErrorMessageDeleteTemplate('Hiba történt a sablon törlése során.');
+    } finally {
+      setShowDeleteModal(false);
+    }  
   };
 
   const handleSubmit = async (e) => {
@@ -300,6 +307,15 @@ export default function Quotation() {
 
           <button className="btn btn-edit" onClick={handleAddTemplate}>Sablon hozzáadása</button>
 
+          {/* Törlés confirm modal */}
+          <DeleteModal
+            show={showDeleteModal}
+            onHide={handleCancelDelete}
+            message="Biztosan törölni szeretnéd ezt a terméket?"
+            variant="danger"
+            onConfirm={handleDeleteTemplate}
+          />
+
           {/* Sablon törlése form - csak akkor jelenik meg, ha van sablon */}
           {templates.length > 0 && (
             <div className="template-delete-container">
@@ -320,7 +336,7 @@ export default function Quotation() {
               </label>
               {errorMessageDeleteTemplate && <p className="error-message">{errorMessageDeleteTemplate}</p>}
               {successMessageDeleteTemplate && <p className="success-message">{successMessageDeleteTemplate}</p>}
-              <button className="btn-danger" onClick={handleDeleteTemplate} disabled={!selectedTemplateToDelete}>Sablon törlése</button>
+              <button className="btn-danger" onClick={handleDeleteButtonClick} disabled={!selectedTemplateToDelete}>Sablon törlése</button>
             </div>
           )}
         </div>

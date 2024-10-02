@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const SoldProductsSummary = () => {
-  const [latestSoldProduct, setLatestSoldProduct] = useState(0);
+  const [latestSoldProduct, setLatestSoldProduct] = useState("");
 
   // minden frissüléskör lekérdezés
   useEffect(() => {

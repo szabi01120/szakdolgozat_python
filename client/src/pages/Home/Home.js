@@ -18,16 +18,7 @@ export default function Home({ user }) {
       {user ? (
         <div className="container mt-4 pt-5 justify-content-center">
           <h1>Üdvözöllek, {user.name}!</h1>
-          <Summary
-            latestCustomer={"Kiss Péter"}
-            recentTransactions={[
-              { date: "2024-09-23", product: "iPhone 12", customer: "Nagy Anna", amount: 299000 },
-              { date: "2024-09-22", product: "MacBook Pro", customer: "Kovács Dávid", amount: 899000 },
-              { date: "2024-09-21", product: "Sony WH-1000XM4", customer: "Tóth Eszter", amount: 120000 },
-              { date: "2024-09-20", product: "Samsung Galaxy Watch", customer: "Varga Tamás", amount: 95000 },
-              { date: "2024-09-19", product: "Xiaomi Mi Band 6", customer: "Szabó Márk", amount: 15000 }
-            ]}
-          />
+          <Summary />
           <button onClick={logoutUser} className="btn btn-danger mt-4">Kijelentkezés</button>
         </div>
       ) : (

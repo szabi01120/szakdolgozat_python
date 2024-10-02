@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './AddProduct.css';
+import { NotificationModal } from '../../components';
 
 export default function AddProduct() {
   const [images, setImages] = useState([]); // képek tömb
@@ -12,11 +13,8 @@ export default function AddProduct() {
 
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('Hiba történt a hozzáadás során!');
-  useEffect(() => {
-    if (isError) {
-      setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
-    }
-  }, [isError]);
+
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const [formData, setFormData] = useState({
     incoming_invoice: '',
@@ -166,8 +164,7 @@ export default function AddProduct() {
         }
 
         // Sikeres hozzáadás esetén állítsd be az átirányítást
-        alert('Sikeres hozzáadás! Az oldal frissítésre kerül.');
-        setRedirectToProducts(true);
+        setShowNotificationModal(true);
       }
     } catch (error) {
       console.log('Hiba történt:', error.response);
@@ -275,13 +272,22 @@ export default function AddProduct() {
     </div>
   );
 
-  // felhasználó átirányítása
+  // átirányítás
   if (redirectToProducts) {
     return <Navigate to="/raktar" />;
   }
 
   return (
     <div>
+      <NotificationModal
+        show={showNotificationModal}
+        onHide={() => {
+          setShowNotificationModal(false);
+          setRedirectToProducts(true);
+        }}
+        message='Sikeres hozzáadás! Az oldal frissítésre kerül.'
+        variant='success'
+      />
       {renderForm}
     </div>
   );
