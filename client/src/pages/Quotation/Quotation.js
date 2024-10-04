@@ -336,7 +336,7 @@ export default function Quotation() {
               </label>
               {errorMessageDeleteTemplate && <p className="error-message">{errorMessageDeleteTemplate}</p>}
               {successMessageDeleteTemplate && <p className="success-message">{successMessageDeleteTemplate}</p>}
-              <button className="btn-danger" onClick={handleDeleteButtonClick} disabled={!selectedTemplateToDelete}>Sablon törlése</button>
+              <button className="btn btn-danger" onClick={handleDeleteButtonClick} disabled={!selectedTemplateToDelete}>Sablon törlése</button>
             </div>
           )}
         </div>

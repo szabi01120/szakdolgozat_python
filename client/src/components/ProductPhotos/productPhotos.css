@@ -19,8 +19,8 @@
 
 .photo-wrapper {
     position: relative;
-    width: calc(33.333% - 20px); /* Kép szélessége */
-    height: 250px; /* Fix magasság */
+    width: calc(33.333% - 20px); 
+    height: 250px; 
     overflow: hidden;
 }
 
@@ -37,7 +37,6 @@
     transform: scale(1.05);
 }
 
-/* Kék X ikon a jobb felső sarokban */
 .delete-icon {
     position: absolute;
     top: 5px;

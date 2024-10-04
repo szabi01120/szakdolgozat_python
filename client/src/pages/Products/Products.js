@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import NotificationModal from '../../components/NotificationModal/NotificationModal';
 import DeleteModal from '../../components/DeleteProductModal/DeleteModal';
-import './Products.css';
 
 export default function Products() {
   const [productData, setProductData] = useState(false);
