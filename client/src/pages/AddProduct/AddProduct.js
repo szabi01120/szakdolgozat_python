@@ -224,7 +224,7 @@ export default function AddProduct() {
             </select>
           </div>
           <div className='col-md-12'>
-            <button type="submit" className="btn btn-primary w-25 mb-3 mt-2" disabled={!isFormFilled}>Hozzáadás</button>
+            <button type="submit" className="btn btn-primary mb-3 mt-2" disabled={!isFormFilled}>Hozzáadás</button>
             {isError && <p className='text-danger'>{errorMessage}</p>}
           </div>
 

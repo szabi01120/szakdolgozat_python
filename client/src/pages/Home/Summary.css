@@ -1,3 +1,4 @@
+/* Alapértelmezett stílusok: ezek maradnak nagyobb képernyőkön (pl. gépen) */
 .summary-container {
   background-color: #f4f4f4;
   border-radius: 12px;
@@ -112,4 +113,55 @@
 .recent-customers li:hover {
   background-color: rgba(0, 0, 0, 0.05); 
   transition: background-color 0.3s ease;
+}
+
+@media only screen and (max-width: 768px) {
+  .summary {
+    flex-direction: column;
+  }
+
+  .summary-column {
+    gap: 10px;
+  }
+
+  .summary-item {
+    padding: 20px;
+  }
+
+  .summary-item h3 {
+    font-size: 16px;
+  }
+
+  .summary-item p {
+    font-size: 14px;
+  }
+
+  .recent-customers-container {
+    padding: 20px;
+  }
+
+  .recent-customers {
+    padding: 15px;
+  }
+
+  .recent-customers h3 {
+    font-size: 18px;
+  }
+
+  .recent-customers ul {
+    padding-left: 10px;
+  }
+
+  .recent-customers li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .transaction-date,
+  .transaction-product,
+  .transaction-customer,
+  .transaction-price {
+    font-size: 14px;
+  }
 }
