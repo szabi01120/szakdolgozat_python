@@ -73,7 +73,7 @@ export default function Products() {
     setShowDeleteModal(true);
   };
 
-  const handleConfirmDelete = async () => {   
+  const handleConfirmDelete = async () => {
     try {
       const response = await axios.delete(`http://127.0.0.1:5000/api/delete_product/${productIdToDelete}`);
       if (response.status === 200) {
@@ -223,7 +223,7 @@ export default function Products() {
     }
   };
 
-  // Véletlenszerű termék hozzáadása
+  // Véletlenszerű termék hozzáadása TESTING PURPOSES ONLY
   const handleAddRandomProduct = async () => {
     const randomProduct = generateRandomProduct();
     try {
@@ -287,12 +287,12 @@ export default function Products() {
             <button type="button" className="btn btn-edit mb-3" onClick={handleSaveButtonClick}>
               Mentés
             </button>
-            <button type="button" className="btn btn-secondary mb-3" onClick={handleAddRandomProduct}>
+            {/* <button type="button" className="btn btn-secondary mb-3" onClick={handleAddRandomProduct}>
               Véletlenszerű termék hozzáadása
-            </button>
+            </button> */}
           </div>
           {productData && (
-            <div>
+            <div className='product-table-container'>
               <table className="product-table">
                 <thead>
                   <tr>
@@ -311,14 +311,16 @@ export default function Products() {
                 <tbody>
                   {products.map((product, index) => (
                     <tr key={product.id}>
-                      <td>{product.id}</td>
-                      <td>{product.product_name}</td>
-                      <td>{product.product_type}</td>
-                      <td>{product.product_size}</td>
-                      <td>{product.quantity}</td>
-                      <td>{product.manufacturer}</td>
-                      <td>{priceFormatter.format(product.price)} {product.currency}</td>
-                      <td>
+                      <td data-label="Id">{product.id}</td>
+                      <td data-label="Termék neve">{product.product_name}</td>
+                      <td data-label="Típus">{product.product_type}</td>
+                      <td data-label="Méret">{product.product_size}</td>
+                      <td data-label="Mennyiség">{product.quantity}</td>
+                      <td data-label="Gyártó">{product.manufacturer}</td>
+                      <td data-label="Ár">
+                        {priceFormatter.format(product.price)} {product.currency}
+                      </td>
+                      <td data-label="Eladva?">
                         <input
                           type="checkbox"
                           id={`checkbox-sold-${index}`}
@@ -327,7 +329,7 @@ export default function Products() {
                         />
                         <label htmlFor={`checkbox-sold-${index}`}></label>
                       </td>
-                      <td>
+                      <td data-label="Szállítva?">
                         <input
                           type="checkbox"
                           id={`checkbox-shipped-${index}`}
@@ -336,14 +338,16 @@ export default function Products() {
                         />
                         <label htmlFor={`checkbox-shipped-${index}`}></label>
                       </td>
-                      <td>
-                        <div className="btn-group">
-                          {product.hasPhotos &&
+                      <td data-label="Műveletek">
+                        <div className={`btn-group ${!product.hasPhotos ? 'no-photo' : ''} me-2`}>
+                          {product.hasPhotos ? (
                             <Link to={`/productphotos/${product.id}`} className="btn btn-photo me-2">
                               Fotók
                             </Link>
-                          }
-                          <button className="btn btn-edit me-2" onClick={() => handleEditClick(product)}>
+                          ) : (
+                            <div className="empty-photo-placeholder me-4"></div>
+                          )}
+                          <button className="btn btn-edit" onClick={() => handleEditClick(product)}>
                             Edit
                           </button>
                           <button className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)}>
