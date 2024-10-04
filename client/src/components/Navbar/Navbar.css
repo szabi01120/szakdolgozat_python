@@ -10,7 +10,6 @@
     z-index: 1000;
     display: flex;
     align-items: center;
-    overflow: hidden; 
 }
 
 .navbar-container {
@@ -20,60 +19,78 @@
     padding: 0 20px;
     max-width: 1200px;
     margin: 0 auto;
-    flex-wrap: nowrap;
+    width: 100%; 
+    box-sizing: border-box;
 }
 
 .navbar-brand {
     font-size: 19px;
     font-weight: 580;
     text-decoration: none;
-    color: #ffffff; 
-    padding: 15px 20px; 
-    white-space: nowrap; 
+    color: #ffffff;
+    padding: 15px 20px;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: background-color 0.3s, color 0.3s; 
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .navbar-brand:hover,
 .navbar-brand:focus,
 .navbar-brand:active {
-    background-color: #304357; 
-    color: #ecf0f1; 
+    background-color: #304357;
+    color: #ecf0f1;
 }
 
-/* Hamburger menü csak mobil nézetben látható */
 .navbar-toggler {
     border: none;
     background: transparent;
     cursor: pointer;
     padding: 10px;
     display: none;
-    white-space: nowrap; 
+    white-space: nowrap;
+    font-size: 24px;
+    color: #ffffff;
 }
 
-/* Csak mobil nézetben jelenik meg a toggler gomb */
-@media (max-width: 768px) {
-    .navbar-toggler {
-        display: block; 
-    }
+.navbar-toggler-icon {
+    width: 30px;
+    height: 3px;
+    background-color: #ffffff;
+    display: block;
+    position: relative;
+    transition: background-color 0.3s;
+}
 
-    .navbar-menu {
-        display: none; 
-        flex-direction: column;
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background-color: #2c3e50;
-        padding: 10px 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        z-index: 999;
-    }
+.navbar-toggler-icon:before,
+.navbar-toggler-icon:after {
+    content: '';
+    width: 30px;
+    height: 3px;
+    background-color: #ffffff;
+    display: block;
+    position: absolute;
+    transition: transform 0.3s;
+}
 
-    .navbar-menu.show {
-        display: flex; 
-    }
+.navbar-toggler-icon:before {
+    top: -8px;
+}
+
+.navbar-toggler-icon:after {
+    top: 8px;
+}
+
+.navbar-toggler-icon.open {
+    background-color: transparent;
+}
+
+.navbar-toggler-icon.open:before {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.navbar-toggler-icon.open:after {
+    transform: rotate(-45deg) translate(5px, -5px);
 }
 
 .navbar-menu {
@@ -81,21 +98,51 @@
     margin: 0;
     padding: 0;
     display: flex;
-    gap: 15px;
-    flex-wrap: nowrap; 
-    white-space: nowrap; 
+    gap: 50px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
-.navbar-menu a {
-    text-decoration: none;
-    color: #ffffff;
-    padding: 15px 20px;
-    display: block;
-    transition: background-color 0.3s, color 0.3s;
-    white-space: nowrap; 
-}
+@media (max-width: 768px) {
+    .navbar-toggler {
+        display: block;
+    }
 
-.navbar-menu a:hover {
-    background-color: #304357;
-    color: #ecf0f1;
+    .navbar-container {
+        justify-content: space-between;
+    }
+
+    .navbar-brand {
+        font-size: 16px;
+        padding: 10px 0;
+        max-width: 70%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .navbar-menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        gap: 10px;
+        background-color: #2c3e50;
+        padding: 10px 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-menu.show {
+        display: flex;
+    }
+
+    .navbar-menu a {
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-menu a:last-child {
+        border-bottom: none;
+    }
 }
