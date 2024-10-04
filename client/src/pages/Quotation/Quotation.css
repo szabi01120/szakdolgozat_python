@@ -57,38 +57,7 @@
   background-color: #ffffff; 
 }
 
-button {
-  padding: 12px;
-  background-color: #3498db; 
-  color: white;
-  font-size: 18px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-button:hover {
-  background-color: #2980b9; 
-  transform: translateY(-2px); 
-}
-
-.btn-danger {
-  background-color: #e74c3c; 
-}
-
-.btn-danger:hover {
-  background-color: #c0392b;
-}
-
-.btn-edit {
-  background-color: #2ecc71; 
-  margin-bottom: 20px;
-}
-
-.btn-edit:hover {
-  background-color: #27ae60;
-}
+/*  */
 
 @media (max-width: 768px) {
   .ajanlat-container {
