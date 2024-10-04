@@ -1,3 +1,4 @@
+/* Alapértelmezett stílusok (nagyobb képernyőkön maradnak) */
 .label-container {
     margin-top: 80px;
     font-size: 2rem;
@@ -56,4 +57,38 @@
 
 .delete-icon:hover {
     background-color: rgba(0, 123, 255, 1);
+}
+
+/* Mobilos reszponzív stílusok (768px alatti kijelzők) */
+@media only screen and (max-width: 768px) {
+    .label-container {
+        font-size: 1.5rem; /* Kisebb cím méret */
+        margin-top: 40px;
+    }
+
+    .photos {
+        gap: 15px; /* Kisebb gap a képek között */
+    }
+
+    .photo-wrapper {
+        width: calc(50% - 10px); /* Képek 50%-os szélességen jelennek meg */
+        height: 200px; /* Kisebb magasság mobilon */
+    }
+}
+
+/* Telefonokra optimalizálás (480px alatti kijelzők) */
+@media only screen and (max-width: 480px) {
+    .label-container {
+        font-size: 1.2rem; /* Még kisebb cím méret */
+        margin-top: 30px;
+    }
+
+    .photo-wrapper {
+        width: 100%; /* Képek teljes szélességen jelennek meg */
+        height: 180px; /* Kisebb magasság mobilon */
+    }
+
+    .photos {
+        gap: 10px; /* Kisebb gap a képek között */
+    }
 }

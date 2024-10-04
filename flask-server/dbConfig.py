@@ -24,6 +24,11 @@ class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     title = db.Column(db.String(120), index=True)
+    
+class ProductTypes(db.Model):
+    __tablename__ = 'product_types'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    product_type = db.Column(db.String(255), nullable=False)
 
 class Products(db.Model):
     __tablename__ = 'products'

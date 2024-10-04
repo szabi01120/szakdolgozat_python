@@ -99,3 +99,47 @@
     z-index: 999;
     color: #0086fe;
 }
+
+@media only screen and (max-width: 768px) {
+    .card {
+        padding: 8px; 
+    }
+
+    .card button {
+        padding: 7px 10px; 
+        font-size: 14px; 
+    }
+
+    .card .drag-area {
+        height: 120px; 
+        font-size: 14px; 
+    }
+
+    .card .drag-area .visible {
+        font-size: 16px; 
+    }
+
+    .card .container .image {
+        width: 60px; 
+        height: 60px;
+    }
+
+    .card .container {
+        max-height: 150px; 
+        gap: 5px; 
+    }
+
+    .card .container .image span {
+        top: -5px; 
+        right: 5px;
+        font-size: 16px; 
+    }
+
+    .card p {
+        font-size: 14px; 
+    }
+
+    .card .select {
+        font-size: 14px; 
+    }
+}
