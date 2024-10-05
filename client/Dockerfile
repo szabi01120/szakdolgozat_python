@@ -1,16 +1,20 @@
-FROM node:16-alpine AS build
+FROM node:20-alpine
 
+# Alkalmazás munkakönyvtárának beállítása
 WORKDIR /app
 
+# Csomagfájlok másolása és telepítés
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
+# Az összes többi fájl másolása
 COPY . .
-RUN npm run build
 
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf 
+# Fejlesztői környezet beállítása
+ENV NODE_ENV=development
 
+# Port 3000 megnyitása
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# React szerver indítása fejlesztői módban
+CMD ["npm", "start"]
