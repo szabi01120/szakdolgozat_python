@@ -303,7 +303,7 @@ export default function AddProduct() {
             <select className="form-select" id="manufacturer" name="manufacturer" onChange={handleChange} value={formData.manufacturer}>
               <option value="">Válassz gyártót</option>
               {manufacturers.map((manufacturer) => (
-                <option key={manufacturer.id} value={manufacturer.id}>{manufacturer.manufacturer}</option>
+                <option key={manufacturer.id} value={manufacturer.manufacturer}>{manufacturer.manufacturer}</option>
               ))}
             </select>
           </div>
@@ -321,7 +321,7 @@ export default function AddProduct() {
             <select className="form-select" id="product_type" name="product_type" onChange={handleChange} value={formData.product_type}>
               <option value="">Válassz egy típust</option>
               {productTypes.map((type) => (
-                <option key={type.id} value={type.id}>{type.product_type}</option>
+                <option key={type.id} value={type.product_type}>{type.product_type}</option>
               ))}
             </select>
           </div>
@@ -374,12 +374,7 @@ export default function AddProduct() {
     </div>
   );
 
-  // átirányítás
-  if (redirectToProducts) {
-    return <Navigate to="/raktar" />;
-  }
-
-  return (
+  const renderModals = (
     <div>
       <AddModal
         show={showAddTypeModal}
@@ -418,6 +413,17 @@ export default function AddProduct() {
         message='Sikeres hozzáadás! Az oldal frissítésre kerül.'
         variant='success'
       />
+    </div>
+  );
+
+  // átirányítás
+  if (redirectToProducts) {
+    return <Navigate to="/raktar" />;
+  }
+
+  return (
+    <div>
+      {renderModals}
       {renderForm}
     </div>
   );
