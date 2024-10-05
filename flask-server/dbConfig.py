@@ -29,7 +29,12 @@ class ProductTypes(db.Model):
     __tablename__ = 'product_types'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     product_type = db.Column(db.String(255), nullable=False)
-
+    
+class ProductManufacturers(db.Model):
+    __tablename__ = 'product_manufacturers'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    manufacturer = db.Column(db.String(255), nullable=False)
+    
 class Products(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

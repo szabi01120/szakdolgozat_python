@@ -17,11 +17,9 @@ export default function App() {
         setUser(resp.data);
       } catch (error) {
         setUser(null);
-      } finally {
-        setLoading(false);
-      }
+      } 
+      setLoading(false);      
     };
-
     checkUserSession();
   }, []);
 

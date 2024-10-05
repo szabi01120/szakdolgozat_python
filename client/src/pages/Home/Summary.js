@@ -72,7 +72,7 @@ const Summary = () => {
                 </span> 
                 <span className="transaction-product">{transaction.product_name}</span> 
                 <span className="transaction-customer">{transaction.customer_name}</span>
-                <span className="transaction-price">{transaction.price} {transaction.currency}</span>
+                <span className="transaction-price">{priceFormatter.format(transaction.price)} {transaction.currency}</span>
               </li>
             ))}
           </ul>

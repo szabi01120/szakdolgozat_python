@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from dbConfig import db, Products, Image, SoldProducts
+from dbConfig import db, Products, Image, SoldProducts, ProductTypes, ProductManufacturers
 import config
 import os
 import shutil
@@ -203,3 +203,61 @@ def update_product_status():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Hiba történt az áthelyezés során: {str(e)}"}), 500
+    
+# Termék típus hozzáadása
+@products_bp.route("/api/add_product_type", methods=["POST"])
+def add_product_type():
+    productType = request.json.get("product_type")
+    
+    if not productType:
+        return jsonify({"error": "Érvénytelen request!"}), 400
+    try:
+        product_type = ProductTypes(product_type=productType)
+        db.session.add(product_type)
+        db.session.commit()
+        return jsonify({"message": "Termék típus sikeresen hozzáadva!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Hiba történt a hozzáadás során: {str(e)}"}), 500
+    
+# Termék típus lekérdezése
+@products_bp.route("/api/product_types", methods=["GET"])
+def get_product_types():
+    product_types = ProductTypes.query.all()
+    
+    if not product_types:
+        return jsonify({"error": "Nincs termék típus!"}), 404
+    
+    return jsonify([{
+        "id": product_type.id,
+        "product_type": product_type.product_type,
+    } for product_type in product_types]), 200
+    
+# Termék gyártó hozzáadása
+@products_bp.route("/api/add_product_manufacturer", methods=["POST"])
+def add_product_manufacturer():
+    productManufacturer = request.json.get("manufacturer")
+    
+    if not productManufacturer:
+        return jsonify({"error": "Érvénytelen request!"}), 400
+    try:
+        product_manufacturer = ProductManufacturers(manufacturer=productManufacturer)
+        db.session.add(product_manufacturer)
+        db.session.commit()
+        return jsonify({"message": "Termék gyártó sikeresen hozzáadva!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Hiba történt a hozzáadás során: {str(e)}"}), 500
+    
+# Termék gyártó lekérdezése
+@products_bp.route("/api/product_manufacturers", methods=["GET"])
+def get_product_manufacturers():
+    product_manufacturers = ProductManufacturers.query.all()
+    
+    if not product_manufacturers:
+        return jsonify({"error": "Nincs termék gyártó!"}), 404
+    
+    return jsonify([{
+        "id": product_manufacturer.id,
+        "manufacturer": product_manufacturer.manufacturer,
+    } for product_manufacturer in product_manufacturers]), 200

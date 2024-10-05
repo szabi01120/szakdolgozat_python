@@ -2,12 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './AddProduct.css';
+import AddModal from './AddModal';
 import { NotificationModal } from '../../components';
 
 export default function AddProduct() {
   const [images, setImages] = useState([]); // képek tömb
   const [isDragging, setIsDragging] = useState(false); // drag and drop állapota
   const [redirectToProducts, setRedirectToProducts] = useState(false); // termékek oldalra irányítás
+  const [productTypes, setProductTypes] = useState([]); // Termék típusok
+  const [manufacturers, setManufacturers] = useState([]); // Termék gyártók
 
   const fileInputRef = useRef(); // input referencia
 
@@ -15,6 +18,14 @@ export default function AddProduct() {
   const [errorMessage, setErrorMessage] = useState('Hiba történt a hozzáadás során!');
 
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [showAddNotificationModalSuccess, setShowAddNotificationModalSuccess] = useState(false);
+  const [showAddNotificationModalError, setShowAddNotificationModalError] = useState(false);
+
+  const [showAddTypeModal, setShowAddTypeModal] = useState(false);
+  const [showAddManufacturerModal, setShowAddManufacturerModal] = useState(false);
+  const [newType, setNewType] = useState('');
+  const [newManufacturer, setNewManufacturer] = useState('');
+
 
   const [formData, setFormData] = useState({
     incoming_invoice: '',
@@ -28,6 +39,33 @@ export default function AddProduct() {
   });
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
+
+  useEffect(() => {
+    const getProductTypes = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/product_types');
+        setProductTypes(response.data);
+      } catch (error) {
+        console.error('Error fetching product types:', error);
+      }
+    };
+
+    const getManufacturers = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/product_manufacturers');
+        setManufacturers(response.data);
+      } catch (error) {
+        console.error('Error fetching manufacturers:', error);
+      }
+    };
+
+    getProductTypes();
+    getManufacturers();
+  }, []);
+
+  useEffect(() => { }, [productTypes]);
+
+  useEffect(() => { }, [manufacturers]);
 
   useEffect(() => {
     if (showImageUpload) {
@@ -92,19 +130,71 @@ export default function AddProduct() {
     const { name, value } = event.target;
 
     if (name === 'price') {
-      // Eltávolítunk minden nem numerikus karaktert, hogy csak számok maradjanak
       const numericValue = value.replace(/\D/g, '');
-
-      // A számot formázzuk tizedes elválasztókkal
       const formattedValue = new Intl.NumberFormat('hu-HU').format(numericValue);
 
-      // Frissítjük az input mezőt formázott értékkel
       setFormData({ ...formData, [name]: numericValue });
-
-      // Az input mezőt frissítjük formázott értékkel
       event.target.value = formattedValue;
     } else {
       setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleTypeClick = () => {
+    setShowAddTypeModal(true);
+  };
+
+  const handleManufacturerClick = () => {
+    setShowAddManufacturerModal(true);
+  };
+
+  const handleTypeInputChange = (event) => {
+    setNewType(event.target.value);
+  };
+
+  const handleManufacturerInputChange = (event) => {
+    setNewManufacturer(event.target.value);
+  };
+
+  const handleSaveType = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/add_product_type', { "product_type": newType });
+      if (response.status === 200) {
+        console.log('Sikeres hozzáadás');
+        console.log('Válasz:', response.data);
+
+        const newProductType = { id: response.data.id, product_type: response.data.product_type };
+        setProductTypes((prevTypes) => {
+          const updatedTypes = [...prevTypes, newProductType];
+          return updatedTypes;
+        });
+
+        setFormData((prevFormData) => ({ ...prevFormData, product_type: newProductType.id }));
+
+        setShowAddTypeModal(false);
+        setShowAddNotificationModalSuccess(true);
+      }
+    } catch (error) {
+      console.log('Hiba történt a típus hozzáadása során:', error.response);
+      setShowAddTypeModal(false);
+      setShowAddNotificationModalError(true);
+    }
+  };
+
+  const handleSaveManufacturer = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/add_product_manufacturer', { "manufacturer": newManufacturer });
+      if (response.status === 200) {
+        console.log('Sikeres hozzáadás');
+        console.log('Válasz:', response.data);
+        setShowAddManufacturerModal(false);
+        setShowAddNotificationModalSuccess(true);
+        setManufacturers((prevManufacturers) => [...prevManufacturers, response.data]);
+      }
+    } catch (error) {
+      console.log('Hiba történt a gyártó hozzáadása során:', error.response);
+      setShowAddManufacturerModal(false);
+      setShowAddNotificationModalError(true);
     }
   };
 
@@ -112,13 +202,13 @@ export default function AddProduct() {
     event.preventDefault();
 
     if (showImageUpload && images.length > 0) {
-      const allowedExtensions = ['jpg', 'jpeg', 'png']; // Engedélyezett fájlformátumok
-      const invalidFiles = images.filter((file) => { // .type-al nem működik ('image/jpeg' stb.)
+      const allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+      const invalidFiles = images.filter((file) => {
         const extension = file.name.split('.').pop().toLowerCase();
         return !allowedExtensions.includes(extension);
       });
 
-      // Logoljuk ki a fájlok típusát a pontosabb diagnosztikához
       images.forEach((file) => {
         console.log(`File name: ${file.name}, File type: ${file.type}`);
       });
@@ -162,8 +252,6 @@ export default function AddProduct() {
             return;
           }
         }
-
-        // Sikeres hozzáadás esetén állítsd be az átirányítást
         setShowNotificationModal(true);
       }
     } catch (error) {
@@ -177,18 +265,23 @@ export default function AddProduct() {
     { label: 'Terméknév', name: 'product_name', placeholder: 'Terméknév', type: 'text' },
     { label: 'Méret', name: 'product_size', placeholder: 'Méret', type: 'text' },
     { label: 'Mennyiség', name: 'quantity', placeholder: 'Mennyiség', type: 'number', min: '0' },
-    { label: 'Gyártó', name: 'manufacturer', placeholder: 'Gyártó', type: 'text' },
     { label: 'Nettó ár', name: 'price', placeholder: 'Nettó ár', type: 'text' }, // Fontos: itt text, hogy formázhassuk
     { label: 'Bejövő számla', name: 'incoming_invoice', placeholder: 'Bejövő számla', type: 'text' },
   ];
 
-  const types = ['Típus 1', 'Típus 2', 'Típus 3']; // Típusok listája
   const currencyTypes = ['HUF', 'EUR', 'USD']; // Pénznem listája
 
   const renderForm = (
     <div className='pt-4'>
       <div className="container shadow d-flex flex-column p-4">
-        <h2>Termék hozzáadása</h2>
+        <div className="d-flex justify-content-between align-items-center position-relative">
+          <h2 className="position-absolute start-50 translate-middle-x ">Termék hozzáadása</h2>
+          <div></div>
+          <div className="d-flex mt-3">
+            <button type="button" className="btn btn-edit" onClick={handleTypeClick}>Típus felvétel</button>
+            <button type="button" className="btn btn-edit" onClick={handleManufacturerClick}>Gyártó felvétel</button>
+          </div>
+        </div>
         <form onSubmit={handleSubmit} className='row g-3'>
           {inputFields.map((field, index) => (
             <div className='col-md-3' key={index}>
@@ -206,6 +299,15 @@ export default function AddProduct() {
             </div>
           ))}
           <div className='col-md-3'>
+            <label htmlFor="currenc">Gyártó</label>
+            <select className="form-select" id="manufacturer" name="manufacturer" onChange={handleChange} value={formData.manufacturer}>
+              <option value="">Válassz gyártót</option>
+              {manufacturers.map((manufacturer) => (
+                <option key={manufacturer.id} value={manufacturer.id}>{manufacturer.manufacturer}</option>
+              ))}
+            </select>
+          </div>
+          <div className='col-md-3'>
             <label htmlFor="currenc">Pénznem</label>
             <select className="form-select" id="currency" name="currency" onChange={handleChange} value={formData.currency}>
               <option value="">Válassz pénznemet</option>
@@ -217,9 +319,9 @@ export default function AddProduct() {
           <div className='col-md-3'>
             <label htmlFor="product_type">Típus</label>
             <select className="form-select" id="product_type" name="product_type" onChange={handleChange} value={formData.product_type}>
-              <option value="">Válassz típust</option>
-              {types.map((type, index) => (
-                <option key={index} value={type}>{type}</option>
+              <option value="">Válassz egy típust</option>
+              {productTypes.map((type) => (
+                <option key={type.id} value={type.id}>{type.product_type}</option>
               ))}
             </select>
           </div>
@@ -279,6 +381,34 @@ export default function AddProduct() {
 
   return (
     <div>
+      <AddModal
+        show={showAddTypeModal}
+        onHide={() => setShowAddTypeModal(false)}
+        onInputChange={handleTypeInputChange}
+        onSaveEdit={handleSaveType}
+        name='Típus'
+        inputValue={newType}
+      />
+      <AddModal
+        show={showAddManufacturerModal}
+        onHide={() => setShowAddManufacturerModal(false)}
+        onInputChange={handleManufacturerInputChange}
+        onSaveEdit={handleSaveManufacturer}
+        name='Gyártó'
+        inputValue={newManufacturer}
+      />
+      <NotificationModal
+        show={showAddNotificationModalSuccess}
+        onHide={() => setShowAddNotificationModalSuccess(false)}
+        message='Sikeres hozzáadás!'
+        variant='success'
+      />
+      <NotificationModal
+        show={showAddNotificationModalError}
+        onHide={() => setShowAddNotificationModalError(false)}
+        message='Hiba történt a hozzáadás során!'
+        variant='danger'
+      />
       <NotificationModal
         show={showNotificationModal}
         onHide={() => {

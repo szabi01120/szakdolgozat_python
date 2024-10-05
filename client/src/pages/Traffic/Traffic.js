@@ -120,7 +120,7 @@ export default function Traffic() {
         variant="danger"
         onConfirm={handleConfirmDeleteSelectedProducts}
       />
-      {/* Szerkesztés modál ablak */}
+      {/* Szerkesztés modal */}
       <EditSoldProductModal
         show={showModal}
         onHide={() => setShowModal(false)}
@@ -182,18 +182,18 @@ export default function Traffic() {
                     ) : (
                       products.map((product, index) => (
                         <tr key={product.id}>
-                          <td>{product.id}</td>
-                          <td>{product.product_name}</td>
-                          <td>{product.incoming_invoice}</td>
-                          <td>{product.outgoing_invoice}</td>
-                          <td>{product.product_type}</td>
-                          <td>{product.product_size}</td>
-                          <td>{product.customer_name}</td>
-                          <td>{product.manufacturer}</td>
-                          <td>{priceFormatter.format(product.price)}</td>
-                          <td>{product.currency}</td>
-                          <td>{product.date}</td>
-                          <td>
+                          <td data-label="Id">{product.id}</td>
+                          <td data-label="Termék neve">{product.product_name}</td>
+                          <td data-label="Bejövő számla">{product.incoming_invoice}</td>
+                          <td data-label="Kimenő számla">{product.outgoing_invoice}</td>
+                          <td data-label="Típus">{product.product_type}</td>
+                          <td data-label="Méret">{product.product_size}</td>
+                          <td data-label="Vásárló neve">{product.customer_name}</td>
+                          <td data-label="Gyártó">{product.manufacturer}</td>
+                          <td data-label="Nettó ár">{priceFormatter.format(product.price)}</td>
+                          <td data-label="Pénznem">{product.currency}</td>
+                          <td data-label="Eladás dátuma">{product.date}</td>
+                          <td data-label="Műveletek">
                             <input
                               className='product-checkbox'
                               type="checkbox"
