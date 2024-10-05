@@ -17,7 +17,8 @@ const SoldProductsSummary = () => {
 
   return (
     <div className="sold-products-summary">
-      <h3>Eladott termékek száma:</h3> {totalQuantity}
+      <h3>Eladott termékek száma:</h3> 
+      {totalQuantity}
     </div>
   );
 };

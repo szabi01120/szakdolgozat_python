@@ -25,10 +25,10 @@ const Summary = () => {
         <div className="summary">
           <div className="summary-column">
             <div className="summary-item">
-              <p><SoldProductsSummary /></p>
+              <div><SoldProductsSummary /></div>
             </div>
             <div className="summary-item">
-              <p><StockSummary /></p>
+              <div><StockSummary /></div>
             </div>
           </div>
 
