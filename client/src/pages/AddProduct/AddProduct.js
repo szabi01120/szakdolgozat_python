@@ -63,10 +63,6 @@ export default function AddProduct() {
     getManufacturers();
   }, []);
 
-  useEffect(() => { }, [productTypes]);
-
-  useEffect(() => { }, [manufacturers]);
-
   useEffect(() => {
     if (showImageUpload) {
       setIsFormFilled(
@@ -164,12 +160,7 @@ export default function AddProduct() {
         console.log('Válasz:', response.data);
 
         const newProductType = { id: response.data.id, product_type: response.data.product_type };
-        setProductTypes((prevTypes) => {
-          const updatedTypes = [...prevTypes, newProductType];
-          return updatedTypes;
-        });
-
-        setFormData((prevFormData) => ({ ...prevFormData, product_type: newProductType.id }));
+        setProductTypes((prevTypes) => [...prevTypes, newProductType]);
 
         setShowAddTypeModal(false);
         setShowAddNotificationModalSuccess(true);
