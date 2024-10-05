@@ -1,14 +1,8 @@
-version: '3'
 services:
   frontend:
     build: ./client
     ports:
-      - "3000:80" # 3000-es port a fejlesztői React szerverhez
-    volumes:
-      - ./client # Lokális fájlok megosztása a konténerrel
-      - /client/node_modules # A node_modules mappa kizárása, hogy a lokális gépeden lévő fájlok ne ütközzenek a konténerben lévőkkel
-    environment:
-      - CHOKIDAR_USEPOLLING=true # Ez a változó szükséges lehet, hogy a fájlváltozásokat kövesse a Docker
+      - "3000:80"
     depends_on:
       - backend
   backend:

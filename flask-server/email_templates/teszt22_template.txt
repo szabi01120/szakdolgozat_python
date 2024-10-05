@@ -1,5 +1,0 @@
-{customer_name} - Ügyfél neve
-{customer_email} - Ügyfél e-mail címe
-{product_name} - Termék neve
-{product_price} - Termék nettó ára
-{quantity} - Mennyiség

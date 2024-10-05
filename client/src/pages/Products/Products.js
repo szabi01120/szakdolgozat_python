@@ -25,6 +25,7 @@ export default function Products() {
     axios
       .get('/api/products')
       .then(async (response) => {
+        console.log("termekek: ", productData);
         const productsWithPhotos = await Promise.all(
           response.data.map(async (product) => {
             try {
@@ -46,6 +47,7 @@ export default function Products() {
           })
         );
         setProducts(productsWithPhotos);
+        console.log('Termékek lekérdezve: ', productsWithPhotos);
       })
       .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
   }, []);
@@ -66,6 +68,7 @@ export default function Products() {
 
   const handleProductsButtonClick = () => {
     setProductData(!productData);
+    console.log('Termékek lekérdezése');
   };
 
   const handleDeleteButtonClick = (id) => {
@@ -309,7 +312,7 @@ export default function Products() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((product, index) => (
+                  {products && products.map((product, index) => (
                     <tr key={product.id}>
                       <td data-label="Id">{product.id}</td>
                       <td data-label="Termék neve">{product.product_name}</td>
