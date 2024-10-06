@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from dbConfig import db, Products, Image, SoldProducts, ProductTypes, ProductManufacturers
-import config
+import services.file_service as f
 import os
 import shutil
 import pytz
@@ -45,18 +45,22 @@ def update_product(id):
     if product is None:
         return jsonify({"error": "Nincs ilyen termék!"}), 404
     
-    product.incoming_invoice = incomingInvoice
-    product.product_name = productName
-    product.product_type = productType
-    product.product_size = productSize
-    product.quantity = productQuantity
-    product.manufacturer = productManufacturer
-    product.price = productPrice
-    product.currency = productCurrency
-    product.sold = stateSold
-    product.shipped = stateShipped
-    
-    db.session.commit()
+    try:
+        product.incoming_invoice = incomingInvoice
+        product.product_name = productName
+        product.product_type = productType
+        product.product_size = productSize
+        product.quantity = productQuantity
+        product.manufacturer = productManufacturer
+        product.price = productPrice
+        product.currency = productCurrency
+        product.sold = stateSold
+        product.shipped = stateShipped
+        
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Hiba történt a frissítés során: {str(e)}"}), 500
     
     return jsonify({"message": "Termék sikeresen frissítve!"}), 200
 
@@ -74,7 +78,7 @@ def delete_product(id):
     
     # id mappa törlés ha van kép
     if product_img is not None:
-        folder_path = os.path.join(config.UPLOAD_FOLDER, str(id))
+        folder_path = os.path.join(f.UPLOAD_FOLDER, str(id))
         if os.path.exists(folder_path):
             shutil.rmtree(folder_path)
             
@@ -96,9 +100,22 @@ def add_product():
     productPrice = request.json.get("price")
     productCurrency = request.json.get("currency")
 
-    product = Products(incoming_invoice=incomingInvoice, product_name=productName, product_type=productType, product_size=productSize, quantity=productQuantity, manufacturer=productManufacturer, price=productPrice, currency=productCurrency)
-    db.session.add(product)
-    db.session.commit()
+    try:
+        product = Products(
+            incoming_invoice=incomingInvoice, 
+            product_name=productName, 
+            product_type=productType, 
+            product_size=productSize, 
+            quantity=productQuantity, 
+            manufacturer=productManufacturer, 
+            price=productPrice, 
+            currency=productCurrency
+        )
+        db.session.add(product)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Hiba történt a hozzáadás során: {str(e)}"}), 500
     
     product_id = product.id
     return jsonify({
@@ -110,7 +127,6 @@ def add_product():
 @products_bp.route("/api/update_checkbox_state/<int:id>", methods=["PUT"])
 def update_checkbox_state(id):
     product_state = request.json
-    print("PRODUCT IDS:", product_state)
     if product_state is None:
         return jsonify({"error": "Érvénytelen kérésformátum!"}), 400
 
@@ -120,12 +136,11 @@ def update_checkbox_state(id):
         return jsonify({"error": "Nincs ilyen termék!"}), 404
     
     try:
-        # Ne fordítsuk az állapotot, csak állítsuk be a kapott értéket
         if "sold" in product_state:
-            product_to_update.sold = product_state.get("sold")  # True/False érték közvetlen beállítása
+            product_to_update.sold = product_state.get("sold")
             
         if "shipped" in product_state:
-            product_to_update.shipped = product_state.get("shipped")  # True/False érték közvetlen beállítása
+            product_to_update.shipped = product_state.get("shipped")
             
         db.session.commit()
         return jsonify({"message": "Termék státusz sikeresen frissítve!"}), 200
@@ -151,25 +166,29 @@ def update_product_status():
         tz = pytz.timezone('Europe/Budapest')
         current_time = datetime.now(tz)
 
-        # eladott terméket sold_products táblába rakjuk
-        sold_product = SoldProducts(
-            product_id=product.id,
-            incoming_invoice=product.incoming_invoice,
-            outgoing_invoice="ÜRES",  # Tedd ide a megfelelő kimenő számlát
-            product_name=product.product_name,
-            product_type=product.product_type,
-            product_size=product.product_size,
-            quantity=1,
-            customer_name="ÜRES",  
-            manufacturer=product.manufacturer,
-            price=product.price,
-            currency=product.currency,
-            date=current_time
-        )
-        db.session.add(sold_product)
+        try:
+            # eladott terméket sold_products táblába rakjuk
+            sold_product = SoldProducts(
+                product_id=product.id,
+                incoming_invoice=product.incoming_invoice,
+                outgoing_invoice="ÜRES",  # Tedd ide a megfelelő kimenő számlát
+                product_name=product.product_name,
+                product_type=product.product_type,
+                product_size=product.product_size,
+                quantity=1,
+                customer_name="ÜRES",  
+                manufacturer=product.manufacturer,
+                price=product.price,
+                currency=product.currency,
+                date=current_time
+            )
+            db.session.add(sold_product)
 
-        # Csökkentjük a termék darabszámát
-        product.quantity -= 1
+            # Csökkentjük a termék darabszámát
+            product.quantity -= 1
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Hiba történt az áthelyezés során: {str(e)}"}), 500
 
         # Ha a darabszám 0, töröljük a terméket
         if product.quantity <= 0:
@@ -179,7 +198,7 @@ def update_product_status():
                 images = Image.query.filter_by(product_id=product.id).all()
 
                 if images is not None:
-                    folder_path = os.path.join(config.UPLOAD_FOLDER, str(product.id))
+                    folder_path = os.path.join(f.UPLOAD_FOLDER, str(product.id))
                 if os.path.exists(folder_path):
                     shutil.rmtree(folder_path)
                     

@@ -2,14 +2,13 @@
 import os
 from flask import Blueprint, request, jsonify
 from dbConfig import db, app, Image
-from services.file_service import allowed_file
 from werkzeug.utils import secure_filename
 from flask_marshmallow import Marshmallow
-import config
+import services.file_service as f
 
 ma = Marshmallow(app)
 
-# Marshmallow séma az Image modellhez
+# Marshmallow az Image-hez
 class ImageSchema(ma.Schema):
     class Meta:
         fields = ("id", "product_id", "title")
@@ -27,14 +26,14 @@ def upload_file(product_id):
         }), 400
 
     files = request.files.getlist('files[]')
-    product_folder = os.path.join(config.UPLOAD_FOLDER, str(product_id)) #??????????
+    product_folder = os.path.join(f.UPLOAD_FOLDER, str(product_id)) #??????????
     if not os.path.exists(product_folder):
         os.makedirs(product_folder)
     
     success = False
     
     for file in files:
-        if file and allowed_file(file.filename):
+        if file and f.allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(product_folder, filename))
             
@@ -64,11 +63,12 @@ def images():
 @images_bp.route('/api/images/<int:id>', methods=['GET'])
 def image(id):
     # A termék képeinek mappája az UPLOAD_FOLDER alapján
-    product_folder = os.path.join(config.UPLOAD_FOLDER, str(id))
+    product_folder = os.path.join(f.UPLOAD_FOLDER, str(id))
+    print("product folder:",product_folder)
 
-    # Ellenőrizzük, hogy a mappa létezik-e
+    # létezik-e a mappa
     if not os.path.exists(product_folder):
-        return jsonify({"error": "A megadott termékhez nem találhatóak képek."})
+        return jsonify({"error": "A megadott termékhez nem találhatóak képek."}), 404
 
     # összes listázás
     images = []
@@ -86,17 +86,20 @@ def delete_image(id):
     if image is None:
         return jsonify({"error": "Nincs ilyen kép!"}), 404
 
-    product_folder = os.path.join(config.UPLOAD_FOLDER, str(image.product_id))
-    print("product folder:",product_folder)
-    image_path = os.path.join(product_folder, image.title)
-    print("image path:",image_path)
+    product_folder = os.path.join(f.UPLOAD_FOLDER, str(image.product_id))
+    if not os.path.exists(product_folder):
+        return jsonify({"error": "A megadott mappa nem létezik"}), 404
     
+    image_path = os.path.join(product_folder, image.title)
     if not os.path.exists(image_path):
         return jsonify({"error": "A megadott kép nem található!"}), 404
 
-    os.remove(image_path)
+    try:
+        os.remove(image_path)
 
-    db.session.delete(image)
-    db.session.commit()
+        db.session.delete(image)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
     return jsonify({"message": "Kép sikeresen törölve!"}), 200

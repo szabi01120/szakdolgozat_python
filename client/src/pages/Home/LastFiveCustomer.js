@@ -7,7 +7,6 @@ const LastFiveCustomer = () => {
   useEffect(() => {
     axios.get("/api/sold_products/last_five_customer")
       .then(response => {
-        // Set the retrieved data to state
         setLastFiveCustomers(response.data.last_five_customers);
       })
       .catch(error => {

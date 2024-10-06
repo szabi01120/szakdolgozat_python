@@ -4,7 +4,6 @@ import axios from 'axios';
 const LatestCustomer = () => {
   const [latestCustomer, setLatestCustomer] = useState("");
 
-  // minden frissüléskör lekérdezés
   useEffect(() => {
     axios.get("/api/sold_products/latest_customer")
       .then(response => {

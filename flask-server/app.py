@@ -2,12 +2,12 @@ from flask import Flask
 from dbConfig import db
 from extensions import bcrypt, mail, server_session
 from routes import register_routes
-from config import ApplicationConfig
+import config
 from flask_cors import CORS
 import redis
 
-app = Flask(__name__)
-app.config.from_object(ApplicationConfig)
+app = config.create_app()
+app.config.from_object(config.ApplicationConfig)
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 CORS(app, supports_credentials=True)

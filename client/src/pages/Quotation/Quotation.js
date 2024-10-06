@@ -25,19 +25,19 @@ export default function Quotation() {
   const [successMessageDeleteTemplate, setSuccessMessageDeleteTemplate] = useState('');
   const [errorMessageDeleteTemplate, setErrorMessageDeleteTemplate] = useState('');
 
-  // Sablon hozzáadásához szükséges állapotok
+  // Sablon hozzáadás állapotok
   const [newTemplateName, setNewTemplateName] = useState('');
   const [newTemplateContent, setNewTemplateContent] = useState('');
 
   // Törlésre kiválasztott sablon állapota
   const [selectedTemplateToDelete, setSelectedTemplateToDelete] = useState('');
 
-  // Accordion megjelenítés állapot
+  // accordion állapot
   const [accordionData, setAccordionData] = useState(false);
 
   // Sablonok lekérése a /api/templates végpontról
   useEffect(() => {
-    const fetchTemplates = async () => {
+    const getTemplates = async () => {
       try {
         const response = await axios.get('/api/templates');
         console.log('Sablonok:', response.data);
@@ -57,7 +57,7 @@ export default function Quotation() {
       }
     };
 
-    fetchTemplates();
+    getTemplates();
   }, []);
 
   // Új sablon hozzáadása
@@ -81,7 +81,7 @@ export default function Quotation() {
         setNewTemplateName('');
         setNewTemplateContent('');
         console.log('Sablon hozzáadva:', newTemplate);
-        setTemplate(newTemplateName); // Új sablon kiválasztása
+        setTemplate(newTemplateName);
       }
     } catch (error) {
       console.error('Hiba történt a sablon hozzáadása során:', error);

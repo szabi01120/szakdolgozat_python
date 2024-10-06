@@ -1,22 +1,11 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
-from config import ApplicationConfig
+import config
 from uuid import uuid4
 
 def get_uuid():
     return uuid4().hex
 
-def create_app(): 
-    app = Flask(__name__)
-    CORS(app, resources={r"*": {"origins": "http://localhost:3000", "supports_credentials":True }})
-    # database config
-    app.config.from_object(ApplicationConfig)
-    app.config['SESSION_COOKIE_HTTPONLY'] = False
-
-    return app
-
-app = create_app()
+app = config.create_app()
 db = SQLAlchemy(app)
 
 class Image(db.Model):

@@ -4,7 +4,6 @@ import axios from 'axios';
 const SoldProductsSummary = () => {
   const [totalQuantity, setTotalQuantity] = useState(0);
 
-  // minden frissüléskör lekérdezés
   useEffect(() => {
     axios.get("/api/sold_products/quantity")
       .then(response => {

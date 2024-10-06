@@ -54,7 +54,4 @@ def send_quotation():
     except FileNotFoundError:
         return jsonify({"message": f"A sablon nem található: {template}"}), 404
     except Exception as e:
-        print("template content:", template_content)
-        print("mail username:", Config.MAIL_USERNAME)
-        print("hiba", e)
         return jsonify({"message": "Hiba történt az ajánlat küldése során."}), 500

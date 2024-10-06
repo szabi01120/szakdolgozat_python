@@ -4,7 +4,6 @@ import axios from 'axios';
 const SoldProductsSummary = () => {
   const [latestSoldProduct, setLatestSoldProduct] = useState("");
 
-  // minden frissüléskör lekérdezés
   useEffect(() => {
     axios.get("/api/sold_products/latest")
       .then(response => {

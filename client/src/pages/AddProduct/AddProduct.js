@@ -6,11 +6,11 @@ import AddModal from './AddModal';
 import { NotificationModal } from '../../components';
 
 export default function AddProduct() {
-  const [images, setImages] = useState([]); // képek tömb
-  const [isDragging, setIsDragging] = useState(false); // drag and drop állapota
+  const [images, setImages] = useState([]);
+  const [isDragging, setIsDragging] = useState(false); // drag and drop
   const [redirectToProducts, setRedirectToProducts] = useState(false); // termékek oldalra irányítás
-  const [productTypes, setProductTypes] = useState([]); // Termék típusok
-  const [manufacturers, setManufacturers] = useState([]); // Termék gyártók
+  const [productTypes, setProductTypes] = useState([]); 
+  const [manufacturers, setManufacturers] = useState([]);
 
   const fileInputRef = useRef(); // input referencia
 
@@ -27,7 +27,7 @@ export default function AddProduct() {
   const [newManufacturer, setNewManufacturer] = useState('');
 
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({ // form adatok amibe küldöm a requestet
     incoming_invoice: '',
     product_name: '',
     product_type: '',
@@ -256,11 +256,11 @@ export default function AddProduct() {
     { label: 'Terméknév', name: 'product_name', placeholder: 'Terméknév', type: 'text' },
     { label: 'Méret', name: 'product_size', placeholder: 'Méret', type: 'text' },
     { label: 'Mennyiség', name: 'quantity', placeholder: 'Mennyiség', type: 'number', min: '0' },
-    { label: 'Nettó ár', name: 'price', placeholder: 'Nettó ár', type: 'text' }, // Fontos: itt text, hogy formázhassuk
+    { label: 'Nettó ár', name: 'price', placeholder: 'Nettó ár', type: 'text' }, // Fontos => itt text, hogy formázhassuk
     { label: 'Bejövő számla', name: 'incoming_invoice', placeholder: 'Bejövő számla', type: 'text' },
   ];
 
-  const currencyTypes = ['HUF', 'EUR', 'USD']; // Pénznem listája
+  const currencyTypes = ['HUF', 'EUR', 'USD'];
 
   const renderForm = (
     <div className='pt-4'>

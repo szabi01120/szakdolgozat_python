@@ -1,11 +1,19 @@
 from dotenv import load_dotenv
+from flask import Flask
 import os
 import redis
-
-UPLOAD_FOLDER = 'static/uploads'
-MAX_CONTENT_LENGTH = 512 * 1024 * 1024  # 512 MB max
+from flask_cors import CORS
 
 load_dotenv()
+
+def create_app(): 
+    app = Flask(__name__)
+    CORS(app, resources={r"*": {"origins": "http://localhost:3000", "supports_credentials":True }})
+    # database config
+    app.config.from_object(ApplicationConfig)
+    app.config['SESSION_COOKIE_HTTPONLY'] = False
+
+    return app
 
 # Flask konfiguráció
 class ApplicationConfig:

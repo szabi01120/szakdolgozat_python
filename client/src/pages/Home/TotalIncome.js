@@ -6,7 +6,6 @@ const TotalIncome = () => {
     const [incomeEUR, setincomeEUR] = useState(0);
     const [incomeUSD, setincomeUSD] = useState(0);
 
-    // minden frissüléskör lekérdezés
     useEffect(() => {
         axios.get("/api/sold_products/income")
             .then(response => {

@@ -92,14 +92,14 @@ export default function Products() {
   };
 
   const handleCancelDelete = () => {
-    setShowDeleteModal(false); // Modal bezárása
-    setProductIdToDelete(null); // Törölt termék azonosítójának törlése
+    setShowDeleteModal(false);
+    setProductIdToDelete(null);
   };
 
   const handleCheckboxChange = async (index, field) => {
     const updatedProductsCopy = [...products];
     const product = updatedProductsCopy[index];
-    product[field] = !product[field]; // Váltás a checkbox értéken (true/false)
+    product[field] = !product[field]; //checkbox value change
 
     try {
       const response = await axios.put(`/api/update_checkbox_state/${product.id}`, {
@@ -127,14 +127,14 @@ export default function Products() {
       console.error(`Hiba a ${field} mező frissítése közben: `, error);
     }
 
-    // Frissítjük a komponens állapotát a helyi változásokkal
+    // frissítés
     setProducts(updatedProductsCopy);
   };
 
   const handleEditClick = (product) => {
     setEditingProductId(product.id);
     setEditedProduct(product);
-    setShowModal(true); // Show the modal
+    setShowModal(true);
   };
 
   const handleInputChange = (e) => {
@@ -155,7 +155,7 @@ export default function Products() {
         setProducts(updatedProducts);
         setEditingProductId(null);
         setEditedProduct({});
-        setShowModal(false); // Close the modal
+        setShowModal(false);
         console.log("Termék sikeresen frissítve!");
       }
     } catch (error) {
@@ -166,7 +166,7 @@ export default function Products() {
   const handleCancelEdit = () => {
     setEditingProductId(null);
     setEditedProduct({});
-    setShowModal(false); // Close the modal
+    setShowModal(false);
   };
 
   const handleSaveButtonClick = async () => {
@@ -186,11 +186,11 @@ export default function Products() {
           // Sikeres válasz esetén frissítjük a termékeket
           const updatedProducts = products.map((product) => {
             if (productsToMove.includes(product.id)) {
-              const updatedQuantity = product.quantity - 1; // Csökkentjük a darabszámot
+              const updatedQuantity = product.quantity - 1; // csökkentjük a darabszámot
 
               // Ha a darabszám 0, akkor eltávolítjuk a listából
               if (updatedQuantity <= 0) {
-                return null; // Eltávolítjuk a nullákat
+                return null;
               }
 
               return {
@@ -202,7 +202,7 @@ export default function Products() {
             }
 
             return product; // A többi termék változatlan marad
-          }).filter(Boolean); // Null elemek eltávolítása
+          }).filter(Boolean); // null elemek eltávolítása
 
           // Frissítjük az állapotot
           setProducts(updatedProducts);
@@ -212,11 +212,11 @@ export default function Products() {
           console.log('Sikeres módosítás, termékek áthelyezve és frissítve.');
         } else {
           console.log('Sikertelen módosítás');
-          setShowFailedModal(true); // alert mutatása
+          setShowFailedModal(true);
         }
       } catch (error) {
         console.log('Hiba történt a módosítás közben: ', error);
-        setShowFailedModal(true); // alert mutatása
+        setShowFailedModal(true);
       }
     } else {
       console.log('Nincs termék a feltételekhez');

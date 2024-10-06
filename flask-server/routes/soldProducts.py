@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from dbConfig import db, SoldProducts, Image
-import config
+import services.file_service as f
 import os
 import shutil
 
@@ -35,18 +35,21 @@ def delete_sold_product(id):
     if product is None:
         return jsonify({"error": "Nincs ilyen termék!"}), 404
     
-    db.session.delete(product)
-    db.session.commit()
-    
-    # van e kép a termékhez
-    if product_img:
-        folder_path = os.path.join(config.UPLOAD_FOLDER, str(id))
-        if os.path.exists(folder_path):
-            shutil.rmtree(folder_path)
-        
-        for image in product_img:
-            db.session.delete(image)
+    try:
+        db.session.delete(product)
         db.session.commit()
+        
+        # van e kép a termékhez
+        if product_img:
+            folder_path = os.path.join(f.UPLOAD_FOLDER, str(id))
+            if os.path.exists(folder_path):
+                shutil.rmtree(folder_path)
+            
+            for image in product_img:
+                db.session.delete(image)
+            db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
     return jsonify({"message": "Termék sikeresen törölve!"}), 200
 
@@ -68,17 +71,20 @@ def update_sold_product(id):
     if product is None:
         return jsonify({"error": "Nincs ilyen termék!"}), 404
     
-    product.incoming_invoice = incomingInvoice
-    product.outgoing_invoice = outgoingInvoice
-    product.product_name = productName
-    product.product_type = productType
-    product.product_size = productSize
-    product.quantity = quantity
-    product.customer_name = customer_name
-    product.manufacturer = productManufacturer
-    product.price = productPrice
-    product.currency = productCurrency
-    
-    db.session.commit()
+    try:
+        product.incoming_invoice = incomingInvoice
+        product.outgoing_invoice = outgoingInvoice
+        product.product_name = productName
+        product.product_type = productType
+        product.product_size = productSize
+        product.quantity = quantity
+        product.customer_name = customer_name
+        product.manufacturer = productManufacturer
+        product.price = productPrice
+        product.currency = productCurrency
+        
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
     return jsonify({"message": "Termék sikeresen frissítve!"}), 200

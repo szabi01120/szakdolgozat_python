@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import axios from 'axios';
-import './Login.css'
+import './Login.css';
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -28,23 +28,23 @@ export default function Login() {
                     <h1 className='text-center'>Bejelentkezés</h1>
                     <h6 className='text-center pt-1 pb-1'>Kérlek add meg a belépési adatokat!</h6>
                     <div className="mt-3">
-                        <label>Felhasználónév:</label>
+                        <label htmlFor="username">Felhasználónév:</label>
                         <input
                             type='text'
                             className='form-control'
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder='Felhasználónév'
-                            id=""
+                            id="username" 
                         />
-                        <label>Jelszó:</label>
+                        <label htmlFor="password">Jelszó:</label>
                         <input
                             type='password'
                             className='form-control'
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder='Jelszó'
-                            id=""
+                            id="password"
                         />
                         <button type='button' className="btn btn-primary mt-4" onClick={() => logInUser()}>Bejelentkezés</button>
                     </div>

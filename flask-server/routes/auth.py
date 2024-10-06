@@ -8,9 +8,6 @@ auth_blueprint = Blueprint('auth', __name__)
 @auth_blueprint.route("/@me", methods=["GET"])
 def get_current_user():
     user_id = session.get("user_id")
-    print("session from get_current_user: ", session)
-    print("session from @me: ", user_id)
-    print("user.id: ", Users.query.filter_by(id=user_id).first())
     if not user_id:
         return jsonify({"error": "Nincs bejelentkezve!"}), 401
     
@@ -21,6 +18,7 @@ def get_current_user():
         "name": user.name
     }), 200
 
+# Regisztráció kezelése
 @auth_blueprint.route("/register", methods=["POST"])
 def register_user():
     username = request.json["username"]
@@ -32,12 +30,15 @@ def register_user():
     if user_exists:
         return jsonify({"error": "Ez a felhasználó már létezik!"}), 409
 
-    hashed_password = bcrypt.generate_password_hash(password)
-    new_user = Users(username=username, password=hashed_password, name=name)
-    db.session.add(new_user)
-    db.session.commit()
+    try:
+        hashed_password = bcrypt.generate_password_hash(password)
+        new_user = Users(username=username, password=hashed_password, name=name)
+        db.session.add(new_user)
+        db.session.commit()
     
-    session["user_id"] = new_user.id
+        session["user_id"] = new_user.id
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
     return jsonify({
         "id": new_user.id,
