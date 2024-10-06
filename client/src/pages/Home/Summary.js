@@ -65,7 +65,7 @@ const Summary = () => {
         <div className="recent-customers">
           <h3>Utolsó 5 tranzakció:</h3>
           <ul>
-            {recentTransactions.map((transaction, index) => (
+            {recentTransactions?.map((transaction, index) => (
               <li key={index}>
                 <span className="transaction-date">
                   {dateFormatter.format(new Date(transaction.date))}

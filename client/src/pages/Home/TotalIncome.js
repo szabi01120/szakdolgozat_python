@@ -7,7 +7,7 @@ const TotalIncome = () => {
     const [incomeUSD, setincomeUSD] = useState(0);
 
     useEffect(() => {
-        axios.get("/api/sold_products/income")
+        axios.get("http://127.0.0.1:5000/api/sold_products/income")
             .then(response => {
                 setincomeHUF(response.data.total_income_huf);
                 setincomeEUR(response.data.total_income_eur);

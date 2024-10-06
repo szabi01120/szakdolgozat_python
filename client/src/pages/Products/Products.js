@@ -23,23 +23,28 @@ export default function Products() {
 
   useEffect(() => {
     axios
-      .get('/api/products')
+      .get('http://127.0.0.1:5000/api/products')
       .then((response) => {
-        const productsWithPhotos = response.data.map((product) => {
+        console.log('Kapott adatok:', response.data); // Ellenőrizzük a válasz struktúráját
+
+        const productsData = response.data;
+  
+        const productsWithPhotos = productsData.map((product) => {
           product.sold = product.sold || false;
           product.shipped = product.shipped || false;
-
+  
           if (product.sold && product.shipped) {
             setProductsToMove((prevProductsToMove) => [...prevProductsToMove, product.id]);
           }
-
+  
           return product;
         });
-
+  
         setProducts(productsWithPhotos);
       })
       .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
   }, []);
+  
 
   const generateRandomProduct = () => { // FOR TESTING PURPOSES ONLY!!
     const randomId = Math.floor(Math.random() * 10000);  // Véletlenszerű ID
@@ -93,7 +98,7 @@ export default function Products() {
     product[field] = !product[field]; //checkbox value change
 
     try {
-      const response = await axios.put(`/api/update_checkbox_state/${product.id}`, {
+      const response = await axios.put(`http://127.0.0.1:5000/api/update_checkbox_state/${product.id}`, {
         [field]: product[field],
       });
 
@@ -138,7 +143,7 @@ export default function Products() {
 
   const handleSaveEdit = async () => {
     try {
-      const response = await axios.put(`/api/update_product/${editingProductId}`, editedProduct, { withCredentials: true });
+      const response = await axios.put(`http://127.0.0.1:5000/api/update_product/${editingProductId}`, editedProduct, { withCredentials: true });
       if (response.status === 200) {
         const updatedProducts = products.map((product) =>
           product.id === editingProductId ? editedProduct : product
@@ -171,7 +176,7 @@ export default function Products() {
             quantity: product.quantity, // Az aktuális darabszám, amit ellenőrizni kell
           }));
 
-        const response = await axios.post('/api/update_product_status', productsToMoveDetails);
+        const response = await axios.post('http://127.0.0.1:5000/api/update_product_status', productsToMoveDetails);
 
         if (response.status === 200) {
           // Sikeres válasz esetén frissítjük a termékeket
@@ -300,7 +305,7 @@ export default function Products() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products && products.map((product, index) => (
+                  {products && products?.map((product, index) => (
                     <tr key={product.id}>
                       <td data-label="Id">{product.id}</td>
                       <td data-label="Termék neve">{product.product_name}</td>

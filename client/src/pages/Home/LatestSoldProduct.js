@@ -5,7 +5,7 @@ const SoldProductsSummary = () => {
   const [latestSoldProduct, setLatestSoldProduct] = useState("");
 
   useEffect(() => {
-    axios.get("/api/sold_products/latest")
+    axios.get("http://127.0.0.1:5000/api/sold_products/latest")
       .then(response => {
         setLatestSoldProduct(response.data.product_name);
       })

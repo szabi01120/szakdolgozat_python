@@ -20,7 +20,7 @@ export default function Traffic() {
     if (productData) {
       setLoading(true); // Indítsd el a töltést
       axios
-        .get('/api/sold_products')
+        .get('http://127.0.0.1:5000/api/sold_products')
         .then((response) => {
           setProducts(response.data);
           console.log(response.data);
@@ -88,7 +88,7 @@ export default function Traffic() {
 
   const handleSaveEdit = async () => {
     try {
-      const response = await axios.put(`/api/update_sold_product/${editingProductId}`, editedProduct, { withCredentials: true });
+      const response = await axios.put(`http://127.0.0.1:5000/api/update_sold_product/${editingProductId}`, editedProduct, { withCredentials: true });
       if (response.status === 200) {
         const updatedProducts = products.map((product) =>
           product.id === editingProductId ? editedProduct : product
