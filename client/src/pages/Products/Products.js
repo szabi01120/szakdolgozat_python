@@ -24,27 +24,18 @@ export default function Products() {
   useEffect(() => {
     axios
       .get('/api/products')
-      .then(async (response) => {
-        const productsWithPhotos = await Promise.all(
-          response.data.map(async (product) => {
-            try {
-              // Fotók lekérése a szerverről
-              const photoResponse = await axios.get(`http://127.0.0.1:5000/api/images/${product.id}`);
-              product.hasPhotos = photoResponse.data.length > 0;
-            } catch (error) {
-              console.log('Hiba a képek lekérdezésekor: ', error);
-              product.hasPhotos = false;
-            }
+      .then((response) => {
+        const productsWithPhotos = response.data.map((product) => {
+          product.sold = product.sold || false;
+          product.shipped = product.shipped || false;
 
-            product.sold = product.sold || false;
-            product.shipped = product.shipped || false;
+          if (product.sold && product.shipped) {
+            setProductsToMove((prevProductsToMove) => [...prevProductsToMove, product.id]);
+          }
 
-            if (product.sold && product.shipped) { // lekérdezésnél is kell tudni hogy van e termék amit move-olni kell
-              setProductsToMove((prevProductsToMove) => [...prevProductsToMove, product.id]);
-            }
-            return product;
-          })
-        );
+          return product;
+        });
+
         setProducts(productsWithPhotos);
       })
       .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
@@ -309,7 +300,7 @@ export default function Products() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((product, index) => (
+                  {products && products.map((product, index) => (
                     <tr key={product.id}>
                       <td data-label="Id">{product.id}</td>
                       <td data-label="Termék neve">{product.product_name}</td>

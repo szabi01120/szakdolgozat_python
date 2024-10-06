@@ -37,6 +37,7 @@ class Products(db.Model):
     currency = db.Column(db.String(255), nullable=False)
     sold = db.Column(db.Boolean, default=False) 
     shipped = db.Column(db.Boolean, default=False)  
+    hasPhotos = db.Column(db.Boolean, default=False)
     
 class Templates(db.Model):
     __tablename__ = 'templates'

@@ -25,6 +25,7 @@ def get_products():
         "currency": product.currency,
         "sold": product.sold,
         "shipped": product.shipped,
+        "hasPhotos": product.hasPhotos
     } for product in products]), 200
 
 # Termék frissítése
@@ -99,6 +100,7 @@ def add_product():
     productManufacturer = request.json.get("manufacturer")
     productPrice = request.json.get("price")
     productCurrency = request.json.get("currency")
+    hasPhotos = request.json.get("hasPhotos")
 
     try:
         product = Products(
@@ -109,7 +111,8 @@ def add_product():
             quantity=productQuantity, 
             manufacturer=productManufacturer, 
             price=productPrice, 
-            currency=productCurrency
+            currency=productCurrency,
+            hasPhotos=hasPhotos
         )
         db.session.add(product)
         db.session.commit()
@@ -171,7 +174,7 @@ def update_product_status():
             sold_product = SoldProducts(
                 product_id=product.id,
                 incoming_invoice=product.incoming_invoice,
-                outgoing_invoice="ÜRES",  # Tedd ide a megfelelő kimenő számlát
+                outgoing_invoice="ÜRES",
                 product_name=product.product_name,
                 product_type=product.product_type,
                 product_size=product.product_size,

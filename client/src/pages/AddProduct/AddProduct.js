@@ -9,7 +9,7 @@ export default function AddProduct() {
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false); // drag and drop
   const [redirectToProducts, setRedirectToProducts] = useState(false); // termékek oldalra irányítás
-  const [productTypes, setProductTypes] = useState([]); 
+  const [productTypes, setProductTypes] = useState([]);
   const [manufacturers, setManufacturers] = useState([]);
 
   const fileInputRef = useRef(); // input referencia
@@ -35,7 +35,8 @@ export default function AddProduct() {
     quantity: '',
     manufacturer: '',
     price: '',
-    currency: ''
+    currency: '',
+    hasPhotos: false
   });
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
@@ -188,22 +189,23 @@ export default function AddProduct() {
       setShowAddNotificationModalError(true);
     }
   };
-
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    
+    
     if (showImageUpload && images.length > 0) {
       const allowedExtensions = ['jpg', 'jpeg', 'png'];
-
+      
       const invalidFiles = images.filter((file) => {
         const extension = file.name.split('.').pop().toLowerCase();
         return !allowedExtensions.includes(extension);
       });
-
+      
       images.forEach((file) => {
         console.log(`File name: ${file.name}, File type: ${file.type}`);
       });
-
+      
       if (invalidFiles.length > 0) {
         console.log('Nem megfelelő fájlformátum');
         console.log('Hibás fájlformátum:', invalidFiles);
@@ -212,10 +214,15 @@ export default function AddProduct() {
         return;
       }
     }
-
+    
+    const updatedFormData = {
+      ...formData,
+      hasPhotos: showImageUpload && images.length > 0 //ha mindkettő igaz akkor van kép => true
+    };
+    
     // ha érvényesek a fájlformátumok, akkor hozzáadjuk a terméket
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/add_product', formData);
+      const response = await axios.post('http://127.0.0.1:5000/api/add_product', updatedFormData);
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
         const product_id = response.data.product_id;
@@ -223,7 +230,6 @@ export default function AddProduct() {
         console.log('Termék ID:', product_id);
 
         // ha van kép feltöltjük a termék után
-        // itt már tudjuk hogy jók a formátumok, feljebb lekezeltük
         if (showImageUpload) {
           const data = new FormData();
           for (let i = 0; i < images.length; i++) {
@@ -247,7 +253,7 @@ export default function AddProduct() {
       }
     } catch (error) {
       console.log('Hiba történt:', error.response);
-      console.log('data:', formData);
+      console.log('data:', updatedFormData);
       setIsError(true);
     }
   };
