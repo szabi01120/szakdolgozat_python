@@ -9,9 +9,6 @@ import redis
 app = config.create_app()
 app.config.from_object(config.ApplicationConfig)
 
-CORS(app, resources={r"/api/*": {"origins": "*"}})
-CORS(app, supports_credentials=True)
-
 bcrypt.init_app(app)
 mail.init_app(app)
 server_session.init_app(app)

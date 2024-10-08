@@ -160,7 +160,7 @@ export default function AddProduct() {
         console.log('Sikeres hozzáadás');
         console.log('Válasz:', response.data);
 
-        const newProductType = { id: response.data.id, product_type: response.data.product_type };
+        const newProductType = response.data.product_type;
         setProductTypes((prevTypes) => [...prevTypes, newProductType]);
 
         setShowAddTypeModal(false);
@@ -181,7 +181,9 @@ export default function AddProduct() {
         console.log('Válasz:', response.data);
         setShowAddManufacturerModal(false);
         setShowAddNotificationModalSuccess(true);
-        setManufacturers((prevManufacturers) => [...prevManufacturers, response.data]);
+
+        const newManufacturer = response.data.product_manufacturer;
+        setManufacturers((prevManufacturers) => [...prevManufacturers, newManufacturer]);
       }
     } catch (error) {
       console.log('Hiba történt a gyártó hozzáadása során:', error.response);
@@ -232,8 +234,8 @@ export default function AddProduct() {
         // ha van kép feltöltjük a termék után
         if (showImageUpload) {
           const data = new FormData();
-          for (let i = 0; i < images.length; i++) {
-            data.append("files[]", images[i]);
+          for (const element of images) {
+            data.append("files[]", element);
           }
           try {
             await axios.post(`http://127.0.0.1:5000/api/img_upload/${product_id}`, data);

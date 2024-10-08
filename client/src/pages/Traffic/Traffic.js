@@ -170,55 +170,54 @@ export default function Traffic() {
                   </tr>
                 </thead>
                 <tbody>
-                  {loading ? (
+                  {loading && (
                     <tr>
                       <td colSpan="13" style={{ textAlign: 'center' }}>Adatok betöltése folyamatban...</td>
                     </tr>
-                  ) : (
-                    products.length === 0 ? (
-                      <tr>
-                        <td colSpan="13">Nincs termék adat</td>
-                      </tr>
-                    ) : (
-                      products.map((product, index) => (
-                        <tr key={product.id}>
-                          <td data-label="Id">{product.id}</td>
-                          <td data-label="Termék neve">{product.product_name}</td>
-                          <td data-label="Bejövő számla">{product.incoming_invoice}</td>
-                          <td data-label="Kimenő számla">{product.outgoing_invoice}</td>
-                          <td data-label="Típus">{product.product_type}</td>
-                          <td data-label="Vásárló neve">{product.customer_name}</td>
-                          <td data-label="Gyártó">{product.manufacturer}</td>
-                          <td data-label="Beszerzési ár">{priceFormatter.format(product.incoming_price) + " " + product.currency}</td>
-                          <td data-label="Eladási ár">{priceFormatter.format(product.selling_price) + " " + product.currency}</td>
-                          <td
-                            data-label="Profit"
-                            className={product.selling_price - product.incoming_price >= 0 ? 'profit-green' : 'profit-red'}
+                  )}
+                  {!loading && products.length === 0 && (
+                    <tr>
+                      <td colSpan="13">Nincs termék adat</td>
+                    </tr>
+                  )}
+                  {!loading && products.length > 0 && (
+                    products.map((product, index) => (
+                      <tr key={product.id}>
+                        <td data-label="Id">{product.id}</td>
+                        <td data-label="Termék neve">{product.product_name}</td>
+                        <td data-label="Bejövő számla">{product.incoming_invoice}</td>
+                        <td data-label="Kimenő számla">{product.outgoing_invoice}</td>
+                        <td data-label="Típus">{product.product_type}</td>
+                        <td data-label="Vásárló neve">{product.customer_name}</td>
+                        <td data-label="Gyártó">{product.manufacturer}</td>
+                        <td data-label="Beszerzési ár">{priceFormatter.format(product.incoming_price) + " " + product.currency}</td>
+                        <td data-label="Eladási ár">{priceFormatter.format(product.selling_price) + " " + product.currency}</td>
+                        <td
+                          data-label="Profit"
+                          className={product.selling_price - product.incoming_price >= 0 ? 'profit-green' : 'profit-red'}
+                        >
+                          {priceFormatter.format(product.selling_price - product.incoming_price) + " " + product.currency}
+                        </td>
+                        <td data-label="Eladás dátuma">{product.date}</td>
+                        <td data-label="Műveletek">
+                          <input
+                            className='product-checkbox'
+                            type="checkbox"
+                            id={`checkbox-select-${index}`}
+                            checked={selectedProducts.includes(product.id)}
+                            onChange={() => handleCheckboxChange(product.id)}
+                          />
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-edit"
+                            onClick={() => handleEditClick(product)}
                           >
-                            {priceFormatter.format(product.selling_price - product.incoming_price) + " " + product.currency}
-                          </td>
-                          <td data-label="Eladás dátuma">{product.date}</td>
-                          <td data-label="Műveletek">
-                            <input
-                              className='product-checkbox'
-                              type="checkbox"
-                              id={`checkbox-select-${index}`}
-                              checked={selectedProducts.includes(product.id)}
-                              onChange={() => handleCheckboxChange(product.id)}
-                            />
-                            <label htmlFor={`checkbox-select-${index}`}></label>
-                          </td>
-                          <td>
-                            <button
-                              className="btn btn-edit"
-                              onClick={() => handleEditClick(product)}
-                            >
-                              Edit
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))
                   )}
                 </tbody>
               </table>

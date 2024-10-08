@@ -232,9 +232,16 @@ def add_product_type():
         product_type = ProductTypes(product_type=productType)
         db.session.add(product_type)
         db.session.commit()
-        return jsonify({"message": "Termék típus sikeresen hozzáadva!"}), 200
+        return jsonify({
+            "message": "Termék típus sikeresen hozzáadva!",
+            "product_type": {
+                "id": product_type.id,
+                "product_type": product_type.product_type
+            }
+        }), 200
     except Exception as e:
         db.session.rollback()
+        print(f"Hiba történt a hozzáadás során: {str(e)}")
         return jsonify({"error": f"Hiba történt a hozzáadás során: {str(e)}"}), 500
     
 # Termék típus lekérdezése
@@ -261,7 +268,13 @@ def add_product_manufacturer():
         product_manufacturer = ProductManufacturers(manufacturer=productManufacturer)
         db.session.add(product_manufacturer)
         db.session.commit()
-        return jsonify({"message": "Termék gyártó sikeresen hozzáadva!"}), 200
+        return jsonify({
+            "message": "Termék gyártó sikeresen hozzáadva!",
+            "product_manufacturer": {
+                "id": product_manufacturer.id,
+                "manufacturer": product_manufacturer.manufacturer
+            }
+        }), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": f"Hiba történt a hozzáadás során: {str(e)}"}), 500

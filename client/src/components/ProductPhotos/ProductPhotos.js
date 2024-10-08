@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductPhotos.css';
-import { Navigate } from 'react-router-dom';
 
 export default function ProductPhotos() {
     const { id: productId } = useParams();

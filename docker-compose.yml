@@ -1,53 +1,17 @@
-# services:
-#   frontend:
-#     build: ./client
-#     ports:
-#       - "3000:80"
-#     depends_on:
-#       - backend
-#   backend:
-#     build: ./flask-server
-#     ports:
-#       - "5000:5000"
-#     environment:
-#       - FLASK_ENV=development
-#       - REDIS_HOST=redis
-#     depends_on:
-#       - redis
-#   redis:
-#     image: "redis:alpine"
-#     ports:
-#       - "6379:6379"
-# networks:
-#   default:
-#     external:
-#       name: docker_internal
-
 services:
   frontend:
     build: ./client
     ports:
-      - "3000:3000"
+      - "3000:80"
     depends_on:
       - backend
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-    command: nodemon --watch src --ignore node_modules src/index.js
   backend:
     build: ./flask-server
     ports:
       - "5000:5000"
     environment:
       - FLASK_ENV=development
-      - FLASK_DEBUG=1
       - REDIS_HOST=redis
-    volumes:
-      - ./flask-server:/app
-      - ./flask-server/instance:/app/instance
-    command: flask run --host=0.0.0.0 --port=5000
     depends_on:
       - redis
   redis:
@@ -58,3 +22,39 @@ networks:
   default:
     external:
       name: docker_internal
+
+# services:
+#   frontend:
+#     build: ./client
+#     ports:
+#       - "3000:3000"
+#     depends_on:
+#       - backend
+#     volumes:
+#       - ./client:/app
+#       - /app/node_modules
+#     environment:
+#       - NODE_ENV=development
+#     command: nodemon --watch src --ignore node_modules src/index.js
+#   backend:
+#     build: ./flask-server
+#     ports:
+#       - "5000:5000"
+#     environment:
+#       - FLASK_ENV=development
+#       - FLASK_DEBUG=1
+#       - REDIS_HOST=redis
+#     volumes:
+#       - ./flask-server:/app
+#       - ./flask-server/instance:/app/instance
+#     command: flask run --host=0.0.0.0 --port=5000
+#     depends_on:
+#       - redis
+#   redis:
+#     image: "redis:alpine"
+#     ports:
+#       - "6379:6379"
+# networks:
+#   default:
+#     external:
+#       name: docker_internal

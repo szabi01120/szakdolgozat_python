@@ -305,7 +305,7 @@ export default function Products() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products && products?.map((product, index) => (
+                  {products?.map((product, index) => (
                     <tr key={product.id}>
                       <td data-label="Id">{product.id}</td>
                       <td data-label="Beszerzés">2024-10-08</td>
@@ -323,7 +323,6 @@ export default function Products() {
                           checked={product.sold}
                           onChange={() => handleCheckboxChange(index, 'sold')}
                         />
-                        <label htmlFor={`checkbox-sold-${index}`}></label>
                       </td>
                       <td data-label="Szállítva?">
                         <input
@@ -332,7 +331,6 @@ export default function Products() {
                           checked={product.shipped}
                           onChange={() => handleCheckboxChange(index, 'shipped')}
                         />
-                        <label htmlFor={`checkbox-shipped-${index}`}></label>
                       </td>
                       <td data-label="Műveletek">
                         <div className={`btn-group ${!product.hasPhotos ? 'no-photo' : ''} me-2`}>
