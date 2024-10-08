@@ -195,17 +195,22 @@ export default function AddProduct() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     
-    
+    const MAX_FILE_SIZE = 512 * 1024 * 1024; // 512 MB
+  
     if (showImageUpload && images.length > 0) {
       const allowedExtensions = ['jpg', 'jpeg', 'png'];
       
+      // Fájlkiterjesztés ellenőrzése
       const invalidFiles = images.filter((file) => {
         const extension = file.name.split('.').pop().toLowerCase();
         return !allowedExtensions.includes(extension);
       });
       
+      // Fájlméret ellenőrzése
+      const oversizedFiles = images.filter((file) => file.size > MAX_FILE_SIZE);
+      
       images.forEach((file) => {
-        console.log(`File name: ${file.name}, File type: ${file.type}`);
+        console.log(`File name: ${file.name}, File type: ${file.type}, File size: ${file.size}`);
       });
       
       if (invalidFiles.length > 0) {
@@ -215,14 +220,21 @@ export default function AddProduct() {
         setIsError(true);
         return;
       }
+      
+      if (oversizedFiles.length > 0) {
+        console.log('Túl nagy fájlméret:', oversizedFiles);
+        setErrorMessage('Túl nagy fájlméret! A maximális méret 512 MB.');
+        setIsError(true);
+        return;
+      }
     }
-    
+  
     const updatedFormData = {
       ...formData,
-      hasPhotos: showImageUpload && images.length > 0 //ha mindkettő igaz akkor van kép => true
+      hasPhotos: showImageUpload && images.length > 0 // ha mindkettő igaz akkor van kép => true
     };
-    
-    // ha érvényesek a fájlformátumok, akkor hozzáadjuk a terméket
+  
+    // Ha érvényesek a fájlformátumok és méretek, akkor hozzáadjuk a terméket
     try {
       const response = await axios.post('http://hajnalszabolcs.duckdns.org:5000/api/add_product', updatedFormData);
       if (response.status === 200) {
@@ -240,8 +252,14 @@ export default function AddProduct() {
           try {
             await axios.post(`http://hajnalszabolcs.duckdns.org:5000/api/img_upload/${product_id}`, data);
           } catch (error) {
-            if (error.response.status === 415) {
+            if (error.response && error.response.status === 415) {
               console.log('Nem megfelelő fájlformátum');
+              setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
+              setIsError(true);
+              return;
+            } else if (error.response && error.response.status === 413) {
+              console.log('Túl nagy fájlméret!');
+              setErrorMessage('Túl nagy fájlméret! A maximális méret 512 MB.');
               setIsError(true);
               return;
             }

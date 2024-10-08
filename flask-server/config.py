@@ -12,6 +12,7 @@ def create_app():
     # database config
     app.config.from_object(ApplicationConfig)
     app.config['SESSION_COOKIE_HTTPONLY'] = False
+    app.config['MAX_CONTENT_LENGTH'] = 512 * 1024 * 1024
 
     return app
 

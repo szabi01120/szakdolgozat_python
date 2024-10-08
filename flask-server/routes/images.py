@@ -3,6 +3,7 @@ import os
 from flask import Blueprint, request, jsonify
 from dbConfig import db, app, Image
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import RequestEntityTooLarge
 from flask_marshmallow import Marshmallow
 import services.file_service as f
 
@@ -16,6 +17,12 @@ class ImageSchema(ma.Schema):
 image_schema = ImageSchema(many=True)
 
 images_bp = Blueprint('images', __name__)
+
+def handle_file_size_error():
+    return jsonify({
+        "message": "A feltöltött fájl mérete meghaladja a megengedett limitet (512 MB).",
+        "status": "failed"
+    }), 413
 
 @images_bp.route("/api/img_upload/<int:product_id>", methods=["POST"])
 def upload_file(product_id):
