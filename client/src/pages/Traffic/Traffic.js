@@ -20,7 +20,7 @@ export default function Traffic() {
     if (productData) {
       setLoading(true); // Indítsd el a töltést
       axios
-        .get('http://127.0.0.1:5000/api/sold_products')
+        .get('http://hajnalszabolcs.duckdns.org:5000/api/sold_products')
         .then((response) => {
           setProducts(response.data);
           console.log(response.data);
@@ -58,7 +58,7 @@ export default function Traffic() {
     try {
       await Promise.all(
         selectedProducts.map((id) =>
-          axios.delete(`http://127.0.0.1:5000/api/delete_sold_product/${id}`)
+          axios.delete(`http://hajnalszabolcs.duckdns.org:5000/api/delete_sold_product/${id}`)
         )
       );
       setProducts(products.filter((product) => !selectedProducts.includes(product.id)));
@@ -88,7 +88,7 @@ export default function Traffic() {
 
   const handleSaveEdit = async () => {
     try {
-      const response = await axios.put(`http://127.0.0.1:5000/api/update_sold_product/${editingProductId}`, editedProduct, { withCredentials: true });
+      const response = await axios.put(`http://hajnalszabolcs.duckdns.org:5000/api/update_sold_product/${editingProductId}`, editedProduct, { withCredentials: true });
       if (response.status === 200) {
         const updatedProducts = products.map((product) =>
           product.id === editingProductId ? editedProduct : product

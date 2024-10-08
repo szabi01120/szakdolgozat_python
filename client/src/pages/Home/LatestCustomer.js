@@ -5,7 +5,7 @@ const LatestCustomer = () => {
   const [latestCustomer, setLatestCustomer] = useState("");
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:5000/api/sold_products/latest_customer")
+    axios.get("http://hajnalszabolcs.duckdns.org:5000/api/sold_products/latest_customer")
       .then(response => {
         setLatestCustomer(response.data.customer_name);
       })

@@ -7,7 +7,7 @@ export default function Home({ user }) {
   
   const logoutUser = useCallback(async () => {
     try {
-      await axios.post('http://localhost:5000/logout', {}, { withCredentials: true });
+      await axios.post('http://hajnalszabolcs.duckdns.org:5000/logout', {}, { withCredentials: true });
       window.location.reload();
     } catch (error) {
       console.error("Hiba a kijelentkezéskor!", error);

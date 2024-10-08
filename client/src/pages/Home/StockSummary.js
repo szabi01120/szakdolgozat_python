@@ -5,7 +5,7 @@ const StockSummary = () => {
   const [totalQuantity, setTotalQuantity] = useState(0);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:5000/api/products/quantity")
+    axios.get("http://hajnalszabolcs.duckdns.org:5000/api/products/quantity")
       .then(response => {
         setTotalQuantity(response.data.total_quantity);
       })

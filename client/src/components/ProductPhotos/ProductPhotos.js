@@ -9,11 +9,11 @@ export default function ProductPhotos() {
 
     const getProductPhotos = async (id) => {
         try {
-            const response = await axios.get(`http://127.0.0.1:5000/api/images/${id}`);
+            const response = await axios.get(`http://hajnalszabolcs.duckdns.org:5000/api/images/${id}`);
             console.log("response1: ", response.data);
             const photoURLs = response.data.map(photo => ({
                 id: photo.id, 
-                url: `http://127.0.0.1:5000/${photo.url.replace(/\\/g, '/')}`
+                url: `http://hajnalszabolcs.duckdns.org:5000/${photo.url.replace(/\\/g, '/')}`
             }));
             setPhotos(photoURLs);
         } catch (error) {
@@ -23,7 +23,7 @@ export default function ProductPhotos() {
 
     const deletePhoto = async (photoId) => {
         try {
-            await axios.delete(`http://127.0.0.1:5000/api/delete_image/${photoId}`);
+            await axios.delete(`http://hajnalszabolcs.duckdns.org:5000/api/delete_image/${photoId}`);
             setPhotos(photos.filter(photo => photo.id !== photoId));
             console.log("Sikeres törlés!");
         } catch (error) {

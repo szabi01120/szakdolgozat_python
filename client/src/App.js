@@ -13,7 +13,7 @@ export default function App() {
   useEffect(() => {
     const checkUserSession = async () => {
       try {
-        const resp = await axios.get('http://localhost:5000/@me', { withCredentials: true });
+        const resp = await axios.get('http://hajnalszabolcs.duckdns.org:5000/@me', { withCredentials: true });
         setUser(resp.data);
       } catch (error) {
         setUser(null);

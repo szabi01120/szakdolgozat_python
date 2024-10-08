@@ -44,7 +44,7 @@ export default function AddProduct() {
   useEffect(() => {
     const getProductTypes = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/product_types');
+        const response = await axios.get('http://hajnalszabolcs.duckdns.org:5000/api/product_types');
         setProductTypes(response.data);
       } catch (error) {
         console.error('Error fetching product types:', error);
@@ -53,7 +53,7 @@ export default function AddProduct() {
 
     const getManufacturers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/product_manufacturers');
+        const response = await axios.get('http://hajnalszabolcs.duckdns.org:5000/api/product_manufacturers');
         setManufacturers(response.data);
       } catch (error) {
         console.error('Error fetching manufacturers:', error);
@@ -155,7 +155,7 @@ export default function AddProduct() {
 
   const handleSaveType = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/add_product_type', { "product_type": newType });
+      const response = await axios.post('http://hajnalszabolcs.duckdns.org:5000/api/add_product_type', { "product_type": newType });
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
         console.log('Válasz:', response.data);
@@ -175,7 +175,7 @@ export default function AddProduct() {
 
   const handleSaveManufacturer = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/add_product_manufacturer', { "manufacturer": newManufacturer });
+      const response = await axios.post('http://hajnalszabolcs.duckdns.org:5000/api/add_product_manufacturer', { "manufacturer": newManufacturer });
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
         console.log('Válasz:', response.data);
@@ -224,7 +224,7 @@ export default function AddProduct() {
     
     // ha érvényesek a fájlformátumok, akkor hozzáadjuk a terméket
     try {
-      const response = await axios.post('http://127.0.0.1:5000/api/add_product', updatedFormData);
+      const response = await axios.post('http://hajnalszabolcs.duckdns.org:5000/api/add_product', updatedFormData);
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
         const product_id = response.data.product_id;
@@ -238,7 +238,7 @@ export default function AddProduct() {
             data.append("files[]", element);
           }
           try {
-            await axios.post(`http://127.0.0.1:5000/api/img_upload/${product_id}`, data);
+            await axios.post(`http://hajnalszabolcs.duckdns.org:5000/api/img_upload/${product_id}`, data);
           } catch (error) {
             if (error.response.status === 415) {
               console.log('Nem megfelelő fájlformátum');
