@@ -6,13 +6,15 @@ from flask_cors import CORS
 
 load_dotenv()
 
+MAX_CONTENT_LENGTH = 512 * 1024 * 1024
+
 def create_app(): 
     app = Flask(__name__)
     CORS(app, supports_credentials=True)
     # database config
     app.config.from_object(ApplicationConfig)
     app.config['SESSION_COOKIE_HTTPONLY'] = False
-    app.config['MAX_CONTENT_LENGTH'] = 512 * 1024 * 1024
+    app.config[MAX_CONTENT_LENGTH]
 
     return app
 

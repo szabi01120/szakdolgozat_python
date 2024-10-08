@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import RequestEntityTooLarge
 from flask_marshmallow import Marshmallow
 import services.file_service as f
+import config
 
 ma = Marshmallow(app)
 
@@ -18,12 +19,6 @@ image_schema = ImageSchema(many=True)
 
 images_bp = Blueprint('images', __name__)
 
-def handle_file_size_error():
-    return jsonify({
-        "message": "A feltöltött fájl mérete meghaladja a megengedett limitet (512 MB).",
-        "status": "failed"
-    }), 413
-
 @images_bp.route("/api/img_upload/<int:product_id>", methods=["POST"])
 def upload_file(product_id):
     if 'files[]' not in request.files:
@@ -31,9 +26,23 @@ def upload_file(product_id):
             "message": "A kérés nem tartalmaz fájlt", 
             "status": 'failed'
         }), 400
-
+    
     files = request.files.getlist('files[]')
-    product_folder = os.path.join(f.UPLOAD_FOLDER, str(product_id)) #??????????
+
+    for file in files:
+        if not f.allowed_file(file.filename):
+            return jsonify({
+                "message": "Nem megfelelő fájl formátum",
+                "status": 'failed'
+            }), 415
+        
+        if file.content_length > config.MAX_CONTENT_LENGTH:
+            return jsonify({
+                "message": "A fájl mérete túl nagy",
+                "status": 'failed'
+            }), 413
+        
+    product_folder = os.path.join(f.UPLOAD_FOLDER, str(product_id))
     if not os.path.exists(product_folder):
         os.makedirs(product_folder)
     
