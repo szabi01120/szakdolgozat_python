@@ -49,16 +49,6 @@ const EditSoldProductModal = ({ show, onHide, editedProduct, onInputChange, onSa
                     />
                 </div>
                 <div className='mb-3'>
-                    <label>Méret</label>
-                    <input
-                        type="text"
-                        name="product_size"
-                        value={editedProduct.product_size || ''}
-                        onChange={onInputChange}
-                        className="form-control"
-                    />
-                </div>
-                <div className='mb-3'>
                     <label>Vásárló neve</label>
                     <input
                         type="text"
@@ -79,11 +69,21 @@ const EditSoldProductModal = ({ show, onHide, editedProduct, onInputChange, onSa
                     />
                 </div>
                 <div className='mb-3'>
-                    <label>Nettó ár</label>
+                    <label>Beszerzési ár</label>
                     <input
                         type="number"
-                        name="price"
-                        value={editedProduct.price || 0}
+                        name="incoming_price"
+                        value={editedProduct.incoming_price || 0}
+                        onChange={onInputChange}
+                        className="form-control"
+                    />
+                </div>
+                <div className='mb-3'>
+                    <label>Eladási ár</label>
+                    <input
+                        type="number"
+                        name="selling_price"
+                        value={editedProduct.selling_price || 0}
                         onChange={onInputChange}
                         className="form-control"
                     />

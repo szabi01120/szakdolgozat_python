@@ -85,7 +85,7 @@
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
-  padding-bottom: 10px;
+  padding: 5px 10px 10px 10px;
 }
 
 .recent-customers li:last-child {
@@ -94,24 +94,36 @@
 
 .transaction-date {
   color: #666; 
+  width: 20%;
 }
 
 .transaction-product {
-  font-weight: 600;
+  width: 30%;
+  font-weight: bold;
 }
 
 .transaction-customer {
-  font-style: italic;
+  width: 25%;
 }
 
 .transaction-price {
   color: #28a745; 
   font-weight: bold;
+  width: 15%;
+  text-align: right;
 }
 
 .recent-customers li:hover {
   background-color: rgba(0, 0, 0, 0.05); 
   transition: background-color 0.3s ease;
+}
+
+.transaction-header {
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #f9f9f9; 
+  padding: 10px; /* Néhány padding a szöveg körül */
+  border-radius: 8px; /* Lekerekített sarkok */
 }
 
 @media only screen and (max-width: 768px) {
@@ -161,6 +173,15 @@
   .transaction-product,
   .transaction-customer,
   .transaction-price {
+    width: 100%;
     font-size: 14px;
+  }
+
+  .transaction-price {
+    text-align: left;
+  }
+  
+  .transaction-header {
+    display: none!important;
   }
 }

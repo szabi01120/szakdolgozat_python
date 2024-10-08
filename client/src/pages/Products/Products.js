@@ -55,7 +55,7 @@ export default function Products() {
       product_size: ['Kicsi', 'Közepes', 'Nagy'][Math.floor(Math.random() * 3)], // Random méret
       quantity: Math.floor(Math.random() * 100) + 1, // Random mennyiség
       manufacturer: ['Gyártó1', 'Gyártó2', 'Gyártó3'][Math.floor(Math.random() * 3)], // Random gyártó
-      price: Math.floor(Math.random() * 100000), // Random ár
+      incoming_price: Math.floor(Math.random() * 100000), // Random ár
       currency: ['HUF', 'EUR', 'USD'][Math.floor(Math.random() * 3)], // Random pénznem
     };
   };
@@ -283,9 +283,9 @@ export default function Products() {
             <button type="button" className="btn btn-edit mb-3" onClick={handleSaveButtonClick}>
               Mentés
             </button>
-            {/* <button type="button" className="btn btn-secondary mb-3" onClick={handleAddRandomProduct}>
+            <button type="button" className="btn btn-secondary mb-3" onClick={handleAddRandomProduct}>
               Véletlenszerű termék hozzáadása
-            </button> */}
+            </button>
           </div>
           {productData && (
             <div className='product-table-container'>
@@ -293,12 +293,12 @@ export default function Products() {
                 <thead>
                   <tr>
                     <th>Id</th>
+                    <th>Beszerzés</th>
                     <th>Termék neve</th>
                     <th>Típus</th>
-                    <th>Méret</th>
                     <th>Mennyiség</th>
                     <th>Gyártó</th>
-                    <th>Ár</th>
+                    <th>Beszerzési ár</th>
                     <th>Eladva?</th>
                     <th>Szállítva?</th>
                     <th>Műveletek</th>
@@ -308,13 +308,13 @@ export default function Products() {
                   {products && products?.map((product, index) => (
                     <tr key={product.id}>
                       <td data-label="Id">{product.id}</td>
+                      <td data-label="Beszerzés">2024-10-08</td>
                       <td data-label="Termék neve">{product.product_name}</td>
                       <td data-label="Típus">{product.product_type}</td>
-                      <td data-label="Méret">{product.product_size}</td>
                       <td data-label="Mennyiség">{product.quantity}</td>
                       <td data-label="Gyártó">{product.manufacturer}</td>
-                      <td data-label="Ár">
-                        {priceFormatter.format(product.price)} {product.currency}
+                      <td data-label="Beszerzési ár">
+                        {priceFormatter.format(product.incoming_price)} {product.currency}
                       </td>
                       <td data-label="Eladva?">
                         <input

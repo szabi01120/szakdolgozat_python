@@ -159,11 +159,11 @@ export default function Traffic() {
                     <th>Bejövő számla</th>
                     <th>Kimenő számla</th>
                     <th>Típus</th>
-                    <th>Méret</th>
                     <th>Vásárló neve</th>
                     <th>Gyártó</th>
-                    <th>Nettó ár</th>
-                    <th>Pénznem</th>
+                    <th>Beszerzési ár</th>
+                    <th>Eladási ár</th>
+                    <th>Profit</th>
                     <th>Eladás dátuma</th>
                     <th></th>
                     <th></th>
@@ -187,11 +187,11 @@ export default function Traffic() {
                           <td data-label="Bejövő számla">{product.incoming_invoice}</td>
                           <td data-label="Kimenő számla">{product.outgoing_invoice}</td>
                           <td data-label="Típus">{product.product_type}</td>
-                          <td data-label="Méret">{product.product_size}</td>
                           <td data-label="Vásárló neve">{product.customer_name}</td>
                           <td data-label="Gyártó">{product.manufacturer}</td>
-                          <td data-label="Nettó ár">{priceFormatter.format(product.price)}</td>
-                          <td data-label="Pénznem">{product.currency}</td>
+                          <td data-label="Beszerzési ár">{priceFormatter.format(product.incoming_price) + " " + product.currency}</td>
+                          <td data-label="Eladási ár">{priceFormatter.format(product.selling_price) + " " + product.currency}</td> 
+                          <td data-label="Profit">{priceFormatter.format(product.selling_price - product.incoming_price) + " " + product.currency}</td>
                           <td data-label="Eladás dátuma">{product.date}</td>
                           <td data-label="Műveletek">
                             <input

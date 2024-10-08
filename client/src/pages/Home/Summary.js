@@ -34,15 +34,15 @@ const Summary = () => {
 
           <div className="summary-column">
             <div className="summary-item">
-              <h3>Jövedelem (HUF):</h3>
+              <h3>Profit (HUF):</h3>
               <p>{priceFormatter.format(incomeHUF)} HUF</p>
             </div>
             <div className="summary-item">
-              <h3>Jövedelem (EUR):</h3>
+              <h3>Profit (EUR):</h3>
               <p>{priceFormatter.format(incomeEUR)} EUR</p>
             </div>
             <div className="summary-item">
-              <h3>Jövedelem (USD):</h3>
+              <h3>Profit (USD):</h3>
               <p>{priceFormatter.format(incomeUSD)} USD</p>
             </div>
           </div>
@@ -65,6 +65,12 @@ const Summary = () => {
         <div className="recent-customers">
           <h3>Utolsó 5 tranzakció:</h3>
           <ul>
+            <li className='transaction-header'>
+              <span className="transaction-date">Dátum</span>
+              <span className="transaction-product">Termék neve</span>
+              <span className="transaction-customer">Vásárló neve</span>
+              <span className="transaction-price">Eladási ár</span>
+            </li>
             {recentTransactions?.map((transaction, index) => (
               <li key={index}>
                 <span className="transaction-date">
@@ -72,7 +78,7 @@ const Summary = () => {
                 </span> 
                 <span className="transaction-product">{transaction.product_name}</span> 
                 <span className="transaction-customer">{transaction.customer_name}</span>
-                <span className="transaction-price">{priceFormatter.format(transaction.price)} {transaction.currency}</span>
+                <span className="transaction-price">{priceFormatter.format(transaction.selling_price)} {transaction.currency}</span>
               </li>
             ))}
           </ul>

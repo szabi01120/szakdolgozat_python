@@ -34,7 +34,7 @@ export default function AddProduct() {
     product_size: '',
     quantity: '',
     manufacturer: '',
-    price: '',
+    incoming_price: '',
     currency: '',
     hasPhotos: false
   });
@@ -126,7 +126,7 @@ export default function AddProduct() {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
-    if (name === 'price') {
+    if (name === 'incoming_price') {
       const numericValue = value.replace(/\D/g, '');
       const formattedValue = new Intl.NumberFormat('hu-HU').format(numericValue);
 
@@ -262,7 +262,7 @@ export default function AddProduct() {
     { label: 'Terméknév', name: 'product_name', placeholder: 'Terméknév', type: 'text' },
     { label: 'Méret', name: 'product_size', placeholder: 'Méret', type: 'text' },
     { label: 'Mennyiség', name: 'quantity', placeholder: 'Mennyiség', type: 'number', min: '0' },
-    { label: 'Nettó ár', name: 'price', placeholder: 'Nettó ár', type: 'text' }, // Fontos => itt text, hogy formázhassuk
+    { label: 'Beszerzési ár', name: 'incoming_price', placeholder: 'Beszerzési ár', type: 'text' }, // Fontos => itt text, hogy formázhassuk
     { label: 'Bejövő számla', name: 'incoming_invoice', placeholder: 'Bejövő számla', type: 'text' },
   ];
 
@@ -290,7 +290,7 @@ export default function AddProduct() {
                 name={field.name}
                 onChange={handleChange}
                 placeholder={field.placeholder}
-                value={field.name === 'price' ? new Intl.NumberFormat('hu-HU').format(formData[field.name]) : formData[field.name]} // nettó ár formázás
+                value={field.name === 'incoming_price' ? new Intl.NumberFormat('hu-HU').format(formData[field.name]) : formData[field.name]} // nettó ár formázás
                 min={field.min}
                 step={field.step} />
             </div>

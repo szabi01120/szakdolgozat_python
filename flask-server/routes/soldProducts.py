@@ -17,11 +17,11 @@ def get_sold_products():
         "outgoing_invoice": product.outgoing_invoice,
         "product_name": product.product_name,
         "product_type": product.product_type,
-        "product_size": product.product_size,
         "quantity": product.quantity,
         "customer_name": product.customer_name,
         "manufacturer": product.manufacturer,
-        "price": product.price,
+        "incoming_price": product.incoming_price,
+        "selling_price": product.selling_price,
         "currency": product.currency,
         "date": product.date.strftime("%Y-%m-%d")
     } for product in sold_products]), 200
@@ -60,11 +60,11 @@ def update_sold_product(id):
     outgoingInvoice = request.json.get("outgoing_invoice")
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
-    productSize = request.json.get("product_size")
     quantity = request.json.get("quantity")
     customer_name = request.json.get("customer_name") 
     productManufacturer = request.json.get("manufacturer")
-    productPrice = request.json.get("price")
+    productIncomingPrice = request.json.get("incoming_price")
+    productSellingPrice = request.json.get("selling_price")
     productCurrency = request.json.get("currency")
 
     product = SoldProducts.query.get(id)
@@ -76,11 +76,11 @@ def update_sold_product(id):
         product.outgoing_invoice = outgoingInvoice
         product.product_name = productName
         product.product_type = productType
-        product.product_size = productSize
         product.quantity = quantity
         product.customer_name = customer_name
         product.manufacturer = productManufacturer
-        product.price = productPrice
+        product.incoming_price = productIncomingPrice
+        product.selling_price = productSellingPrice
         product.currency = productCurrency
         
         db.session.commit()

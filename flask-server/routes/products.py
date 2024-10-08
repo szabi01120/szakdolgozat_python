@@ -18,10 +18,9 @@ def get_products():
         "incoming_invoice": product.incoming_invoice,
         "product_name": product.product_name,
         "product_type": product.product_type,
-        "product_size": product.product_size,
         "quantity": product.quantity,
         "manufacturer": product.manufacturer,
-        "price": product.price,
+        "incoming_price": product.incoming_price,
         "currency": product.currency,
         "sold": product.sold,
         "shipped": product.shipped,
@@ -34,10 +33,9 @@ def update_product(id):
     incomingInvoice = request.json.get("incoming_invoice")
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
-    productSize = request.json.get("product_size")
     productQuantity = request.json.get("quantity")
     productManufacturer = request.json.get("manufacturer")
-    productPrice = request.json.get("price")
+    productIncomingPrice = request.json.get("incoming_price")
     productCurrency = request.json.get("currency")
     stateSold = request.json.get("sold")
     stateShipped = request.json.get("shipped")
@@ -50,10 +48,9 @@ def update_product(id):
         product.incoming_invoice = incomingInvoice
         product.product_name = productName
         product.product_type = productType
-        product.product_size = productSize
         product.quantity = productQuantity
         product.manufacturer = productManufacturer
-        product.price = productPrice
+        product.incoming_price = productIncomingPrice
         product.currency = productCurrency
         product.sold = stateSold
         product.shipped = stateShipped
@@ -95,10 +92,9 @@ def add_product():
     incomingInvoice = request.json.get("incoming_invoice")
     productName = request.json.get("product_name")
     productType = request.json.get("product_type")
-    productSize = request.json.get("product_size")
     productQuantity = request.json.get("quantity")
     productManufacturer = request.json.get("manufacturer")
-    productPrice = request.json.get("price")
+    productIncomingPrice = request.json.get("incoming_price")
     productCurrency = request.json.get("currency")
     hasPhotos = request.json.get("hasPhotos")
 
@@ -107,10 +103,9 @@ def add_product():
             incoming_invoice=incomingInvoice, 
             product_name=productName, 
             product_type=productType, 
-            product_size=productSize, 
             quantity=productQuantity, 
             manufacturer=productManufacturer, 
-            price=productPrice, 
+            incoming_price=productIncomingPrice, 
             currency=productCurrency,
             hasPhotos=hasPhotos
         )
@@ -177,11 +172,11 @@ def update_product_status():
                 outgoing_invoice="ÜRES",
                 product_name=product.product_name,
                 product_type=product.product_type,
-                product_size=product.product_size,
                 quantity=1,
                 customer_name="ÜRES",  
                 manufacturer=product.manufacturer,
-                price=product.price,
+                incoming_price=product.incoming_price,
+                selling_price=0,
                 currency=product.currency,
                 date=current_time
             )
