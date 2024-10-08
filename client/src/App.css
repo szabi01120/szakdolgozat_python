@@ -275,3 +275,12 @@ input[type="checkbox"]:checked+label:after {
     border: solid #fff;
     border-width: 0 2px 2px 0;
 }
+
+.profit-green {
+    color: #2ecc71;
+}
+
+.profit-red {
+    color: #e74c3c;
+    font-weight: bold;
+}

@@ -11,7 +11,7 @@ export default function Traffic() {
   const [editingProductId, setEditingProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
   const [showModal, setShowModal] = useState(false); // Modális állapot
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const priceFormatter = new Intl.NumberFormat('hu-HU');
@@ -190,8 +190,13 @@ export default function Traffic() {
                           <td data-label="Vásárló neve">{product.customer_name}</td>
                           <td data-label="Gyártó">{product.manufacturer}</td>
                           <td data-label="Beszerzési ár">{priceFormatter.format(product.incoming_price) + " " + product.currency}</td>
-                          <td data-label="Eladási ár">{priceFormatter.format(product.selling_price) + " " + product.currency}</td> 
-                          <td data-label="Profit">{priceFormatter.format(product.selling_price - product.incoming_price) + " " + product.currency}</td>
+                          <td data-label="Eladási ár">{priceFormatter.format(product.selling_price) + " " + product.currency}</td>
+                          <td
+                            data-label="Profit"
+                            className={product.selling_price - product.incoming_price >= 0 ? 'profit-green' : 'profit-red'}
+                          >
+                            {priceFormatter.format(product.selling_price - product.incoming_price) + " " + product.currency}
+                          </td>
                           <td data-label="Eladás dátuma">{product.date}</td>
                           <td data-label="Műveletek">
                             <input

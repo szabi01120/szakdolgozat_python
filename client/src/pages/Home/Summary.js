@@ -1,5 +1,6 @@
 import React from 'react';
 import './Summary.css';
+import '../../App.css';
 import SoldProductsSummary from './SoldProductsSummary';
 import StockSummary from './StockSummary';
 import TotalIncome from './TotalIncome';
@@ -35,15 +36,21 @@ const Summary = () => {
           <div className="summary-column">
             <div className="summary-item">
               <h3>Profit (HUF):</h3>
-              <p>{priceFormatter.format(incomeHUF)} HUF</p>
+              <p className={incomeHUF >= 0 ? 'profit-summary-green' : 'profit-summary-red'}>
+                {priceFormatter.format(incomeHUF)} HUF
+              </p>
             </div>
             <div className="summary-item">
               <h3>Profit (EUR):</h3>
-              <p>{priceFormatter.format(incomeEUR)} EUR</p>
+              <p className={incomeEUR >= 0 ? 'profit-summary-green' : 'profit-summary-red'}>
+                {priceFormatter.format(incomeEUR)} EUR
+              </p>
             </div>
             <div className="summary-item">
               <h3>Profit (USD):</h3>
-              <p>{priceFormatter.format(incomeUSD)} USD</p>
+              <p className={incomeUSD >= 0 ? 'profit-summary-green' : 'profit-summary-red'}>
+                {priceFormatter.format(incomeUSD)} USD
+              </p>
             </div>
           </div>
 
@@ -75,8 +82,8 @@ const Summary = () => {
               <li key={index}>
                 <span className="transaction-date">
                   {dateFormatter.format(new Date(transaction.date))}
-                </span> 
-                <span className="transaction-product">{transaction.product_name}</span> 
+                </span>
+                <span className="transaction-product">{transaction.product_name}</span>
                 <span className="transaction-customer">{transaction.customer_name}</span>
                 <span className="transaction-price">{priceFormatter.format(transaction.selling_price)} {transaction.currency}</span>
               </li>

@@ -283,9 +283,9 @@ export default function Products() {
             <button type="button" className="btn btn-edit mb-3" onClick={handleSaveButtonClick}>
               Mentés
             </button>
-            <button type="button" className="btn btn-secondary mb-3" onClick={handleAddRandomProduct}>
+            {/* <button type="button" className="btn btn-secondary mb-3" onClick={handleAddRandomProduct}>
               Véletlenszerű termék hozzáadása
-            </button>
+            </button> */}
           </div>
           {productData && (
             <div className='product-table-container'>
