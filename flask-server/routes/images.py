@@ -1,9 +1,8 @@
 # routes/images.py
 import os
 from flask import Blueprint, request, jsonify
-from dbConfig import db, app, Image
+from dbConfig import db, app, Image, Products
 from werkzeug.utils import secure_filename
-from werkzeug.exceptions import RequestEntityTooLarge
 from flask_marshmallow import Marshmallow
 import services.file_service as f
 import config
@@ -28,20 +27,24 @@ def upload_file(product_id):
         }), 400
     
     files = request.files.getlist('files[]')
-
     for file in files:
         if not f.allowed_file(file.filename):
             return jsonify({
                 "message": "Nem megfelelő fájl formátum",
                 "status": 'failed'
             }), 415
-        
-        if file.content_length > config.MAX_CONTENT_LENGTH:
-            return jsonify({
-                "message": "A fájl mérete túl nagy",
-                "status": 'failed'
-            }), 413
-        
+
+    total_size = sum([file.seek(0, os.SEEK_END) or file.tell() for file in files])
+
+    for file in files: # vissza az elejére
+        file.seek(0, 0)
+
+    if total_size > config.MAX_CONTENT_LENGTH:
+        return jsonify({
+            "message": "A fájlok teljes mérete túl nagy!",
+            "status": 'failed'
+        }), 413
+
     product_folder = os.path.join(f.UPLOAD_FOLDER, str(product_id))
     if not os.path.exists(product_folder):
         os.makedirs(product_folder)
@@ -113,9 +116,20 @@ def delete_image(id):
     try:
         os.remove(image_path)
 
+        # Ha már nincs fotó a termékhez, akkor töröljük a mappát is és adatbázisba false 
+        remaining_images = os.listdir(product_folder)
+        if len(remaining_images) == 0:
+            os.rmdir(product_folder)
+            product = Products.query.get(image.product_id)
+            product.hasPhotos = False
+            db.session.commit()
+
         db.session.delete(image)
         db.session.commit()
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
     return jsonify({"message": "Kép sikeresen törölve!"}), 200
+
+
+

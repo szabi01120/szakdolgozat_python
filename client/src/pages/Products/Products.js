@@ -44,21 +44,6 @@ export default function Products() {
       })
       .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
   }, []);
-  
-
-  const generateRandomProduct = () => { // FOR TESTING PURPOSES ONLY!!
-    const randomId = Math.floor(Math.random() * 10000);  // Véletlenszerű ID
-    return {
-      incoming_invoice: `Számla ${randomId}`,
-      product_name: `Termék ${randomId}`,
-      product_type: ['Típus1', 'Típus2', 'Típus3'][Math.floor(Math.random() * 3)], // Random típus
-      product_size: ['Kicsi', 'Közepes', 'Nagy'][Math.floor(Math.random() * 3)], // Random méret
-      quantity: Math.floor(Math.random() * 100) + 1, // Random mennyiség
-      manufacturer: ['Gyártó1', 'Gyártó2', 'Gyártó3'][Math.floor(Math.random() * 3)], // Random gyártó
-      incoming_price: Math.floor(Math.random() * 100000), // Random ár
-      currency: ['HUF', 'EUR', 'USD'][Math.floor(Math.random() * 3)], // Random pénznem
-    };
-  };
 
   const handleProductsButtonClick = () => {
     setProductData(!productData);
@@ -216,20 +201,6 @@ export default function Products() {
       }
     } else {
       console.log('Nincs termék a feltételekhez');
-    }
-  };
-
-  // Véletlenszerű termék hozzáadása TESTING PURPOSES ONLY
-  const handleAddRandomProduct = async () => {
-    const randomProduct = generateRandomProduct();
-    try {
-      const response = await axios.post('http://hajnalszabolcs.duckdns.org:5000/api/add_product', randomProduct);
-      if (response.status === 200) {
-        setProducts([...products, randomProduct]);
-        console.log("Random termék sikeresen hozzáadva!");
-      }
-    } catch (error) {
-      console.log("Hiba a random termék hozzáadása közben: ", error);
     }
   };
 

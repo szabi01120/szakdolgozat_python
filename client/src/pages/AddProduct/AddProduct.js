@@ -191,38 +191,39 @@ export default function AddProduct() {
       setShowAddNotificationModalError(true);
     }
   };
-  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    const MAX_FILE_SIZE = 512 * 1024 * 1024; // 512 MB
+  
+    const MAX_TOTAL_FILE_SIZE = 512 * 1024 * 1024; // 512 MB
   
     if (showImageUpload && images.length > 0) {
       const allowedExtensions = ['jpg', 'jpeg', 'png'];
-      
-      // Fájlkiterjesztés ellenőrzése
+  
+      // formátum
       const invalidFiles = images.filter((file) => {
         const extension = file.name.split('.').pop().toLowerCase();
         return !allowedExtensions.includes(extension);
       });
-      
-      // Fájlméret ellenőrzése
-      const oversizedFiles = images.filter((file) => file.size > MAX_FILE_SIZE);
-      
+  
+      // méret összeg
+      const totalFileSize = images.reduce((sum, file) => sum + file.size, 0);
+  
       images.forEach((file) => {
         console.log(`File name: ${file.name}, File type: ${file.type}, File size: ${file.size}`);
       });
-      
+  
+      // ha van érvénytelen fájlformátum
       if (invalidFiles.length > 0) {
-        console.log('Nem megfelelő fájlformátum');
-        console.log('Hibás fájlformátum:', invalidFiles);
+        console.log('Nem megfelelő fájlformátum:', invalidFiles);
         setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
         setIsError(true);
         return;
       }
-      
-      if (oversizedFiles.length > 0) {
-        console.log('Túl nagy fájlméret:', oversizedFiles);
+  
+      // ha túl nagy a fájl pack
+      if (totalFileSize > MAX_TOTAL_FILE_SIZE) {
+        console.log('Túl nagy fájlméret összesítve:', totalFileSize);
         setErrorMessage('Túl nagy fájlméret! A maximális méret 512 MB.');
         setIsError(true);
         return;
@@ -231,40 +232,39 @@ export default function AddProduct() {
   
     const updatedFormData = {
       ...formData,
-      hasPhotos: showImageUpload && images.length > 0 // ha mindkettő igaz akkor van kép => true
+      hasPhotos: showImageUpload && images.length > 0 // Ha be van pipálva és van kép, akkor true
     };
   
-    // Ha érvényesek a fájlformátumok és méretek, akkor hozzáadjuk a terméket
     try {
       const response = await axios.post('http://hajnalszabolcs.duckdns.org:5000/api/add_product', updatedFormData);
+  
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
         const product_id = response.data.product_id;
-        console.log('Válasz:', response.data);
         console.log('Termék ID:', product_id);
-
-        // ha van kép feltöltjük a termék után
-        if (showImageUpload) {
+  
+        if (showImageUpload && images.length > 0) {
           const data = new FormData();
           for (const element of images) {
             data.append("files[]", element);
           }
+  
           try {
             await axios.post(`http://hajnalszabolcs.duckdns.org:5000/api/img_upload/${product_id}`, data);
           } catch (error) {
-            if (error.response && error.response.status === 415) {
+            if (error.response === 415) {
               console.log('Nem megfelelő fájlformátum');
               setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
               setIsError(true);
               return;
-            } else if (error.response && error.response.status === 413) {
+            } else if (error.response === 413) {
               console.log('Túl nagy fájlméret!');
               setErrorMessage('Túl nagy fájlméret! A maximális méret 512 MB.');
               setIsError(true);
               return;
             }
             console.log('Hiba történt:', error);
-            setErrorMessage('Hibás fájlformátum! Csak .jpg .jpeg .png engedélyezett.');
+            setErrorMessage('Fájl feltöltési hiba történt.');
             setIsError(true);
             return;
           }
@@ -277,7 +277,7 @@ export default function AddProduct() {
       setIsError(true);
     }
   };
-
+  
   const inputFields = [
     { label: 'Terméknév', name: 'product_name', placeholder: 'Terméknév', type: 'text' },
     { label: 'Méret', name: 'product_size', placeholder: 'Méret', type: 'text' },
