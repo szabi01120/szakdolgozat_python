@@ -12,6 +12,8 @@ services:
     environment:
       - FLASK_ENV=development
       - REDIS_HOST=redis
+      - SECRET_KEY=${SECRET_KEY}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     depends_on:
       - redis
   redis:
