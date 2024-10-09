@@ -5,7 +5,7 @@ const SoldProductsSummary = () => {
   const [latestSoldProduct, setLatestSoldProduct] = useState("");
 
   useEffect(() => {
-    axios.get("http://hajnalszabolcs.duckdns.org:5000/api/sold_products/latest")
+    axios.get("https://hajnalszabolcs.duckdns.org:5000/api/sold_products/latest")
       .then(response => {
         setLatestSoldProduct(response.data.product_name);
       })

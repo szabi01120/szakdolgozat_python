@@ -23,7 +23,7 @@ export default function Products() {
 
   useEffect(() => {
     axios
-      .get('http://hajnalszabolcs.duckdns.org:5000/api/products')
+      .get('https://hajnalszabolcs.duckdns.org:5000/api/products')
       .then((response) => {
         console.log('Kapott adatok:', response.data); // Ellenőrizzük a válasz struktúráját
 
@@ -56,7 +56,7 @@ export default function Products() {
 
   const handleConfirmDelete = async () => {
     try {
-      const response = await axios.delete(`http://hajnalszabolcs.duckdns.org:5000/api/delete_product/${productIdToDelete}`);
+      const response = await axios.delete(`https://hajnalszabolcs.duckdns.org:5000/api/delete_product/${productIdToDelete}`);
       if (response.status === 200) {
         setProducts(products.filter((product) => product.id !== productIdToDelete));
         console.log('Sikeres törlés');
@@ -83,7 +83,7 @@ export default function Products() {
     product[field] = !product[field]; //checkbox value change
 
     try {
-      const response = await axios.put(`http://hajnalszabolcs.duckdns.org:5000/api/update_checkbox_state/${product.id}`, {
+      const response = await axios.put(`https://hajnalszabolcs.duckdns.org:5000/api/update_checkbox_state/${product.id}`, {
         [field]: product[field],
       });
 
@@ -128,7 +128,7 @@ export default function Products() {
 
   const handleSaveEdit = async () => {
     try {
-      const response = await axios.put(`http://hajnalszabolcs.duckdns.org:5000/api/update_product/${editingProductId}`, editedProduct, { withCredentials: true });
+      const response = await axios.put(`https://hajnalszabolcs.duckdns.org:5000/api/update_product/${editingProductId}`, editedProduct, { withCredentials: true });
       if (response.status === 200) {
         const updatedProducts = products.map((product) =>
           product.id === editingProductId ? editedProduct : product
@@ -161,7 +161,7 @@ export default function Products() {
             quantity: product.quantity, // Az aktuális darabszám, amit ellenőrizni kell
           }));
 
-        const response = await axios.post('http://hajnalszabolcs.duckdns.org:5000/api/update_product_status', productsToMoveDetails);
+        const response = await axios.post('https://hajnalszabolcs.duckdns.org:5000/api/update_product_status', productsToMoveDetails);
 
         if (response.status === 200) {
           // Sikeres válasz esetén frissítjük a termékeket

@@ -5,7 +5,7 @@ from extensions import bcrypt
 auth_blueprint = Blueprint('auth', __name__)
 
 # Aktív felhasználó lekérdezése
-@auth_blueprint.route("/@me", methods=["GET"])
+@auth_blueprint.route("/api/@me", methods=["GET"])
 def get_current_user():
     user_id = session.get("user_id")
     if not user_id:
@@ -19,7 +19,7 @@ def get_current_user():
     }), 200
 
 # Regisztráció kezelése
-@auth_blueprint.route("/register", methods=["POST"])
+@auth_blueprint.route("/api/register", methods=["POST"])
 def register_user():
     username = request.json["username"]
     password = request.json["password"]
@@ -47,7 +47,7 @@ def register_user():
     })
     
 # Bejelentkezés kezelése
-@auth_blueprint.route("/login", methods=["POST"])
+@auth_blueprint.route("/api/login", methods=["POST"])
 def login_user():
     username = request.json["username"]
     password = request.json["password"]
@@ -68,7 +68,7 @@ def login_user():
     }), 200
 
 # Kijelentkezés kezelése
-@auth_blueprint.route("/logout", methods=["POST"])
+@auth_blueprint.route("/api/logout", methods=["POST"])
 def logout_user():
     print("session from logout: ", session.get("user_id"))
     session.pop("user_id")
