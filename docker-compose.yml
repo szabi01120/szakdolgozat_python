@@ -9,9 +9,9 @@ services:
       - "443:443"
       - "443:443/udp"
     volumes:
-      ./caddy/Caddyfile:/etc/caddy/Caddyfile
-      ./caddy/caddy_config:/config
-      ./caddy/caddy_data:/data
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/caddy_config:/config
+      - ./caddy/caddy_data:/data
   frontend:
     build: ./client
     ports:
