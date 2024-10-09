@@ -15,7 +15,7 @@ export default function App() {
   useEffect(() => {
     const checkUserSession = async () => {
       try {
-        const resp = await axios.get('https://dezsanyilvantarto.hu:5000/api/@me', { withCredentials: true });
+        const resp = await axios.get('https://dezsanyilvantarto.hu/api/@me', { withCredentials: true });
         setUser(resp.data);
       } catch (error) {
         setUser(null);

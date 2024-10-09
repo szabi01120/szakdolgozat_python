@@ -5,7 +5,7 @@ const LatestCustomer = () => {
   const [latestCustomer, setLatestCustomer] = useState("");
 
   useEffect(() => {
-    axios.get("https://dezsanyilvantarto.hu:5000/api/sold_products/latest_customer")
+    axios.get("https://dezsanyilvantarto.hu/api/sold_products/latest_customer")
       .then(response => {
         setLatestCustomer(response.data.customer_name);
       })

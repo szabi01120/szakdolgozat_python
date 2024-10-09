@@ -10,11 +10,11 @@ export default function ProductPhotos() {
 
     const getProductPhotos = async (id) => {
         try {
-            const response = await axios.get(`https://dezsanyilvantarto.hu:5000/api/images/${id}`);
+            const response = await axios.get(`https://dezsanyilvantarto.hu/api/images/${id}`);
             console.log("response1: ", response.data);
             const photoURLs = response.data.map(photo => ({
                 id: photo.id,
-                url: `https://dezsanyilvantarto.hu:5000/${photo.url.replace(/\\/g, '/')}`
+                url: `https://dezsanyilvantarto.hu/${photo.url.replace(/\\/g, '/')}`
             }));
             setPhotos(photoURLs);
         } catch (error) {
@@ -24,7 +24,7 @@ export default function ProductPhotos() {
 
     const deletePhoto = async (photoId) => {
         try {
-            await axios.delete(`https://dezsanyilvantarto.hu:5000/api/delete_image/${photoId}`);
+            await axios.delete(`https://dezsanyilvantarto.hu/api/delete_image/${photoId}`);
             const updatedPhotos = photos.filter(photo => photo.id !== photoId);
             setPhotos(updatedPhotos);
             console.log("Sikeres törlés!");

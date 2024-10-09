@@ -7,7 +7,7 @@ const TotalIncome = () => {
     const [incomeUSD, setincomeUSD] = useState(0);
 
     useEffect(() => {
-        axios.get("https://dezsanyilvantarto.hu:5000/api/sold_products/income")
+        axios.get("https://dezsanyilvantarto.hu/api/sold_products/income")
             .then(response => {
                 setincomeHUF(response.data.total_income_huf);
                 setincomeEUR(response.data.total_income_eur);
