@@ -4,6 +4,7 @@ import EditSoldProductModal from './EditSoldProductModal';
 import DeleteModal from '../../components/DeleteProductModal/DeleteModal';
 import './Traffic.css';
 
+
 export default function Traffic() {
   const [productData, setProductData] = useState(false);
   const [products, setProducts] = useState([]);

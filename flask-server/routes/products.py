@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from dbConfig import db, Products, Image, SoldProducts, ProductTypes, ProductManufacturers
 import services.file_service as f
 import os
@@ -256,6 +256,23 @@ def get_product_types():
         "id": product_type.id,
         "product_type": product_type.product_type,
     } for product_type in product_types]), 200
+
+# Termék típus törlése
+@products_bp.route("/api/delete_product_type/<int:id>", methods=["DELETE"])
+def delete_product_type(id):
+    product_type = ProductTypes.query.get(id)
+    
+    if product_type is None:
+        return jsonify({"error": "Nincs ilyen típus!"}), 404
+    
+    try:
+        db.session.delete(product_type)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Hiba történt a törlés során: {str(e)}"}), 500
+    
+    return jsonify({"message": "Típus sikeresen törölve!"}), 200
     
 # Termék gyártó hozzáadása
 @products_bp.route("/api/add_product_manufacturer", methods=["POST"])
@@ -291,3 +308,20 @@ def get_product_manufacturers():
         "id": product_manufacturer.id,
         "manufacturer": product_manufacturer.manufacturer,
     } for product_manufacturer in product_manufacturers]), 200
+
+# Termék gyártó törlése
+@products_bp.route("/api/delete_product_manufacturer/<int:id>", methods=["DELETE"])
+def delete_product_manufacturer(id):
+    product_manufacturer = ProductManufacturers.query.get(id)
+    
+    if product_manufacturer is None:
+        return jsonify({"error": "Nincs ilyen gyártó!"}), 404
+    
+    try:
+        db.session.delete(product_manufacturer)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": f"Hiba történt a törlés során: {str(e)}"}), 500
+    
+    return jsonify({"message": "Gyártó sikeresen törölve!"}), 200

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify, request, session
 from dbConfig import db
 from extensions import bcrypt, mail, server_session
 from routes import register_routes
@@ -15,6 +15,15 @@ server_session.init_app(app)
 db.init_app(app)
 
 register_routes(app)
+
+@app.before_request
+def check_if_logged_in():
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    excluded_paths = ['/login']
+    if request.path not in excluded_paths and not session.get("user_id"):
+        return jsonify({"error": "Nincs bejelentkezve!"}), 401
 
 @app.route('/')
 def test_redis_connection():

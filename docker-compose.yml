@@ -1,4 +1,17 @@
 services:
+  caddy:
+    image: caddy
+    container_name: caddy
+    hostname: caddy
+    restart: unless-stopped
+    ports:        
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      ./caddy/caddy_config:/config
+      ./caddy/caddy_data:/data
   frontend:
     build: ./client
     ports:
@@ -24,6 +37,8 @@ networks:
   default:
     external:
       name: docker_internal
+
+
 
 # services:
 #   frontend:

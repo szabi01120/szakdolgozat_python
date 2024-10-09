@@ -1,6 +1,6 @@
 # routes/images.py
 import os
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from dbConfig import db, app, Image, Products
 from werkzeug.utils import secure_filename
 from flask_marshmallow import Marshmallow
@@ -20,6 +20,9 @@ images_bp = Blueprint('images', __name__)
 
 @images_bp.route("/api/img_upload/<int:product_id>", methods=["POST"])
 def upload_file(product_id):
+    if not session.get("user_id"):
+        return jsonify({"error": "Nincs bejelentkezve!"}), 401
+
     if 'files[]' not in request.files:
         return jsonify({
             "message": "A kérés nem tartalmaz fájlt", 
@@ -75,12 +78,18 @@ def upload_file(product_id):
 
 @images_bp.route('/api/images', methods=['GET'])
 def images():
+    if not session.get("user_id"):
+        return jsonify({"error": "Nincs bejelentkezve!"}), 401
+    
     all_images = Image.query.all()
     results = image_schema.dump(all_images)
     return jsonify(results)
 
 @images_bp.route('/api/images/<int:id>', methods=['GET'])
 def image(id):
+    if not session.get("user_id"):
+        return jsonify({"error": "Nincs bejelentkezve!"}), 401
+    
     # A termék képeinek mappája az UPLOAD_FOLDER alapján
     product_folder = os.path.join(f.UPLOAD_FOLDER, str(id))
     print("product folder:",product_folder)
@@ -101,6 +110,9 @@ def image(id):
 
 @images_bp.route('/api/delete_image/<int:id>', methods=['DELETE'])
 def delete_image(id):
+    if not session.get("user_id"):
+        return jsonify({"error": "Nincs bejelentkezve!"}), 401
+    
     image = Image.query.get(id)
     if image is None:
         return jsonify({"error": "Nincs ilyen kép!"}), 404
@@ -130,6 +142,3 @@ def delete_image(id):
         return jsonify({"error": str(e)}), 500
 
     return jsonify({"message": "Kép sikeresen törölve!"}), 200
-
-
-

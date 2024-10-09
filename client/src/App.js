@@ -6,6 +6,8 @@ import { ProductPhotos, Navbar, LoadingSpinner } from './components';
 import './App.css';
 import axios from 'axios';
 
+axios.defaults.withCredentials = true;
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);  

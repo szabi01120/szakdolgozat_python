@@ -5,6 +5,7 @@ import './AddProduct.css';
 import AddModal from './AddModal';
 import { NotificationModal } from '../../components';
 
+
 export default function AddProduct() {
   const [images, setImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false); // drag and drop
@@ -194,6 +195,7 @@ export default function AddProduct() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log('Form adatok:', formData);
   
     const MAX_TOTAL_FILE_SIZE = 512 * 1024 * 1024; // 512 MB
   
