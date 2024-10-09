@@ -1,4 +1,4 @@
-hajnalszabolcs.duckdns.org {
+dezsanyilvantarto.hu {
     route /api/* {
         reverse_proxy backend:5000
     }

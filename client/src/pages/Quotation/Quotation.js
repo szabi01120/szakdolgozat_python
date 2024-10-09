@@ -39,7 +39,7 @@ export default function Quotation() {
   useEffect(() => {
     const getTemplates = async () => {
       try {
-        const response = await axios.get('https://hajnalszabolcs.duckdns.org:5000/api/templates');
+        const response = await axios.get('https://dezsanyilvantarto.hu:5000/api/templates');
         console.log('Sablonok:', response.data);
         setTemplates(response.data);
 
@@ -73,7 +73,7 @@ export default function Quotation() {
     };
 
     try {
-      const response = await axios.post('https://hajnalszabolcs.duckdns.org:5000/api/add_template', newTemplate);
+      const response = await axios.post('https://dezsanyilvantarto.hu:5000/api/add_template', newTemplate);
       if (response.status === 201) {
         setSuccessMessageTemplate('Sablon sikeresen hozzáadva!');
         setErrorMessageTemplate('');
@@ -109,7 +109,7 @@ export default function Quotation() {
     };
 
     try {
-      const response = await axios.delete('https://hajnalszabolcs.duckdns.org:5000/api/delete_template', { data: templateToDelete });
+      const response = await axios.delete('https://dezsanyilvantarto.hu:5000/api/delete_template', { data: templateToDelete });
       if (response.status === 200) {
         setSuccessMessageDeleteTemplate('Sablon sikeresen törölve!');
         setErrorMessageDeleteTemplate('');
@@ -149,7 +149,7 @@ export default function Quotation() {
     };
 
     try {
-      const response = await axios.post('https://hajnalszabolcs.duckdns.org:5000/api/send_quotation', quotationData);
+      const response = await axios.post('https://dezsanyilvantarto.hu:5000/api/send_quotation', quotationData);
       if (response.status === 200) {
         setSuccessMessageQuotation('Az ajánlat sikeresen elküldve!');
         setErrorMessageQuotation('');

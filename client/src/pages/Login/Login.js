@@ -8,7 +8,7 @@ export default function Login() {
 
     const logInUser = async () => {
         try {
-            const response = await axios.post('https://hajnalszabolcs.duckdns.org:5000/api/login', {
+            const response = await axios.post('https://dezsanyilvantarto.hu:5000/api/login', {
                 "username": username,
                 "password": password
             }, { withCredentials: true });
