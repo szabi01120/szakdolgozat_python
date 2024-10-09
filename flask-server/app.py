@@ -21,7 +21,7 @@ def check_if_logged_in():
     if request.method == 'OPTIONS':
         return '', 200
 
-    excluded_paths = ['/login']
+    excluded_paths = ['/api/login']
     if request.path not in excluded_paths and not session.get("user_id"):
         return jsonify({"error": "Nincs bejelentkezve!"}), 401
 
