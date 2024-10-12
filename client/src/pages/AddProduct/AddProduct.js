@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWarehouse, faPlusMinus } from '@fortawesome/free-solid-svg-icons';
 import './AddProduct.css';
 import AddModal from './AddModal';
 import { NotificationModal } from '../../components';
@@ -13,6 +15,9 @@ export default function AddProduct() {
   const [productTypes, setProductTypes] = useState([]);
   const [manufacturers, setManufacturers] = useState([]);
 
+  const [selectedDeleteTypeId, setSelectedDeleteTypeId] = useState('');
+  const [selectedDeleteManufacturerId, setSelectedDeleteManufacturerId] = useState('');
+
   const fileInputRef = useRef(); // input referencia
 
   const [isError, setIsError] = useState(false);
@@ -21,6 +26,8 @@ export default function AddProduct() {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [showAddNotificationModalSuccess, setShowAddNotificationModalSuccess] = useState(false);
   const [showAddNotificationModalError, setShowAddNotificationModalError] = useState(false);
+  const [showNotificationModalDeleteSuccess, setShowNotificationModalDeleteSuccess] = useState(false);
+  const [showNotificationModalDeleteError, setShowNotificationModalDeleteError] = useState(false);
 
   const [showAddTypeModal, setShowAddTypeModal] = useState(false);
   const [showAddManufacturerModal, setShowAddManufacturerModal] = useState(false);
@@ -32,7 +39,6 @@ export default function AddProduct() {
     incoming_invoice: '',
     product_name: '',
     product_type: '',
-    product_size: '',
     quantity: '',
     manufacturer: '',
     incoming_price: '',
@@ -155,6 +161,15 @@ export default function AddProduct() {
   };
 
   const handleSaveType = async () => {
+    if (!newType) {
+      <NotificationModal
+        show={showAddNotificationModalError}
+        onHide={() => setShowAddNotificationModalError(false)}
+        message='Nem lehet üres a mező!'
+        variant='danger'
+      />;
+      return;
+    }
     try {
       const response = await axios.post('https://dezsanyilvantarto.hu/api/add_product_type', { "product_type": newType });
       if (response.status === 200) {
@@ -164,6 +179,7 @@ export default function AddProduct() {
         const newProductType = response.data.product_type;
         setProductTypes((prevTypes) => [...prevTypes, newProductType]);
 
+        setNewType('');
         setShowAddTypeModal(false);
         setShowAddNotificationModalSuccess(true);
       }
@@ -174,17 +190,38 @@ export default function AddProduct() {
     }
   };
 
+  const handleDeleteType = async (id) => {
+    try {
+      const response = await axios.delete(`https://dezsanyilvantarto.hu/api/delete_product_type/${id}`);
+      if (response.status === 200) {
+        const deletedType = response.data.product_type;
+        setProductTypes((prevTypes) => prevTypes.filter((type) => type.id !== deletedType.id));
+
+        setShowAddTypeModal(false);
+        setShowNotificationModalDeleteSuccess(true);
+        setSelectedDeleteTypeId(''); 
+      }
+    } catch (error) {
+      console.log("type:", newType);
+      console.log('Hiba történt a törlés során:', error.response);
+      setShowAddTypeModal(false);
+      setShowNotificationModalDeleteError(true);
+    }
+  };
+
   const handleSaveManufacturer = async () => {
     try {
       const response = await axios.post('https://dezsanyilvantarto.hu/api/add_product_manufacturer', { "manufacturer": newManufacturer });
       if (response.status === 200) {
-        console.log('Sikeres hozzáadás');
-        console.log('Válasz:', response.data);
         setShowAddManufacturerModal(false);
         setShowAddNotificationModalSuccess(true);
 
         const newManufacturer = response.data.product_manufacturer;
         setManufacturers((prevManufacturers) => [...prevManufacturers, newManufacturer]);
+
+        setNewManufacturer('');
+        setShowAddManufacturerModal(false);
+        setShowAddNotificationModalSuccess(true);
       }
     } catch (error) {
       console.log('Hiba történt a gyártó hozzáadása során:', error.response);
@@ -193,28 +230,47 @@ export default function AddProduct() {
     }
   };
 
+  const handleDeleteManufacturer = async (id) => {
+    console.log('Törlés:', newManufacturer);
+    try {
+      const response = await axios.delete(`https://dezsanyilvantarto.hu/api/delete_product_manufacturer/${id}`);
+      if (response.status === 200) {
+        const deletedManufacturer = response.data.product_manufacturer;
+        setManufacturers((prevManufacturers) => prevManufacturers.filter((manufacturer) => manufacturer.id !== deletedManufacturer.id));
+
+        setShowAddManufacturerModal(false);
+        setShowNotificationModalDeleteSuccess(true);
+        setSelectedDeleteManufacturerId('');
+      }
+    } catch (error) {
+      console.log('Hiba történt a törlés során:', error.response);
+      setShowAddManufacturerModal(false);
+      setShowNotificationModalDeleteError(true);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log('Form adatok:', formData);
-  
+
     const MAX_TOTAL_FILE_SIZE = 512 * 1024 * 1024; // 512 MB
-  
+
     if (showImageUpload && images.length > 0) {
       const allowedExtensions = ['jpg', 'jpeg', 'png'];
-  
+
       // formátum
       const invalidFiles = images.filter((file) => {
         const extension = file.name.split('.').pop().toLowerCase();
         return !allowedExtensions.includes(extension);
       });
-  
+
       // méret összeg
       const totalFileSize = images.reduce((sum, file) => sum + file.size, 0);
-  
+
       images.forEach((file) => {
         console.log(`File name: ${file.name}, File type: ${file.type}, File size: ${file.size}`);
       });
-  
+
       // ha van érvénytelen fájlformátum
       if (invalidFiles.length > 0) {
         console.log('Nem megfelelő fájlformátum:', invalidFiles);
@@ -222,7 +278,7 @@ export default function AddProduct() {
         setIsError(true);
         return;
       }
-  
+
       // ha túl nagy a fájl pack
       if (totalFileSize > MAX_TOTAL_FILE_SIZE) {
         console.log('Túl nagy fájlméret összesítve:', totalFileSize);
@@ -231,26 +287,26 @@ export default function AddProduct() {
         return;
       }
     }
-  
+
     const updatedFormData = {
       ...formData,
       hasPhotos: showImageUpload && images.length > 0 // Ha be van pipálva és van kép, akkor true
     };
-  
+
     try {
       const response = await axios.post('https://dezsanyilvantarto.hu/api/add_product', updatedFormData);
-  
+
       if (response.status === 200) {
         console.log('Sikeres hozzáadás');
         const product_id = response.data.product_id;
         console.log('Termék ID:', product_id);
-  
+
         if (showImageUpload && images.length > 0) {
           const data = new FormData();
           for (const element of images) {
             data.append("files[]", element);
           }
-  
+
           try {
             await axios.post(`https://dezsanyilvantarto.hu/api/img_upload/${product_id}`, data);
           } catch (error) {
@@ -279,10 +335,17 @@ export default function AddProduct() {
       setIsError(true);
     }
   };
-  
+
+  const handleDeleteManufacturerOptionChange = (id) => {
+    setSelectedDeleteManufacturerId(id);
+  };
+
+  const handleDeleteTypeOptionChange = (id) => {
+    setSelectedDeleteTypeId(id);
+  };
+
   const inputFields = [
     { label: 'Terméknév', name: 'product_name', placeholder: 'Terméknév', type: 'text' },
-    { label: 'Méret', name: 'product_size', placeholder: 'Méret', type: 'text' },
     { label: 'Mennyiség', name: 'quantity', placeholder: 'Mennyiség', type: 'number', min: '0' },
     { label: 'Beszerzési ár', name: 'incoming_price', placeholder: 'Beszerzési ár', type: 'text' }, // Fontos => itt text, hogy formázhassuk
     { label: 'Bejövő számla', name: 'incoming_invoice', placeholder: 'Bejövő számla', type: 'text' },
@@ -297,8 +360,14 @@ export default function AddProduct() {
           <h2 className="position-absolute start-50 translate-middle-x ">Termék hozzáadása</h2>
           <div></div>
           <div className="d-flex mt-3">
-            <button type="button" className="btn btn-edit" onClick={handleTypeClick}>Típus felvétel</button>
-            <button type="button" className="btn btn-edit" onClick={handleManufacturerClick}>Gyártó felvétel</button>
+            <button type="button" className="btn btn-edit" onClick={handleTypeClick}>
+              <FontAwesomeIcon icon={faPlusMinus} className="me-1" />
+              Típus felvétel
+            </button>
+            <button type="button" className="btn btn-edit" onClick={handleManufacturerClick}>
+              <FontAwesomeIcon icon={faPlusMinus} className="me-1" />
+              Gyártó felvétel
+            </button>
           </div>
         </div>
         <form onSubmit={handleSubmit} className='row g-3'>
@@ -402,6 +471,9 @@ export default function AddProduct() {
         onSaveEdit={handleSaveType}
         name='Típus'
         inputValue={newType}
+        deleteOptions={productTypes.map((tpye) => ({ id: tpye.id, name: tpye.product_type }))}
+        onDelete={handleDeleteType}
+        onDeleteOptionChange={handleDeleteTypeOptionChange}
       />
       <AddModal
         show={showAddManufacturerModal}
@@ -410,12 +482,27 @@ export default function AddProduct() {
         onSaveEdit={handleSaveManufacturer}
         name='Gyártó'
         inputValue={newManufacturer}
+        deleteOptions={manufacturers.map((manufacturer) => ({ id: manufacturer.id, name: manufacturer.manufacturer }))}
+        onDelete={handleDeleteManufacturer}
+        onDeleteOptionChange={handleDeleteManufacturerOptionChange}
       />
       <NotificationModal
         show={showAddNotificationModalSuccess}
         onHide={() => setShowAddNotificationModalSuccess(false)}
         message='Sikeres hozzáadás!'
         variant='success'
+      />
+      <NotificationModal
+        show={showNotificationModalDeleteSuccess}
+        onHide={() => setShowNotificationModalDeleteSuccess(false)}
+        message='Sikeres törlés!'
+        variant='success'
+      />
+      <NotificationModal
+        show={showNotificationModalDeleteError}
+        onHide={() => setShowNotificationModalDeleteError(false)}
+        message='Hiba történt a törlés során!'
+        variant='danger'
       />
       <NotificationModal
         show={showAddNotificationModalError}

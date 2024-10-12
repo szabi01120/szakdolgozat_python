@@ -13,22 +13,21 @@ export default function MyNavbar({ user }) {
     };
 
     const handleNavClick = () => {
-        // Ha egy menüpontra kattintunk, akkor zárja be a menüt
         setIsOpen(false);
     };
 
     return (
-        <nav className="navbar">
+        <nav className={`navbar ${!user ? 'centered-navbar' : ''}`}>
             <div className="navbar-container">
                 <Link className="navbar-brand" to="/" id="mainPage">
                     Dézsafürdő és Hordószauna Nyilvántartó Rendszer
                 </Link>
-                <button className="navbar-toggler d-md-none" onClick={toggleNavbar}>
-                    <span className={`navbar-toggler-icon ${isOpen ? 'open' : ''}`}></span>
-                </button>
-                <ul className={`navbar-menu ${isOpen ? 'show' : ''}`} id='navbarNav'>
-                    {user && (
-                        <>
+                {user && (
+                    <>
+                        <button className="navbar-toggler d-md-none" onClick={toggleNavbar}>
+                            <span className={`navbar-toggler-icon ${isOpen ? 'open' : ''}`}></span>
+                        </button>
+                        <ul className={`navbar-menu ${isOpen ? 'show' : ''}`} id="navbarNav">
                             <li className={`nav-item ${location.pathname === '/raktar' ? 'active' : ''}`}>
                                 <Link className="nav-link" to="/raktar" onClick={handleNavClick}>
                                     <FontAwesomeIcon icon={faWarehouse} /> Raktár
@@ -49,9 +48,9 @@ export default function MyNavbar({ user }) {
                                     <FontAwesomeIcon icon={faPlusCircle} /> Termék hozzáadása
                                 </Link>
                             </li>
-                        </>
-                    )}
-                </ul>
+                        </ul>
+                    </>
+                )}
             </div>
         </nav>
     );

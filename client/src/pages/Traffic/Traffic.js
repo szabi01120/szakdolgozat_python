@@ -19,7 +19,7 @@ export default function Traffic() {
 
   useEffect(() => {
     if (productData) {
-      setLoading(true); // Indítsd el a töltést
+      setLoading(true);
       axios
         .get('https://dezsanyilvantarto.hu/api/sold_products')
         .then((response) => {

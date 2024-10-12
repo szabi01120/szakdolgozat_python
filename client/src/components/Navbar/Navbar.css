@@ -42,6 +42,10 @@
     color: #ecf0f1;
 }
 
+.centered-navbar .navbar-container {
+    justify-content: center;
+}
+
 .navbar-toggler {
     border: none;
     background: transparent;

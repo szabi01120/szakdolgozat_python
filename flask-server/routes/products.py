@@ -272,7 +272,13 @@ def delete_product_type(id):
         db.session.rollback()
         return jsonify({"error": f"Hiba történt a törlés során: {str(e)}"}), 500
     
-    return jsonify({"message": "Típus sikeresen törölve!"}), 200
+    return jsonify({
+        "message": "Típus sikeresen törölve!",
+        "product_type": {
+            "id": product_type.id,
+            "product_type": product_type.product_type
+        }
+    }), 200
     
 # Termék gyártó hozzáadása
 @products_bp.route("/api/add_product_manufacturer", methods=["POST"])
@@ -324,4 +330,10 @@ def delete_product_manufacturer(id):
         db.session.rollback()
         return jsonify({"error": f"Hiba történt a törlés során: {str(e)}"}), 500
     
-    return jsonify({"message": "Gyártó sikeresen törölve!"}), 200
+    return jsonify({
+        "message": "Gyártó sikeresen törölve!",
+        "product_manufacturer": {
+            "id": product_manufacturer.id,
+            "manufacturer": product_manufacturer.manufacturer
+        }
+    }), 200

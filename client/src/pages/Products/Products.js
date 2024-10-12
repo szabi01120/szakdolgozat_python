@@ -12,6 +12,7 @@ export default function Products() {
   const [editingProductId, setEditingProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFailedModal, setShowFailedModal] = useState(false);
@@ -22,28 +23,34 @@ export default function Products() {
   const priceFormatter = new Intl.NumberFormat('hu-HU');
 
   useEffect(() => {
-    axios
-      .get('https://dezsanyilvantarto.hu/api/products')
-      .then((response) => {
-        console.log('Kapott adatok:', response.data); // Ellenőrizzük a válasz struktúráját
+    if (productData) {
+      setLoading(true);
+      axios
+        .get('https://dezsanyilvantarto.hu/api/products')
+        .then((response) => {
+          console.log('Kapott adatok:', response.data); // Ellenőrizzük a válasz struktúráját
 
-        const productsData = response.data;
-  
-        const productsWithPhotos = productsData.map((product) => {
-          product.sold = product.sold || false;
-          product.shipped = product.shipped || false;
-  
-          if (product.sold && product.shipped) {
-            setProductsToMove((prevProductsToMove) => [...prevProductsToMove, product.id]);
-          }
-  
-          return product;
+          const productsData = response.data;
+
+          const productsWithPhotos = productsData.map((product) => {
+            product.sold = product.sold || false;
+            product.shipped = product.shipped || false;
+
+            if (product.sold && product.shipped) {
+              setProductsToMove((prevProductsToMove) => [...prevProductsToMove, product.id]);
+            }
+
+            return product;
+          });
+
+          setProducts(productsWithPhotos);
+        })
+        .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error))
+        .finally(() => {
+          setLoading(false);
         });
-  
-        setProducts(productsWithPhotos);
-      })
-      .catch((error) => console.log('Hiba a termékek lekérdezésekor: ', error));
-  }, []);
+    }
+  }, [productData]);
 
   const handleProductsButtonClick = () => {
     setProductData(!productData);
@@ -276,52 +283,63 @@ export default function Products() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products?.map((product, index) => (
-                    <tr key={product.id}>
-                      <td data-label="Id">{product.id}</td>
-                      <td data-label="Beszerzés">2024-10-08</td>
-                      <td data-label="Termék neve">{product.product_name}</td>
-                      <td data-label="Típus">{product.product_type}</td>
-                      <td data-label="Mennyiség">{product.quantity}</td>
-                      <td data-label="Gyártó">{product.manufacturer}</td>
-                      <td data-label="Beszerzési ár">
-                        {priceFormatter.format(product.incoming_price)} {product.currency}
-                      </td>
-                      <td data-label="Eladva?">
-                        <input
-                          type="checkbox"
-                          id={`checkbox-sold-${index}`}
-                          checked={product.sold}
-                          onChange={() => handleCheckboxChange(index, 'sold')}
-                        />
-                      </td>
-                      <td data-label="Szállítva?">
-                        <input
-                          type="checkbox"
-                          id={`checkbox-shipped-${index}`}
-                          checked={product.shipped}
-                          onChange={() => handleCheckboxChange(index, 'shipped')}
-                        />
-                      </td>
-                      <td data-label="Műveletek">
-                        <div className={`btn-group ${!product.hasPhotos ? 'no-photo' : ''} me-2`}>
-                          {product.hasPhotos ? (
-                            <Link to={`/productphotos/${product.id}`} className="btn btn-photo me-2">
-                              Fotók
-                            </Link>
-                          ) : (
-                            <div className="empty-photo-placeholder me-4"></div>
-                          )}
-                          <button className="btn btn-edit" onClick={() => handleEditClick(product)}>
-                            Edit
-                          </button>
-                          <button className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)}>
-                            Törlés
-                          </button>
-                        </div>
-                      </td>
+                  {loading && (
+                    <tr>
+                      <td colSpan="13" style={{ textAlign: 'center' }}>Adatok betöltése folyamatban...</td>
                     </tr>
-                  ))}
+                  )}
+                  {!loading && products.length > 0 && (
+                    products.map((product, index) => (
+                      <tr key={product.id}>
+                        <td data-label="Id">{product.id}</td>
+                        <td data-label="Beszerzés">2024-10-08</td>
+                        <td data-label="Termék neve">{product.product_name}</td>
+                        <td data-label="Típus">{product.product_type}</td>
+                        <td data-label="Mennyiség">{product.quantity}</td>
+                        <td data-label="Gyártó">{product.manufacturer}</td>
+                        <td data-label="Beszerzési ár">
+                          {priceFormatter.format(product.incoming_price)} {product.currency}
+                        </td>
+                        <td data-label="Eladva?">
+                          <input
+                            type="checkbox"
+                            id={`checkbox-sold-${index}`}
+                            checked={product.sold}
+                            onChange={() => handleCheckboxChange(index, 'sold')}
+                          />
+                        </td>
+                        <td data-label="Szállítva?">
+                          <input
+                            type="checkbox"
+                            id={`checkbox-shipped-${index}`}
+                            checked={product.shipped}
+                            onChange={() => handleCheckboxChange(index, 'shipped')}
+                          />
+                        </td>
+                        <td data-label="Műveletek">
+                          <div className={`btn-group ${!product.hasPhotos ? 'no-photo' : ''} me-2`}>
+                            {product.hasPhotos ? (
+                              <Link to={`/productphotos/${product.id}`} className="btn btn-photo me-2">
+                                Fotók
+                              </Link>
+                            ) : (
+                              <div className="empty-photo-placeholder me-4"></div>
+                            )}
+                            <button className="btn btn-edit" onClick={() => handleEditClick(product)}>
+                              Edit
+                            </button>
+                            <button className="btn btn-danger" onClick={() => handleDeleteButtonClick(product.id)}>
+                              Törlés
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )))}
+                  {!loading && products.length === 0 && (
+                    <tr>
+                      <td colSpan="13">Nincs termék adat</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
